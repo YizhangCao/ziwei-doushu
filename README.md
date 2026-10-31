@@ -294,7 +294,7 @@ npm test            # 排盘引擎回归（768 盘 × 紫微铁律、夏令时�
 
 每次 push 与 PR 都会在 GitHub Actions 上跑同一套（见 [`.github/workflows/ci.yml`](./.github/workflows/ci.yml)）。
 
-> **注意：开源版不含后端 API 路由。**排盘、命盘展示、合盘起盘都在浏览器里用本仓库的引擎完成，**不需要任何 API Key**。AI 解读（`/api/interpret`）和合盘 AI 分析（`/api/heming`）需要你自己实现接口；没实现之前，这两处会直接提示「开源版不含该接口」，配置 API Key 也不会变成可用（#30 就是这个原因）。
+> **AI 解读配置：** `/api/interpret` 使用服务端 Anthropic API。复制 `.env.example` 为 `.env.local` 并设置 `ANTHROPIC_API_KEY` 后，命盘页会流式显示解读；排盘本身不需要任何 API Key。合盘 AI 分析（`/api/heming`）仍需自行实现。
 
 ---
 
