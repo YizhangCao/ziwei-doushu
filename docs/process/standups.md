@@ -6,9 +6,9 @@ Format: what I did · what I'll do next · blockers.
 ## Sprint 1 (Nov 8–10)
 | Date | Partner | Done | Next | Blockers |
 |---|---|---|---|---|
-| 11/08 | Yizhang | Set up repo, board, and milestones; kit PR #13; re-planned backlog (#14–#26); Vercel + Neon; GitHub OAuth; main branch ruleset | Open PR for #4 (closes #2–#5); start #16 test harness | None |
+| 11/08 | Yizhang | Kit PR #13 (merged); re-planned backlog (#14–#26); main branch ruleset; Vercel project + Neon database (ziwei-db); opened PR #27 for #4 (closes #2–#5) with reviewer, milestone, and board card | Start #16 test harness | None |
 | 11/08 | Yikang | Accepted collaborator invite; reviewed and merged #13 | #14 Prisma schema, then #15 GitHub login | None |
-| 11/09 AM | Yizhang | | | |
+| 11/09 AM | Yizhang | Opened PR #28 (Sprint 1 planning); local env from Vercel + a Neon `test` branch for integration tests; #16 test harness (Vitest + Playwright) with red/green commits, PR #29; added `feature` label to PR #27 | #17 roles and permissions (failing tests written, implementation next), then #18 saved charts | CI integration/E2E jobs need Prisma from #14 |
 | 11/09 AM | Yikang | | | |
 | 11/09 PM | Yizhang | | | |
 | 11/09 PM | Yikang | | | |
