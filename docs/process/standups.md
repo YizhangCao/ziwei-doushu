@@ -6,8 +6,8 @@ Format: what I did · what I'll do next · blockers.
 ## Sprint 1 (Nov 8–10)
 | Date | Partner | Done | Next | Blockers |
 |---|---|---|---|---|
-| 11/08 | Yizhang | | | |
-| 11/08 | Yikang | | | |
+| 11/08 | Yizhang | Set up repo, board, and milestones; kit PR #13; re-planned backlog (#14–#26); Vercel + Neon; GitHub OAuth; main branch ruleset | Open PR for #4 (closes #2–#5); start #16 test harness | None |
+| 11/08 | Yikang | Accepted collaborator invite; reviewed and merged #13 | #14 Prisma schema, then #15 GitHub login | None |
 | 11/09 AM | Yizhang | | | |
 | 11/09 AM | Yikang | | | |
 | 11/09 PM | Yizhang | | | |
