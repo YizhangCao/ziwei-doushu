@@ -204,6 +204,7 @@ When a feature changes one of these flows, update this section in the same PR.
 - Birth data (`birthInfo`) is stored encrypted at rest (`lib/crypto.ts`, key in `DATA_ENCRYPTION_KEY`).
 - Public API keys are stored hashed, never in plain text. Rate-limit `/api/v1/*` and AI routes per key / per user.
 - API keys only in `.env.local` (git-ignored). Add any new variable to `.env.example` with a fake value.
+- Production and preview use their own AUTH_SECRET and DATA_ENCRYPTION_KEY, set only in Vercel; development uses the values in .env.local.
 - Never import server code or read `process.env` secrets in a `'use client'` file. Only `NEXT_PUBLIC_*` variables may reach the browser.
 - **Birth data is personal data.** Don't log full birth details or chat contents on the server, don't put real people's birth data in tests or issues, and don't send more of the chart to the AI than the reading needs.
   - **Never send `birthInfo` or `lunarInfo` (birth date, hour, gender) to the AI.** Send only what a reading uses: the 12 palaces (name, branch, stars, brightness, 四化), `wuxingJuName`, `mingZhu`, `shenZhu`, `currentAge`, and the decade ranges.
