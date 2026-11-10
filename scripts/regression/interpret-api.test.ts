@@ -24,7 +24,8 @@ const chart = {
   currentAge: 36,
   palaces: Array.from({ length: 12 }, (_, branch) => ({
     branch,
-    name: `宫${branch}`,
+    // Real engine palace names: the request validator only accepts names the engine produces (#4).
+    name: ['命宫', '兄弟', '夫妻', '子女', '财帛', '疾厄', '迁移', '仆役', '官禄', '田宅', '福德', '父母'][branch],
     stars: [{ name: '紫微', type: 'major' as const, brightnessRaw: '庙' as const }],
   })),
   daXians: [],
