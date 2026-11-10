@@ -3,6 +3,8 @@
 # Deployment: Vercel's GitHub integration builds a preview for every PR and deploys
 # production from main; the Neon integration gives each preview its own database branch.
 # Branch protection on main requires every job here to pass before a PR can merge.
+# Prisma steps run only once prisma/schema.prisma exists (#14), and use the Prisma CLI
+# pinned in package.json (--no-install) instead of downloading whatever npx finds.
 name: CI
 
 on:
@@ -31,7 +33,9 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: '${{ env.NODE_VERSION }}', cache: npm }
       - run: npm ci --no-audit --no-fund
-      - run: npx prisma generate
+      - name: Prisma generate
+        if: hashFiles('prisma/schema.prisma') != ''
+        run: npx --no-install prisma generate
       - run: npm run typecheck
       - run: npm test
 
@@ -44,7 +48,9 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: '${{ env.NODE_VERSION }}', cache: npm }
       - run: npm ci --no-audit --no-fund
-      - run: npx prisma generate
+      - name: Prisma generate
+        if: hashFiles('prisma/schema.prisma') != ''
+        run: npx --no-install prisma generate
       - run: npm run test:unit -- --coverage
       - uses: actions/upload-artifact@v4
         if: always()
@@ -66,7 +72,9 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: '${{ env.NODE_VERSION }}', cache: npm }
       - run: npm ci --no-audit --no-fund
-      - run: npx prisma migrate deploy
+      - name: Prisma migrate
+        if: hashFiles('prisma/schema.prisma') != ''
+        run: npx --no-install prisma migrate deploy
       - run: npm run test:integration
 
   e2e:
@@ -85,7 +93,9 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: '${{ env.NODE_VERSION }}', cache: npm }
       - run: npm ci --no-audit --no-fund
-      - run: npx prisma migrate deploy && npx prisma db seed
+      - name: Prisma migrate + seed
+        if: hashFiles('prisma/schema.prisma') != ''
+        run: npx --no-install prisma migrate deploy && npx --no-install prisma db seed
       - run: npx playwright install --with-deps chromium
       - run: npm run build
       - run: npm run test:e2e

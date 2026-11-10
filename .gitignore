@@ -7,3 +7,10 @@ dist/
 *.tsbuildinfo
 .DS_Store
 node_modules
+
+# Test output (Vitest coverage, Playwright)
+coverage/
+test-results/
+playwright-report/
+
+.vercel
