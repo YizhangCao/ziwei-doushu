@@ -26,6 +26,7 @@
     "iztro": "^2.5.8",
     "lunar-javascript": "^1.7.3",
     "next": "^16.4.6",
+    "next-auth": "5.0.0-beta.32",
     "pg": "^8.20.0",
     "react": "^19.2.5",
     "react-dom": "^19.2.5"
