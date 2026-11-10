@@ -1,7 +1,11 @@
 import Anthropic from '@anthropic-ai/sdk';
 import type { RawMessageStreamEvent } from '@anthropic-ai/sdk/resources/messages';
 import type { ZiweiChart } from '@/lib/ziwei/types';
+import { serializeChartForInterpretation } from './chart-context';
 import { isKnownChart } from './known-chart-values';
+
+// Re-exported so existing imports keep working; the serializer lives in chart-context.ts.
+export { serializeChartForInterpretation };
 
 export interface InterpretMessage {
   role: 'user' | 'assistant';
@@ -43,37 +47,6 @@ export function validateInterpretRequest(value: unknown): InterpretRequest | nul
   }
 
   return { chart, messages };
-}
-
-export function serializeChartForInterpretation(chart: ZiweiChart): string {
-  const palaces = chart.palaces.map((palace) => ({
-    name: palace.name,
-    branch: palace.branch,
-    stars: palace.stars.map((star) => ({
-      name: star.name,
-      type: star.type,
-      brightness: star.brightnessRaw ?? star.brightness,
-      siHua: star.siHua,
-    })),
-    selfSihua: palace.selfSihua,
-    daXianAge: palace.daXianAge,
-    isMingGong: palace.isMingGong,
-    isShenGong: palace.isShenGong,
-  }));
-
-  return JSON.stringify({
-    wuxingJuName: chart.wuxingJuName,
-    mingZhu: chart.mingZhu,
-    shenZhu: chart.shenZhu,
-    currentAge: chart.currentAge,
-    palaces,
-    daXians: chart.daXians.map((daXian) => ({
-      startAge: daXian.startAge,
-      endAge: daXian.endAge,
-      palaceName: daXian.palaceName,
-      siHua: daXian.siHua,
-    })),
-  });
 }
 
 /** Puts the chart text at the start of the first user turn, keeping user/assistant alternation. */
