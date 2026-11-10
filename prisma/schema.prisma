@@ -1,0 +1,127 @@
+// ZiweiHub database schema (#14). The connection URL lives in prisma.config.ts (Prisma 7).
+// Change this file only together with a new migration in prisma/migrations/.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  member
+  practitioner
+  admin
+}
+
+enum MessageRole {
+  user
+  assistant
+}
+
+model User {
+  id             String           @id @default(cuid())
+  email          String           @unique
+  name           String?
+  image          String?
+  role           Role             @default(member)
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  charts         Chart[]
+  sharesReceived Share[]          @relation("SharePractitioner")
+  conversations  Conversation[]
+  consultMessages ConsultMessage[]
+  apiKeys        ApiKey[]
+}
+
+model Chart {
+  id                 String         @id @default(cuid())
+  ownerId            String
+  owner              User           @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  name               String
+  /// Birth data, encrypted at rest with DATA_ENCRYPTION_KEY (lib/crypto.ts). Never stored in plain text.
+  encryptedBirthInfo String
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+  shares             Share[]
+  conversations      Conversation[]
+
+  @@index([ownerId])
+}
+
+model Share {
+  id              String           @id @default(cuid())
+  chartId         String
+  chart           Chart            @relation(fields: [chartId], references: [id], onDelete: Cascade)
+  practitionerId  String
+  practitioner    User             @relation("SharePractitioner", fields: [practitionerId], references: [id], onDelete: Cascade)
+  createdAt       DateTime         @default(now())
+  /// Set when the owner revokes the share; access checks treat a revoked share as no share.
+  revokedAt       DateTime?
+  consultMessages ConsultMessage[]
+
+  @@unique([chartId, practitionerId])
+  @@index([practitionerId])
+}
+
+model Conversation {
+  id        String    @id @default(cuid())
+  chartId   String
+  chart     Chart     @relation(fields: [chartId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  messages  Message[]
+
+  @@index([chartId])
+  @@index([userId])
+}
+
+model Message {
+  id             String       @id @default(cuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  role           MessageRole
+  content        String
+  createdAt      DateTime     @default(now())
+
+  @@index([conversationId, createdAt])
+}
+
+model ConsultMessage {
+  id        String   @id @default(cuid())
+  shareId   String
+  share     Share    @relation(fields: [shareId], references: [id], onDelete: Cascade)
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  body      String
+  createdAt DateTime @default(now())
+
+  @@index([shareId, createdAt])
+}
+
+model ApiKey {
+  id         String    @id @default(cuid())
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name       String
+  /// SHA-256 of the key. The plain key is shown once at creation and never stored.
+  keyHash    String    @unique
+  /// First characters of the key, so users can tell keys apart.
+  prefix     String
+  createdAt  DateTime  @default(now())
+  lastUsedAt DateTime?
+  revokedAt  DateTime?
+
+  @@index([userId])
+}
+
+model Setting {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
+}

@@ -14,3 +14,6 @@ test-results/
 playwright-report/
 
 .vercel
+
+# Generated Prisma client (rebuilt by `prisma generate`)
+lib/generated/
