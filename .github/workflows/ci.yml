@@ -81,6 +81,8 @@ jobs:
     name: 4 · E2E (Playwright)
     needs: integration
     runs-on: ubuntu-latest
+    # Fake, public test key: prisma db seed stores its hash, the Playwright specs send it (#26).
+    env: { E2E_API_KEY: zwk_e2e0000000000000000000000000000000000000000 }
     services:
       postgres:
         image: postgres:16
