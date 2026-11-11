@@ -20,6 +20,7 @@ Format: what I did · what I'll do next · blockers.
 | Date | Partner | Done | Next | Blockers |
 |---|---|---|---|---|
 | 11/11 | Yizhang | Sprint 2 planning PR | #24 and #18 lib layers (TDD) | #15 and #20 needed before #18 routes and any migration |
+| 11/11 PM | Yizhang | #24 and #18 lib layers with 256-bit encryption (PRs #42, #43); #21 lib layer and the Vercel SSE spike (PR #44); E2E for the public API (#26, PR #45) | Wire #18, #21, #24 routes and pages once #15 merges | #15 (login); eight PRs awaiting review (#37–#39, #41–#45) |
 | 11/11 | Yikang | | | |
 | 11/12 | Yizhang | | | |
 | 11/12 | Yikang | | | |
