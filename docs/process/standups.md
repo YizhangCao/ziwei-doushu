@@ -13,16 +13,17 @@ Format: what I did · what I'll do next · blockers.
 | 11/09 PM | Yizhang | #17 roles and permissions: red/green commits, 93 unit tests passing (local, waiting on #29); synced app env vars to Vercel; separate prod/preview AUTH_SECRET and DATA_ENCRYPTION_KEY (#31, PR #30); board statuses updated | Open #17 PR once #29 merges, then #18 saved charts | PRs #27–#30 waiting for review; #18 needs #14 (database) |
 | 11/09 PM | Yikang | | | |
 | 11/10 AM | Yizhang | Status check of PRs, CI, and board: found CI failing on every PR (prisma generate with no schema; critical Next.js advisory) | CI fixes; merge PR queue (#29, #30, #28, #27, #17); take over #14 and #15 | Yikang unresponsive since 11/08 |
+| 11/10 PM | Yizhang | Sprint 1 review and retro with Yikang; Sprint 2 planning; moved the repo to D: | #4 browser check; #24 and #18 lib layers | None |
 | 11/10 AM | Yikang | | | |
 
-## Sprint 2 (Nov 10–12)
+## Sprint 2 (Nov 11–14)
 | Date | Partner | Done | Next | Blockers |
 |---|---|---|---|---|
-| 11/10 PM | Yizhang | | | |
-| 11/10 PM | Yikang | | | |
-| 11/11 AM | Yizhang | | | |
-| 11/11 AM | Yikang | | | |
-| 11/11 PM | Yizhang | | | |
-| 11/11 PM | Yikang | | | |
-| 11/12 AM | Yizhang | | | |
-| 11/12 AM | Yikang | | | |
+| 11/11 | Yizhang | Sprint 2 planning PR | #24 and #18 lib layers (TDD) | #15 and #20 needed before #18 routes and any migration |
+| 11/11 | Yikang | | | |
+| 11/12 | Yizhang | | | |
+| 11/12 | Yikang | | | |
+| 11/13 | Yizhang | | | |
+| 11/13 | Yikang | | | |
+| 11/14 | Yizhang | | | |
+| 11/14 | Yikang | | | |
