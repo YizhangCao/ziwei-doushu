@@ -22,38 +22,43 @@ beforeAll(async () => {
 function interpretRequest(cookie?: string): NextRequest {
   return new NextRequest(URL, {
     method: 'POST',
-    headers: { 'content-type': 'application/json', ...(cookie ? { cookie } : {}) },
+    headers: {
+      'content-type': 'application/json',
+      // Next.js sets these on every request; Auth.js uses them to pick the http cookie name.
+      host: 'localhost:3000',
+      'x-forwarded-proto': 'http',
+      ...(cookie ? { cookie } : {}),
+    },
     body: JSON.stringify({ chart: null, messages: [] }),
   });
 }
 
-async function sessionCookie(token: Record<string, unknown>): Promise<string> {
-  const value = await encode({ token, secret: process.env.AUTH_SECRET!, salt: SESSION_COOKIE });
+async function sessionCookie(token: Record<string, unknown>, secret = process.env.AUTH_SECRET!): Promise<string> {
+  const value = await encode({ token, secret, salt: SESSION_COOKIE });
   return `${SESSION_COOKIE}=${value}`;
 }
 
-// The route handler's second argument (route context); /api/interpret has no params.
-const ctx = { params: Promise.resolve({}) };
+// Calls the route the way Next.js does; /api/interpret has no params.
+async function post(cookie?: string): Promise<Response> {
+  const res = await POST(interpretRequest(cookie), { params: Promise.resolve({}) });
+  if (!(res instanceof Response)) throw new Error('route returned no Response');
+  return res;
+}
 
 describe('POST /api/interpret auth', () => {
   it('returns 401 with { error } when there is no session', async () => {
-    const res = await POST(interpretRequest(), ctx);
+    const res = await post();
     expect(res.status).toBe(401);
     expect(await res.json()).toEqual({ error: expect.any(String) });
   });
 
   it('returns 401 for a session cookie signed with the wrong secret', async () => {
-    const forged = await encode({
-      token: { sub: 'user-1', role: 'member' },
-      secret: 'some-other-secret-not-ours',
-      salt: SESSION_COOKIE,
-    });
-    const res = await POST(interpretRequest(`${SESSION_COOKIE}=${forged}`), ctx);
+    const res = await post(await sessionCookie({ sub: 'user-1', role: 'member' }, 'some-other-secret-not-ours'));
     expect(res.status).toBe(401);
   });
 
   it('lets a signed-in member past auth (invalid body then gives 400, not 401)', async () => {
-    const res = await POST(interpretRequest(await sessionCookie({ sub: 'user-1', role: 'member' })), ctx);
+    const res = await post(await sessionCookie({ sub: 'user-1', role: 'member' }));
     expect(res.status).toBe(400);
   });
 });
