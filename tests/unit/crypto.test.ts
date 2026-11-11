@@ -2,9 +2,9 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { decryptBirthInfo, encryptBirthInfo, EncryptionKeyError } from '@/lib/crypto';
 import type { BirthInfo } from '@/lib/ziwei/types';
 
-// Test-only keys, never used anywhere else.
-const KEY_A = '0123456789abcdef0123456789abcdef';
-const KEY_B = 'fedcba9876543210fedcba9876543210';
+// Test-only keys: valid hex, deliberately low-entropy so they never look like real secrets.
+const KEY_A = 'a'.repeat(32);
+const KEY_B = 'b'.repeat(32);
 
 // Fake person (AGENTS.md: no real birth data in tests).
 const BIRTH: BirthInfo = {
