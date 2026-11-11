@@ -22,7 +22,7 @@ env:
   DATABASE_URL_TEST: postgresql://postgres:postgres@localhost:5432/ziwei_test
   DATABASE_URL: postgresql://postgres:postgres@localhost:5432/ziwei_test
   AUTH_SECRET: ci-only-secret
-  DATA_ENCRYPTION_KEY: ci-only-32-byte-key-000000000000
+  DATA_ENCRYPTION_KEY: 0000000000000000000000000000000000000000000000000000000000000000
 
 jobs:
   static:

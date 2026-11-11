@@ -1,4 +1,4 @@
-import { createCipheriv, createDecipheriv, hkdfSync, randomBytes } from 'node:crypto';
+import { createCipheriv, createDecipheriv, randomBytes } from 'node:crypto';
 import { z } from 'zod';
 import type { BirthInfo } from '@/lib/ziwei/types';
 
@@ -15,22 +15,19 @@ export class EncryptionKeyError extends Error {
 
 const keySchema = z
   .string({ error: 'DATA_ENCRYPTION_KEY is not set' })
-  .regex(/^[0-9a-fA-F]{32}$/, 'DATA_ENCRYPTION_KEY must be exactly 32 hex characters');
+  .regex(/^[0-9a-fA-F]{64}$/, 'DATA_ENCRYPTION_KEY must be exactly 64 hex characters (32 bytes)');
 
 const VERSION = 'v1';
 const IV_BYTES = 12; // the GCM standard nonce size
 const TAG_BYTES = 16;
-// Binds derived keys to this one purpose, so the same secret can't decrypt anything else.
-const HKDF_INFO = 'ziwei-hub birth-info v1';
 
 // Read on every call, not at import: a missing key then fails the request that needs it,
 // not `next build`, and tests can switch keys.
 function loadKey(): Buffer {
   const parsed = keySchema.safeParse(process.env.DATA_ENCRYPTION_KEY);
   if (!parsed.success) throw new EncryptionKeyError(parsed.error.issues[0].message);
-  // The env key is 32 hex chars = 16 bytes; AES-256 needs 32. HKDF-SHA256 stretches it.
-  // See #18: a 64-hex key would give a full 256 bits of key material.
-  return Buffer.from(hkdfSync('sha256', Buffer.from(parsed.data, 'hex'), Buffer.alloc(0), HKDF_INFO, 32));
+  // 64 hex chars = the 32 random bytes AES-256 needs, so they are the key as-is.
+  return Buffer.from(parsed.data, 'hex');
 }
 
 /** AES-256-GCM with a random IV. Output: "v1.<iv>.<tag>.<ciphertext>", each part base64url. */
