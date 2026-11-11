@@ -11,10 +11,15 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   pages: { signIn: '/login', error: '/login' },
   callbacks: {
     async jwt({ token, user, account }) {
-      // `account` is only present on sign-in: link the GitHub login to our User row by email,
+      // `account` is only present on sign-in: find or create our User row by GitHub account id,
       // and keep our own user id and role in the token from then on.
-      if (account && user) {
-        const dbUser = await upsertUserFromProfile(prisma, { email: user.email, name: user.name, image: user.image });
+      if (account?.provider === 'github' && user) {
+        const dbUser = await upsertUserFromProfile(prisma, {
+          githubId: account.providerAccountId,
+          email: user.email,
+          name: user.name,
+          image: user.image,
+        });
         token.sub = dbUser.id;
         token.role = dbUser.role;
       }

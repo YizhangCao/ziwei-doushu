@@ -15,26 +15,36 @@ export function toSessionUser(token: { sub?: unknown; role?: unknown; [key: stri
 }
 
 export interface GitHubProfile {
+  /** GitHub's numeric account id as a string (Auth.js `account.providerAccountId`). */
+  githubId: string | null | undefined;
   email: string | null | undefined;
   name: string | null | undefined;
   image: string | null | undefined;
 }
 
 /**
- * Called once per GitHub sign-in: finds the User by email or creates one. New users get the
- * schema default role (member). An existing user's role is never touched here; only an admin
- * changes roles (#23).
+ * Called once per GitHub sign-in. Users are matched by GitHub account id, never by email:
+ * GitHub can withhold a private email and users can change it, and matching by email would
+ * let a GitHub account with the same address take over an existing row (PR #35 review).
+ *
+ * - Existing user: refresh name and image only. Role is never touched here (admins change
+ *   roles, #23); email isn't either, so a later login can't hit the unique email index.
+ * - New user: schema default role (member). Email is stored only if GitHub gave one and no
+ *   other row already has it.
  */
 export async function upsertUserFromProfile(db: Pick<PrismaClient, 'user'>, profile: GitHubProfile): Promise<SessionUser> {
-  const email = profile.email?.trim().toLowerCase();
-  if (!email) throw new Error('GitHub account has no email address');
+  const githubId = profile.githubId?.trim();
+  if (!githubId) throw new Error('GitHub sign-in has no account id');
 
   const details = { name: profile.name ?? null, image: profile.image ?? null };
-  const user = await db.user.upsert({
-    where: { email },
-    update: details,
-    create: { email, ...details },
-    select: { id: true, role: true },
-  });
-  return { id: user.id, role: user.role };
+  const select = { id: true, role: true } as const;
+
+  const existing = await db.user.findUnique({ where: { githubId }, select: { id: true } });
+  if (existing) {
+    return db.user.update({ where: { id: existing.id }, data: details, select });
+  }
+
+  const email = profile.email?.trim().toLowerCase() || null;
+  const emailTaken = email !== null && (await db.user.findUnique({ where: { email }, select: { id: true } })) !== null;
+  return db.user.create({ data: { githubId, email: emailTaken ? null : email, ...details }, select });
 }
