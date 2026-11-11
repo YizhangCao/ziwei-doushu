@@ -1,4 +1,4 @@
-# Sprint 2 (Nov 10–12)
+# Sprint 2 (Nov 11–14)
 
 ## Planning (done together by Yikang and Yizhang)
 - **Date / attendees:** 11/10/2026, Yikang Liu and Yizhang Cao (video call)
