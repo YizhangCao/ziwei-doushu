@@ -1,3 +1,5 @@
+// Last Edited by Yikang (Richard) Liu: November 11, 2026 · San Francisco, California, USA
+
 // ZiweiHub database schema (#14). The connection URL lives in prisma.config.ts (Prisma 7).
 // Change this file only together with a new migration in prisma/migrations/.
 
@@ -23,7 +25,7 @@ enum MessageRole {
 
 model User {
   id             String           @id @default(cuid())
-  /// GitHub account id: how sign-in finds the user (#15). Null for seeded demo accounts.
+  /// GitHub account id; sign-in looks users up by it. Null for seeded demo accounts.
   githubId       String?          @unique
   /// Only if GitHub shares it; never used to match a sign-in to an account.
   email          String?          @unique

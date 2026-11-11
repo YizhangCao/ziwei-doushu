@@ -1,3 +1,5 @@
+// Last Edited by Yikang (Richard) Liu: November 11, 2026 · San Francisco, California, USA
+
 import Anthropic from '@anthropic-ai/sdk';
 import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
@@ -11,7 +13,10 @@ import { toSessionUser } from '@/lib/auth/session';
 
 export const runtime = 'nodejs';
 
-// AI readings are member-only (AGENTS.md roles table), so auth is checked before the body.
+/**
+ * Streams an AI reading of the posted chart as server-sent events. Members only:
+ * without a valid session it returns 401 before reading the body.
+ */
 export const POST = auth(async function POST(request) {
   try {
     requireUser(toSessionUser({ sub: request.auth?.user?.id, role: request.auth?.user?.role }));

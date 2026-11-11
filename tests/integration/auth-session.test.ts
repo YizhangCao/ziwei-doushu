@@ -1,10 +1,21 @@
+/**
+ * Author: Yikang (Richard) Liu, M.S. Candidate in Computer Science, Khoury College of Computer Sciences, Northeastern University
+ * Version: 1.2
+ * Created: November 10, 2026 · San Francisco, California, USA
+ * Last Edited: November 11, 2026 · San Francisco, California, USA
+ */
+
+/**
+ * @fileoverview Integration tests for `upsertUserFromProfile` on a real database.
+ * Users are matched by GitHub account id, never by email. All people and emails
+ * are fictional.
+ */
+
 import { describe, it, expect, beforeEach, afterAll } from 'vitest';
 import { prisma } from '@/lib/db';
 import { upsertUserFromProfile } from '@/lib/auth/session';
 import { resetDatabase } from './helpers/reset';
 
-// Sign-in creates or updates the User row from the GitHub account (#15). Users are matched
-// by GitHub account id, never by email (PR #35 review). Fake people only (AGENTS.md).
 beforeEach(resetDatabase);
 afterAll(() => prisma.$disconnect());
 

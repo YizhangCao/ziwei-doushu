@@ -1,3 +1,5 @@
+// Last Edited by Yikang (Richard) Liu: November 11, 2026 · San Francisco, California, USA
+
 import { describe, it, expect, beforeEach, afterAll } from 'vitest';
 import { prisma } from '@/lib/db';
 import { seed } from '@/prisma/seed';
@@ -28,7 +30,7 @@ describe('User', () => {
     await expect(makeUser('dup@example.test')).rejects.toThrow();
   });
 
-  // #15: users are identified by GitHub account id; GitHub may not share an email.
+  // Users are identified by GitHub account id, and GitHub may not share an email.
   it('allows a user without an email', async () => {
     const user = await prisma.user.create({ data: { githubId: '2001' } });
     expect(user.email).toBeNull();
@@ -46,8 +48,8 @@ describe('User', () => {
   });
 });
 
-// #15 (PR #35 review): this release has no user deletion, so deleting a user must never
-// silently remove consultation history.
+// This release has no user deletion, so deleting a user must never silently remove
+// consultation history.
 describe('User deletion is restricted', () => {
   it('rejects deleting a practitioner who has a share, and keeps the share', async () => {
     const owner = await makeUser('owner@example.test');

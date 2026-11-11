@@ -1,3 +1,5 @@
+# Last Edited by Yikang (Richard) Liu: November 10, 2026 · San Francisco, California, USA
+
 # Multi-stage pipeline for ZiweiHub.
 # Stages: static → unit → integration → e2e, with security scanning in parallel.
 # Deployment: Vercel's GitHub integration builds a preview for every PR and deploys

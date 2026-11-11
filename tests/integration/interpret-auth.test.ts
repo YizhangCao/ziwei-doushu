@@ -1,10 +1,22 @@
+/**
+ * Author: Yikang (Richard) Liu, M.S. Candidate in Computer Science, Khoury College of Computer Sciences, Northeastern University
+ * Version: 1.2
+ * Created: November 10, 2026 · San Francisco, California, USA
+ * Last Edited: November 11, 2026 · San Francisco, California, USA
+ */
+
+/**
+ * @fileoverview Integration tests for the member-only check on POST /api/interpret.
+ * The route checks auth before the body, so every request sends an invalid body:
+ * a guest gets 401, and a signed-in member gets past auth to the 400 body check.
+ * No request reaches Anthropic.
+ */
+
 import { describe, it, expect, beforeAll } from 'vitest';
 import { NextRequest } from 'next/server';
 import { encode } from 'next-auth/jwt';
 
-// POST /api/interpret is member-only (AGENTS.md roles table, #15). Auth is checked before
-// the body, so these tests send an invalid body: a guest must get 401, and a signed-in user
-// must get past auth to the 400 body check. No Anthropic call is ever reached.
+// Fallbacks so the suite also runs without a configured environment.
 process.env.AUTH_SECRET ??= 'integration-test-auth-secret-not-real';
 process.env.AUTH_TRUST_HOST ??= 'true';
 
@@ -19,12 +31,14 @@ beforeAll(async () => {
   ({ POST } = await import('@/app/api/interpret/route'));
 });
 
+/** Builds a POST /api/interpret request with an invalid body and an optional cookie. */
 function interpretRequest(cookie?: string): NextRequest {
   return new NextRequest(URL, {
     method: 'POST',
     headers: {
       'content-type': 'application/json',
-      // Next.js sets these on every request; Auth.js uses them to pick the http cookie name.
+      // Next.js sets these on real requests. Without them Auth.js assumes https and
+      // looks for the __Secure- cookie name.
       host: 'localhost:3000',
       'x-forwarded-proto': 'http',
       ...(cookie ? { cookie } : {}),
@@ -33,12 +47,13 @@ function interpretRequest(cookie?: string): NextRequest {
   });
 }
 
+/** Returns a Cookie header value holding a session JWT encoded the way Auth.js does. */
 async function sessionCookie(token: Record<string, unknown>, secret = process.env.AUTH_SECRET!): Promise<string> {
   const value = await encode({ token, secret, salt: SESSION_COOKIE });
   return `${SESSION_COOKIE}=${value}`;
 }
 
-// Calls the route the way Next.js does; /api/interpret has no params.
+/** Calls the route handler as Next.js does; /api/interpret has no route params. */
 async function post(cookie?: string): Promise<Response> {
   const res = await POST(interpretRequest(cookie), { params: Promise.resolve({}) });
   if (!(res instanceof Response)) throw new Error('route returned no Response');

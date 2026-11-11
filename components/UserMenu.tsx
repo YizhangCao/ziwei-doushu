@@ -1,3 +1,12 @@
+/**
+ * Author: Yikang (Richard) Liu, M.S. Candidate in Computer Science, Khoury College of Computer Sciences, Northeastern University
+ * Version: 1.1
+ * Created: November 10, 2026 · San Francisco, California, USA
+ * Last Edited: November 11, 2026 · San Francisco, California, USA
+ */
+
+/** @fileoverview Account control in the home page navigation bar. */
+
 'use client';
 
 import Link from 'next/link';
@@ -5,7 +14,11 @@ import { signOut, useSession } from 'next-auth/react';
 
 const PILL = 'text-[11px] sm:text-xs px-2.5 sm:px-4 py-1 sm:py-1.5 rounded-full focus:outline-none focus-visible:ring-2';
 
-// Login link for guests; name and logout for members (#15).
+/**
+ * Shows a login link to guests, and the user's name with a logout button to
+ * signed-in users. Renders nothing while the session is loading, to avoid
+ * flashing the wrong state.
+ */
 export default function UserMenu() {
   const { data: session, status } = useSession();
   if (status === 'loading') return null;

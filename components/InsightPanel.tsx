@@ -1,10 +1,12 @@
+// Last Edited by Yikang (Richard) Liu: November 11, 2026 · San Francisco, California, USA
+
 'use client';
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { ZiweiChart, Palace } from '@/lib/ziwei/types';
 import type { TimeView } from './TimeNav';
 
-// /api/interpret returns 401 for guests: AI readings are member-only (#15).
+// Shown when /api/interpret returns 401: AI readings require login.
 const LOGIN_REQUIRED_MESSAGE = 'AI 解读需要登录。请点击首页右上角的「登录」，或打开 /login 使用 GitHub 账号登录。';
 
 interface Message {
