@@ -27,6 +27,46 @@ describe('User', () => {
     await makeUser('dup@example.test');
     await expect(makeUser('dup@example.test')).rejects.toThrow();
   });
+
+  // #15: users are identified by GitHub account id; GitHub may not share an email.
+  it('allows a user without an email', async () => {
+    const user = await prisma.user.create({ data: { githubId: '2001' } });
+    expect(user.email).toBeNull();
+  });
+
+  it('rejects a duplicate githubId', async () => {
+    await prisma.user.create({ data: { githubId: '2002' } });
+    await expect(prisma.user.create({ data: { githubId: '2002' } })).rejects.toThrow();
+  });
+
+  it('allows many users without a githubId (seeded demo accounts)', async () => {
+    await makeUser('one@example.test');
+    await makeUser('two@example.test');
+    expect(await prisma.user.count({ where: { githubId: null } })).toBe(2);
+  });
+});
+
+// #15 (PR #35 review): this release has no user deletion, so deleting a user must never
+// silently remove consultation history.
+describe('User deletion is restricted', () => {
+  it('rejects deleting a practitioner who has a share, and keeps the share', async () => {
+    const owner = await makeUser('owner@example.test');
+    const practitioner = await makeUser('prac@example.test', 'practitioner');
+    await prisma.share.create({ data: { chartId: (await makeChart(owner.id)).id, practitionerId: practitioner.id } });
+
+    await expect(prisma.user.delete({ where: { id: practitioner.id } })).rejects.toThrow();
+    expect(await prisma.share.count()).toBe(1);
+  });
+
+  it('rejects deleting the author of a consultation message', async () => {
+    const owner = await makeUser('owner@example.test');
+    const practitioner = await makeUser('prac@example.test', 'practitioner');
+    const share = await prisma.share.create({ data: { chartId: (await makeChart(owner.id)).id, practitionerId: practitioner.id } });
+    await prisma.consultMessage.create({ data: { shareId: share.id, authorId: owner.id, body: '请帮我看看' } });
+
+    await expect(prisma.user.delete({ where: { id: owner.id } })).rejects.toThrow();
+    expect(await prisma.consultMessage.count()).toBe(1);
+  });
 });
 
 describe('Chart', () => {
