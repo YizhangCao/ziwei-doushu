@@ -1,10 +1,11 @@
+import { createDecipheriv } from 'node:crypto';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { decryptBirthInfo, encryptBirthInfo, EncryptionKeyError } from '@/lib/crypto';
 import type { BirthInfo } from '@/lib/ziwei/types';
 
-// Test-only keys: valid hex, deliberately low-entropy so they never look like real secrets.
-const KEY_A = 'a'.repeat(32);
-const KEY_B = 'b'.repeat(32);
+// Test-only 256-bit keys (64 hex chars): valid, deliberately low-entropy so they never look like real secrets.
+const KEY_A = 'a'.repeat(64);
+const KEY_B = 'b'.repeat(64);
 
 // Fake person (AGENTS.md: no real birth data in tests).
 const BIRTH: BirthInfo = {
@@ -79,15 +80,29 @@ describe('DATA_ENCRYPTION_KEY — refuses to run without a valid key', () => {
     expect(() => decryptBirthInfo('v1.a.b.c')).toThrow(EncryptionKeyError);
   });
 
-  it('throws EncryptionKeyError when the key is not exactly 32 hex characters', () => {
-    for (const bad of ['', 'abc123', 'z'.repeat(32), `${KEY_A}0`, KEY_A + KEY_A, 'ci-only-32-byte-key-000000000000']) {
+  it('throws EncryptionKeyError when the key is not exactly 64 hex characters (32 bytes)', () => {
+    for (const bad of ['', 'abc123', 'z'.repeat(64), KEY_A.slice(1), `${KEY_A}0`, KEY_A + KEY_A, 'ci-only-32-byte-key-000000000000']) {
       vi.stubEnv('DATA_ENCRYPTION_KEY', bad);
       expect(() => encryptBirthInfo(BIRTH), `key "${bad}"`).toThrow(EncryptionKeyError);
     }
   });
 
+  it('rejects a 32-hex (128-bit) key: AES-256 needs a full 32-byte key', () => {
+    vi.stubEnv('DATA_ENCRYPTION_KEY', 'a'.repeat(32));
+    expect(() => encryptBirthInfo(BIRTH)).toThrow(EncryptionKeyError);
+    expect(() => encryptBirthInfo(BIRTH)).toThrow(/64 hex/);
+  });
+
+  it('uses the 32 key bytes directly as the AES-256-GCM key', () => {
+    const [, iv, tag, ciphertext] = encryptBirthInfo(BIRTH).split('.').map((part) => Buffer.from(part, 'base64url'));
+    const decipher = createDecipheriv('aes-256-gcm', Buffer.from(KEY_A, 'hex'), iv);
+    decipher.setAuthTag(tag);
+    const plaintext = Buffer.concat([decipher.update(ciphertext), decipher.final()]).toString('utf8');
+    expect(JSON.parse(plaintext)).toEqual(BIRTH);
+  });
+
   it('never puts the key in the error message', () => {
-    const bad = 'q'.repeat(32);
+    const bad = 'q'.repeat(64);
     vi.stubEnv('DATA_ENCRYPTION_KEY', bad);
     expect(() => encryptBirthInfo(BIRTH)).toThrow(/DATA_ENCRYPTION_KEY/);
     try {

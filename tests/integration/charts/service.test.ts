@@ -8,7 +8,7 @@ import type { BirthInfo } from '@/lib/ziwei/types';
 import { resetDatabase } from '../helpers/reset';
 
 // CI's DATA_ENCRYPTION_KEY is a placeholder, so these tests bring their own test-only key.
-const TEST_KEY = 'c'.repeat(32);
+const TEST_KEY = 'c'.repeat(64);
 
 // Fake people only (AGENTS.md: no real birth data in tests).
 const BIRTH: BirthInfo = { year: 1990, month: 6, day: 15, hour: 6, gender: 'female', city: '测试市' };
