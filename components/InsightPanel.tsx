@@ -358,7 +358,8 @@ export default function InsightPanel({ chart, selectedPalace, selectedSiHua }: I
         {(waiting || messages.length === 0) && (
           <div className={anyShown ? 'flex items-center gap-3' : 'flex flex-col items-center justify-center h-full gap-3 text-center'}>
             <span aria-hidden="true" className="pole-mark animate-breathe" />
-            <p style={{ fontSize: 'var(--fs-small)', color: 'var(--t-text2)' }}>{readingLine(reading)}</p>
+            {/* Naming the stars makes the line long enough to wrap; balance it so no word is left alone (#86) */}
+            <p style={{ fontSize: 'var(--fs-small)', color: 'var(--t-text2)', textWrap: 'balance' }}>{readingLine(reading)}</p>
           </div>
         )}
       </div>

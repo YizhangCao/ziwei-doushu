@@ -60,7 +60,7 @@
     "palaceStars": "Reading the {palace} Palace: {stars}…",
     "sihua": "Reading {star} {sihua}…",
     "answer": "Answering…",
-    "star": "{star} ({sihua})"
+    "star": "{star}\u00a0({sihua})"
   },
   "charsLeft": "{n, plural, one {# character} other {# characters}} left"
 }
