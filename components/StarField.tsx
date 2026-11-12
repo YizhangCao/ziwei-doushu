@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useRef } from 'react';
 import { useTheme } from './ThemeProvider';
+import { skyMotion } from '@/lib/design/sky';
 
 /**
  * 星空背景（#57，overdrive）：众星拱北辰。
@@ -70,16 +71,15 @@ export default function StarField() {
 
     let angle = 0;
     const paint = (dt: number, fresh: boolean) => {
-      const p = progress();
-      // Speed rises while the first screen scrolls away, then falls back to a calm turn.
-      const boost = p <= 1 ? Math.max(p, 0) : Math.max(0, 1 - (p - 1) * 2);
-      angle += (0.006 + boost * boost * 0.3) * dt;
+      // Speed and trail length rise while the first screen scrolls away, then settle (lib/design/sky.ts).
+      const { speed, fade } = skyMotion(progress());
+      angle += speed * dt;
       if (fresh) {
         ctx.clearRect(0, 0, width, height);
       } else {
         // Fade what is already drawn toward transparent: short trails at rest, longer while turning fast.
         ctx.globalCompositeOperation = 'destination-out';
-        ctx.fillStyle = `rgba(0, 0, 0, ${Math.max(0.06, 0.4 - boost * 0.34)})`;
+        ctx.fillStyle = `rgba(0, 0, 0, ${fade})`;
         ctx.fillRect(0, 0, width, height);
         ctx.globalCompositeOperation = 'source-over';
       }

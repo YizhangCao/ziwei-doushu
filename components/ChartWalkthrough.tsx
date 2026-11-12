@@ -17,14 +17,12 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useLocale, useTranslations } from 'next-intl';
-import { generateChart } from '@/lib/ziwei/algorithm';
+import { sampleChart } from '@/lib/ziwei/sample-chart';
 import { BRANCH_GRID_POS, getSanFangSiZheng } from '@/lib/ziwei/board-layout';
 import { termLabel } from '@/lib/i18n/glossary';
 import PalaceCell from './PalaceCell';
 import SanFangLines from './SanFangLines';
 
-// A made-up birthday (the same synthetic data the tests use), never a real person.
-const SAMPLE = { year: 1990, month: 6, day: 15, hour: 6, gender: 'female' } as const;
 const STEPS = ['ming', 'sanfang', 'sihua', 'daxian'] as const;
 type Step = (typeof STEPS)[number];
 /** On narrow screens the board isn't pinned, so it shows every step's highlight at once. */
@@ -36,7 +34,8 @@ export default function ChartWalkthrough() {
   const home = useTranslations('home');
   const t = (key: string, values?: Record<string, string | number>) => home(`walkthrough.${key}` as Parameters<typeof home>[0], values as never);
   const locale = useLocale();
-  const chart = useMemo(() => generateChart(SAMPLE), []);
+  // A made-up birthday, frozen at one age so the copy stays true in later years (lib/ziwei/sample-chart.ts).
+  const chart = useMemo(() => sampleChart(), []);
   const [view, setView] = useState<View>('ming');
   const stepRefs = useRef<(HTMLElement | null)[]>([]);
 
@@ -86,13 +85,13 @@ export default function ChartWalkthrough() {
 
       <div className="mt-12 grid gap-12 lg:gap-16 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
         {/* The board is a picture of what the steps say; the steps carry the content for screen readers. */}
-        <div className="lg:sticky self-start" style={{ top: 'calc(var(--nav-h) + 24px)' }} aria-hidden="true" inert>
+        <div data-walkthrough-board className="lg:sticky self-start" style={{ top: 'calc(var(--nav-h) + 24px)' }} aria-hidden="true" inert>
           <div className="grid relative"
             style={{ gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', gridTemplateRows: 'repeat(4, auto)', gap: '1px', background: 'var(--t-border)', border: '1px solid var(--t-border)' }}>
             {chart.palaces.map((palace) => {
               const [row, col] = BRANCH_GRID_POS[palace.branch];
               return (
-                <div key={palace.branch}
+                <div key={palace.branch} data-lit={lit(palace.branch)}
                   style={{ gridRow: row, gridColumn: col, background: 'var(--t-bg)', opacity: lit(palace.branch) ? 1 : 0.3, transition: 'opacity var(--dur-1) linear' }}>
                   <PalaceCell
                     palace={palace}
@@ -124,6 +123,7 @@ export default function ChartWalkthrough() {
         <ol className="grid" style={{ listStyle: 'none', margin: 0, padding: 0 }}>
           {STEPS.map((step, i) => (
             <li key={step} data-step={step} ref={(el) => { stepRefs.current[i] = el; }}
+              aria-current={view === step ? 'step' : undefined}
               className="lg:min-h-[70vh] pb-12 lg:pb-0"
               style={{ opacity: view === 'all' || view === step ? 1 : 0.4, transition: 'opacity var(--dur-1) linear' }}>
               <p style={{ fontSize: 'var(--fs-caption)', color: 'var(--tx-2)' }}>{t(`steps.${step}.label`)}</p>
