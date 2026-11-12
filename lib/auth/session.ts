@@ -1,13 +1,13 @@
 /**
  * Author: Yikang (Richard) Liu, M.S. Candidate in Computer Science, Khoury College of Computer Sciences, Northeastern University
- * Version: 1.2
+ * Version: 1.3
  * Created: November 10, 2026 · San Francisco, California, USA
  * Last Edited: November 11, 2026 · San Francisco, California, USA
  */
 
 /**
- * @fileoverview Maps Auth.js tokens to session users, and resolves GitHub sign-ins
- * to User rows.
+ * @fileoverview Maps Auth.js tokens to session users, keeps the role in the token
+ * current, and resolves GitHub sign-ins to User rows.
  */
 
 import type { PrismaClient } from '@/lib/generated/prisma/client';
@@ -28,6 +28,49 @@ const isRole = (value: unknown): value is Role => ROLES.includes(value as Role);
 export function toSessionUser(token: { sub?: unknown; role?: unknown; [key: string]: unknown } | null | undefined): SessionUser | null {
   if (!token || typeof token.sub !== 'string' || token.sub === '' || !isRole(token.role)) return null;
   return { id: token.sub, role: token.role };
+}
+
+/** How long the role copied into a session JWT is trusted before it is read again. */
+export const ROLE_REFRESH_MS = 5 * 60 * 1000;
+
+/** The Auth.js JWT fields that carry our user. */
+export interface RoleToken {
+  sub?: unknown;
+  role?: unknown;
+  /** When the role was last read from the database, in epoch milliseconds. */
+  roleCheckedAt?: unknown;
+  [key: string]: unknown;
+}
+
+/**
+ * Re-reads the user's role into the session JWT once the copy is older than
+ * `ROLE_REFRESH_MS`. Sessions renew on every request, so without this a role
+ * change made by an admin would never reach a user who stays active.
+ *
+ * Auth.js clears the session cookie when the jwt callback throws, so a failed
+ * read keeps the current token and is retried on the next request instead of
+ * signing the user out.
+ *
+ * @param now The current time in epoch milliseconds.
+ * @return The token with the current role and check time; the token unchanged if
+ *     it was checked recently, has no user id, or the read failed; or null if the
+ *     user no longer exists, which makes Auth.js end the session.
+ */
+export async function refreshTokenRole<T extends RoleToken>(
+  db: Pick<PrismaClient, 'user'>,
+  token: T,
+  now: number,
+): Promise<T | null> {
+  if (typeof token.sub !== 'string' || token.sub === '') return token;
+  if (typeof token.roleCheckedAt === 'number' && now - token.roleCheckedAt < ROLE_REFRESH_MS) return token;
+
+  let row: { role: Role } | null;
+  try {
+    row = await db.user.findUnique({ where: { id: token.sub }, select: { role: true } });
+  } catch {
+    return token;
+  }
+  return row ? { ...token, role: row.role, roleCheckedAt: now } : null;
 }
 
 /** The parts of a GitHub sign-in that are stored on the User row. */

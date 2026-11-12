@@ -1,6 +1,6 @@
 /**
  * Author: Yikang (Richard) Liu, M.S. Candidate in Computer Science, Khoury College of Computer Sciences, Northeastern University
- * Version: 1.2
+ * Version: 1.3
  * Created: November 10, 2026 · San Francisco, California, USA
  * Last Edited: November 11, 2026 · San Francisco, California, USA
  */
@@ -13,7 +13,7 @@
 import NextAuth from 'next-auth';
 import GitHub from 'next-auth/providers/github';
 import { prisma } from '@/lib/db';
-import { toSessionUser, upsertUserFromProfile } from '@/lib/auth/session';
+import { refreshTokenRole, toSessionUser, upsertUserFromProfile } from '@/lib/auth/session';
 
 /**
  * Auth.js entry points: the `/api/auth/*` route `handlers`, `auth()` for reading
@@ -36,8 +36,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         });
         token.sub = dbUser.id;
         token.role = dbUser.role;
+        token.roleCheckedAt = Date.now();
+        return token;
       }
-      return token;
+      // Every later session read: re-read a stale role, and end the session if the
+      // user no longer exists.
+      return refreshTokenRole(prisma, token, Date.now());
     },
     session({ session, token }) {
       // Expose only a validated id and role; a malformed token leaves both unset,
