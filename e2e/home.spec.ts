@@ -37,3 +37,9 @@ test('the roadmap runs from Ziwei in November to Renji in February', async ({ pa
   await expect(navCard('人纪', '2 月 开放')).toHaveCount(1);
   await expect(page.getByText('筹备中')).toHaveCount(0);
 });
+
+test('the hero opens with the site name, with no line above it (#73)', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.getByRole('heading', { level: 1, name: '紫微命盘' })).toBeVisible();
+  await expect(page.getByText('紫微斗数 · 倪海厦体系')).toHaveCount(0);
+});
