@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { motion, useScroll, useTransform, useInView, AnimatePresence } from 'framer-motion';
 import { useTranslations } from 'next-intl';
 import StarField from '@/components/StarField';
+import ChartWalkthrough from '@/components/ChartWalkthrough';
 import { useTheme, type Theme } from '@/components/ThemeProvider';
 
 // ─── 滚动入场 wrapper ────────────────────────────────────
@@ -328,25 +329,17 @@ export default function HomePage() {
 
   const heroRef = useRef(null);
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ['start start', 'end start'] });
-  const heroY = useTransform(scrollYProgress, [0, 1], ['0%', '28%']);
   const heroOpacity = useTransform(scrollYProgress, [0, 0.55], [1, 0]);
 
 
+  // overflow-x clip, not hidden: hidden makes the wrapper a scroll container, and the
+  // walkthrough's sticky board would never stick.
   return (
-    <div style={{ background: c.bgBase }} className="overflow-x-hidden">
+    <div style={{ background: c.bgBase }} className="overflow-x-clip">
       {/* 致用户公告——首次访问全屏覆盖，关闭后才进入首页 */}
 
       <StarField />
 
-      {/* 全局光晕 */}
-      <div className="fixed inset-0 pointer-events-none z-0">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[500px] rounded-full"
-          style={{ background: `radial-gradient(ellipse, ${c.glowTint} 0%, transparent 70%)` }} />
-        <div className="absolute top-1/3 left-1/4 w-96 h-96 rounded-full"
-          style={{ background: `radial-gradient(ellipse, ${c.glowBlue} 0%, transparent 70%)` }} />
-        <div className="absolute bottom-1/4 right-1/4 w-64 h-64 rounded-full"
-          style={{ background: `radial-gradient(ellipse, ${c.glowPurple} 0%, transparent 70%)` }} />
-      </div>
 
 
       {/* ══ HERO（Polestar 版式，#57）══════════════════════════
@@ -354,7 +347,13 @@ export default function HomePage() {
           标题在夜里带一圈极淡的金色星辉，是全页唯一的“灵性”点缀。 */}
       <section ref={heroRef} className="relative min-h-[92svh] flex flex-col justify-center z-10"
         style={{ padding: '48px var(--gutter) 96px' }}>
-        <motion.div style={{ y: heroY, opacity: heroOpacity }} className="w-full max-w-[1216px]">
+        {/* 北辰：首屏星空绕它转（StarField 读 data-pole-star 的位置） */}
+        {/* The wrapper is positioned: .pole-mark sets position: relative and would win over Tailwind's absolute */}
+        <motion.span aria-hidden="true" data-pole-star className="absolute flex top-[12%] right-[var(--gutter)] lg:top-[34%] lg:right-[14%]"
+          initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6, delay: 0.1, ease: [0.15, 1, 0.35, 1] }}>
+          <span className="pole-mark pole-mark-lg" />
+        </motion.span>
+        <motion.div style={{ opacity: heroOpacity }} className="w-full max-w-[1216px]">
           <motion.p initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1, ease: [0.15, 1, 0.35, 1] }}
             className="mb-6" style={{ fontSize: 'var(--fs-caption)', color: c.textMuted }}>
@@ -391,6 +390,9 @@ export default function HomePage() {
 
         </motion.div>
       </section>
+
+      {/* ══ 命盘四步（overdrive 方向一，动效 5）══════════════════ */}
+      <ChartWalkthrough />
 
       {/* ══ 哲学引言 ══════════════════════════════════════ */}
       <section data-theme="dark" className="relative z-10 overflow-hidden min-h-[82svh] lg:min-h-[92vh] flex items-center" style={{ padding: '72px 24px' }}>
