@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterAll } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, afterAll, vi } from 'vitest';
 import { POST } from '@/app/api/v1/charts/route';
 import { generateApiKey } from '@/lib/api/keys';
 import { prisma } from '@/lib/db';
@@ -45,6 +45,7 @@ async function errorOf(response: Response): Promise<string> {
 }
 
 beforeEach(resetDatabase);
+afterEach(() => vi.restoreAllMocks());
 afterAll(() => prisma.$disconnect());
 
 describe('POST /api/v1/charts — API key', () => {
@@ -71,6 +72,14 @@ describe('POST /api/v1/charts — API key', () => {
     const { plainKey } = await createKey({ revoked: true });
     const response = await POST(request(VALID_BODY, bearer(plainKey)));
     expect(response.status).toBe(401);
+  });
+
+  it('accepts the auth scheme in any case (RFC 9110: "bearer", "BEARER")', async () => {
+    const { plainKey } = await createKey();
+    for (const scheme of ['bearer', 'BEARER', 'BeArEr']) {
+      const response = await POST(request(VALID_BODY, { Authorization: `${scheme} ${plainKey}` }));
+      expect(response.status, scheme).toBe(200);
+    }
   });
 
   it('checks the key before the body: no key and a bad body is still 401', async () => {
@@ -121,5 +130,19 @@ describe('POST /api/v1/charts — success', () => {
     await POST(request(VALID_BODY, bearer(plainKey)));
     const row = await prisma.apiKey.findUniqueOrThrow({ where: { id } });
     expect(row.lastUsedAt).toBeInstanceOf(Date);
+  });
+});
+
+describe('POST /api/v1/charts — server errors', () => {
+  it('returns 500 with a JSON { error } when the key lookup fails, without leaking the key or the cause', async () => {
+    const { plainKey, keyHash } = await createKey();
+    vi.spyOn(prisma.apiKey, 'findUnique').mockRejectedValueOnce(new Error('connection to db-internal-host timed out'));
+
+    const response = await POST(request(VALID_BODY, bearer(plainKey)));
+    expect(response.status).toBe(500);
+    expect(response.headers.get('content-type')).toMatch(/application\/json/);
+    const text = await response.text();
+    expect(JSON.parse(text)).toEqual({ error: expect.any(String) });
+    for (const secret of [plainKey, keyHash, 'db-internal-host', 'timed out']) expect(text).not.toContain(secret);
   });
 });
