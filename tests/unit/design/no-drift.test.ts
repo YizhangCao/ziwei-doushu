@@ -38,6 +38,7 @@ const CORE = [
   'app/library/search/page.tsx',
   'app/knowledge/page.tsx',
   'app/knowledge/[star]/[topic]/page.tsx',
+  'app/ni-haixia/page.tsx',
   'app/not-found.tsx',
 ];
 
