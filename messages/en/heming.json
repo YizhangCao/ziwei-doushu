@@ -9,19 +9,28 @@
   "loading": "Comparing the two charts…",
   "errors": {
     "formIncomplete": "Fill in full birth details for both people first.",
-    "apiMissing": "The open-source version has no compatibility AI endpoint (/api/heming). You need to add one yourself. You can still see each chart on the Chart page (/chart).",
-    "failed": "The reading isn’t available right now. Please try again."
+    "apiMissing": "Compatibility readings aren’t available yet. You can still build each chart on the Chart page.",
+    "apiMissingDev": "(Developer note: the open-source version has no compatibility endpoint at /api/heming; add your own.)",
+    "rateLimited": "You’ve used today’s readings. You can continue tomorrow.",
+    "network": "The connection dropped, so the compatibility reading didn’t finish.",
+    "tooLong": "Keep your question under 2,000 characters.",
+    "failed": "The compatibility reading didn’t finish. Please try again in a moment."
   },
   "followUpTitle": "Ask more about this match",
-  "inputPlaceholder": "Ask a follow-up, e.g. Which years matter most for us as a couple?",
+  "inputPlaceholder": "Ask a follow-up, e.g. Which stars sit in each of our Marriage Palaces?",
   "inputLabel": "Ask a follow-up",
   "send": "Ask",
   "sending": "Reading…",
   "quickQuestions": {
-    "q1": "How well do we match in love?",
-    "q2": "Should we start a business together?",
-    "q3": "Are we right for marriage?",
-    "q4": "Where are we most likely to clash?",
-    "q5": "Do our finances complement each other?"
-  }
+    "q1": "How do our Life Palaces relate?",
+    "q2": "Working together, where is each of us strong?",
+    "q3": "Which palace needs the most care between us?",
+    "q4": "How do we differ in our attitude to money?",
+    "q5": "Which stars sit in each of our Marriage Palaces?"
+  },
+  "meta": {
+    "title": "Compatibility · Ziwei Natal Chart",
+    "description": "Enter two people’s birth details to compare the Life Palace, Marriage Palace and sanfang sizheng of both charts."
+  },
+  "charsLeft": "{n, plural, one {# character} other {# characters}} left"
 }

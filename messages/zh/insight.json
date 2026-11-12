@@ -38,14 +38,26 @@
     "daxian": "大限",
     "liunian": "流年"
   },
-  "loading": "命格解读生成中…",
   "replyLabel": "命理解读",
   "retry": "重试",
-  "inputPlaceholder": "继续追问，如：今年适合换工作吗？",
+  "inputPlaceholder": "继续追问，如：命宫没有主星，怎么看？",
   "inputLabel": "继续追问",
   "send": "追问",
   "errors": {
-    "apiMissing": "开源版不含 AI 解读接口（/api/interpret），需要你自己实现后才能用，详见 README「快速开始」。排盘本身不需要任何 API Key。",
-    "failed": "解读失败，请稍后重试。"
-  }
+    "failed": "解读没有完成，请稍后重试。",
+    "rateLimited": "今天的解读次数已用完，明天可以继续。",
+    "network": "网络中断，解读没有完成。",
+    "tooLong": "问题请在 2000 字以内。",
+    "tooMany": "这次的对话已经很长。重新起盘，可以从头问起。",
+    "apiMissing": "解读暂未开放。命盘可以正常查看。",
+    "apiMissingDev": "（开发提示：开源版不含 AI 解读接口 /api/interpret，需要自己实现，详见 README「快速开始」。排盘本身不需要任何 API Key。）"
+  },
+  "reading": {
+    "overview": "正在读命宫与三方四正…",
+    "topic": "{topic, select, love {正在读感情…} career {正在读事业…} wealth {正在读财运…} health {正在读健康…} personality {正在读性格…} other {正在读命盘…}}",
+    "palace": "正在读{palace}…",
+    "sihua": "正在读{star}{sihua}…",
+    "answer": "正在回答…"
+  },
+  "charsLeft": "还可以输入 {n} 字"
 }

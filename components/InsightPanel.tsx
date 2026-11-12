@@ -12,9 +12,20 @@ interface Message {
   role: 'user' | 'assistant';
   content: string;
   hidden?: boolean; // don't show user bubble for auto/topic messages
-  /** The request failed; the panel offers a retry. */
-  error?: boolean;
+  /** Why the request failed (#63); the panel offers a retry when trying again can help. */
+  error?: ReadingError;
 }
+
+/** Each cause has its own message, so a used-up limit never reads like a bug (#63). */
+type ReadingError = 'network' | 'apiMissing' | 'rateLimited' | 'failed';
+const RETRYABLE: ReadonlySet<ReadingError> = new Set(['network', 'failed']);
+
+// The limits the server enforces (lib/ai/interpret.ts, #5). Checking them here lets the
+// panel say why a question can't be sent instead of failing with a 400 (#63).
+const MAX_MESSAGES = 30;
+const MAX_CHARS = 2000;
+/** The character counter appears once a question gets this long. */
+const COUNTER_FROM = 1800;
 
 interface SelectedSiHua {
   starName: string;
@@ -31,6 +42,14 @@ interface InsightPanelProps {
 // Labels and prompts live in messages/{zh,en}/insight.json (#59); the Chinese is verbatim.
 const TOPICS = ['overview', 'love', 'career', 'wealth', 'health', 'personality'] as const;
 type Topic = (typeof TOPICS)[number];
+
+/** What the panel is reading while it waits; kept as data so the line follows a language switch (#63). */
+type Reading =
+  | { kind: 'overview' }
+  | { kind: 'topic'; topic: Exclude<Topic, 'overview'> }
+  | { kind: 'palace'; palace: string }
+  | { kind: 'sihua'; star: string; sihua: string }
+  | { kind: 'answer' };
 
 // Palace → role key in messages/*/insight.json. The keys mirror today's lookup exactly,
 // including its 宫-suffix mismatch with the engine's palace names (fixed in its own PR).
@@ -51,6 +70,7 @@ export default function InsightPanel({ chart, selectedPalace, selectedSiHua }: I
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [activeTopic, setActiveTopic] = useState<Topic>('overview');
+  const [reading, setReading] = useState<Reading>({ kind: 'overview' });
   const messagesRef = useRef<Message[]>([]); // always-current copy for closures
   const loadingRef = useRef(false);
   const autoLoaded = useRef(false);
@@ -73,7 +93,7 @@ export default function InsightPanel({ chart, selectedPalace, selectedSiHua }: I
   useEffect(() => {
     if (autoLoaded.current) return;
     autoLoaded.current = true;
-    sendMessage(t('prompts.overview'), true);
+    sendMessage(t('prompts.overview'), true, { kind: 'overview' });
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Inject palace analysis when palace selected
@@ -89,7 +109,7 @@ export default function InsightPanel({ chart, selectedPalace, selectedSiHua }: I
 
     const prompt = t('prompts.palace', { palace: term(selectedPalace.name), role, stars: starDesc });
 
-    if (sendMessage(prompt, true)) lastPalaceBranch.current = selectedPalace.branch;
+    if (sendMessage(prompt, true, { kind: 'palace', palace: selectedPalace.name })) lastPalaceBranch.current = selectedPalace.branch;
   }, [selectedPalace]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // 注入四化飞化分析
@@ -112,19 +132,30 @@ export default function InsightPanel({ chart, selectedPalace, selectedSiHua }: I
       palace: palaceName,
     });
 
-    if (sendMessage(prompt, true)) lastSiHuaKey.current = key;
+    if (sendMessage(prompt, true, { kind: 'sihua', star: selectedSiHua.starName, sihua: selectedSiHua.siHua })) lastSiHuaKey.current = key;
   }, [selectedSiHua]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const fail = (cause: ReadingError) => {
+    // The developer note only shows in `next dev`; visitors see the plain message.
+    const devNote = cause === 'apiMissing' && process.env.NODE_ENV === 'development' ? `\n\n${t('errors.apiMissingDev')}` : '';
+    setMessages(prev => [...prev, { role: 'assistant', content: t(`errors.${cause}`) + devNote, error: cause }]);
+  };
 
   const streamResponse = async (apiMessages: { role: 'user' | 'assistant'; content: string }[]) => {
     try {
-      const res = await fetch('/api/interpret', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ chart, messages: apiMessages }),
-      });
-      if (res.status === 404) throw new Error('api-missing');
-      if (!res.ok) throw new Error('request-failed');
-      if (!res.body) throw new Error('no-stream');
+      let res: Response;
+      try {
+        res = await fetch('/api/interpret', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ chart, messages: apiMessages }),
+        });
+      } catch {
+        return fail('network'); // fetch rejects only when no answer came back
+      }
+      if (res.status === 404) return fail('apiMissing');
+      if (res.status === 429) return fail('rateLimited');
+      if (!res.ok || !res.body) return fail('failed');
 
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
@@ -151,23 +182,27 @@ export default function InsightPanel({ chart, selectedPalace, selectedSiHua }: I
           } catch { /* skip */ }
         }
       }
-    } catch (e) {
-      const missing = e instanceof Error && e.message === 'api-missing';
-      setMessages(prev => [...prev, { role: 'assistant', content: missing ? t('errors.apiMissing') : t('errors.failed'), error: true }]);
+    } catch {
+      fail('network'); // reading the stream rejects when the connection drops mid-reply
     } finally {
       setLoading(false);
       loadingRef.current = false;
     }
   };
 
-  const lastRequest = useRef<{ text: string; hidden: boolean } | null>(null);
+  const lastRequest = useRef<{ text: string; hidden: boolean; what: Reading } | null>(null);
 
-  /** Sends a message; returns false when it was not sent (empty, or a reply is still streaming). */
-  const sendMessage = (text: string, hidden = false): boolean => {
+  /**
+   * Sends a message; returns false when it was not sent: empty, a reply still streaming,
+   * or over the server's limits (the input area then says which).
+   */
+  const sendMessage = (text: string, hidden: boolean, what: Reading): boolean => {
     if (!text.trim() || loadingRef.current) return false;
+    if (messagesRef.current.length >= MAX_MESSAGES || text.length > MAX_CHARS) return false;
     loadingRef.current = true;
     setLoading(true);
-    lastRequest.current = { text, hidden };
+    setReading(what);
+    lastRequest.current = { text, hidden, what };
 
     const userMsg: Message = { role: 'user', content: text, hidden };
     // Capture current messages synchronously via ref (avoids stale closure)
@@ -189,18 +224,38 @@ export default function InsightPanel({ chart, selectedPalace, selectedSiHua }: I
     const trimmed = messagesRef.current.slice(0, -2);
     messagesRef.current = trimmed;
     setMessages(trimmed);
-    sendMessage(request.text, request.hidden);
+    sendMessage(request.text, request.hidden, request.what);
   };
 
   const handleTopicClick = (topic: Topic) => {
     if (loadingRef.current) return;
     setActiveTopic(topic);
-    sendMessage(t(`prompts.${topic}`), true);
+    sendMessage(t(`prompts.${topic}`), true, topic === 'overview' ? { kind: 'overview' } : { kind: 'topic', topic });
   };
 
   const handleSend = () => {
-    sendMessage(input);
+    sendMessage(input, false, { kind: 'answer' });
   };
+
+  const readingLine = (what: Reading): string => {
+    switch (what.kind) {
+      case 'overview': return t('reading.overview');
+      case 'topic': return t('reading.topic', { topic: what.topic });
+      // 命宫 already ends in 宫, the other eleven names don't; English adds "Palace" in the message
+      case 'palace': return t('reading.palace', {
+        palace: locale === 'en' ? term(what.palace) : what.palace.endsWith('宫') ? what.palace : `${what.palace}宫`,
+      });
+      case 'sihua': return t('reading.sihua', { star: term(what.star), sihua: term(`化${what.sihua}`) });
+      case 'answer': return t('reading.answer');
+    }
+  };
+
+  const last = messages[messages.length - 1];
+  // Between sending and the first words of the reply, the panel says what it is reading (#63).
+  const waiting = loading && !(last?.role === 'assistant' && last.content !== '');
+  const anyShown = messages.some(m => (m.role === 'user' && !m.hidden) || (m.role === 'assistant' && m.content !== ''));
+  const tooLong = input.length > MAX_CHARS;
+  const tooMany = messages.length >= MAX_MESSAGES;
 
   return (
     <div className="flex flex-col h-full overflow-hidden card-glass" style={{ minHeight: 480 }}>
@@ -237,17 +292,10 @@ export default function InsightPanel({ chart, selectedPalace, selectedSiHua }: I
       {/* ── Messages ── */}
       <div ref={scrollRef} aria-live="polite" aria-busy={loading} className="flex-1 overflow-y-auto p-5 space-y-6 min-h-0">
 
-        {/* Loading state before first message */}
-        {messages.length === 0 && (
-          <div className="flex flex-col items-center justify-center h-full gap-3 text-center">
-            <span aria-hidden="true" className="pole-mark animate-breathe" />
-            <p style={{ fontSize: 'var(--fs-small)', color: 'var(--t-text2)' }}>{t('loading')}</p>
-          </div>
-        )}
-
         <AnimatePresence initial={false}>
           {messages.map((msg, i) => {
             if (msg.role === 'user' && msg.hidden) return null;
+            if (msg.role === 'assistant' && msg.content === '') return null; // the reading line covers it
 
             if (msg.role === 'user') {
               return (
@@ -281,13 +329,21 @@ export default function InsightPanel({ chart, selectedPalace, selectedSiHua }: I
               >
                 <div className="mb-2" style={{ fontSize: 'var(--fs-caption)', color: 'var(--t-faint)' }}>{t('replyLabel')}</div>
                 <AiContent text={msg.content} streaming={loading && isLastMsg} />
-                {msg.error && isLastMsg && !loading && (
+                {msg.error && RETRYABLE.has(msg.error) && isLastMsg && !loading && (
                   <button type="button" className="btn-ghost btn-sm mt-3" onClick={retry}>{t('retry')}</button>
                 )}
               </motion.div>
             );
           })}
         </AnimatePresence>
+
+        {/* What the panel is reading, centred before the first reply and inline after it */}
+        {(waiting || messages.length === 0) && (
+          <div className={anyShown ? 'flex items-center gap-3' : 'flex flex-col items-center justify-center h-full gap-3 text-center'}>
+            <span aria-hidden="true" className="pole-mark animate-breathe" />
+            <p style={{ fontSize: 'var(--fs-small)', color: 'var(--t-text2)' }}>{readingLine(reading)}</p>
+          </div>
+        )}
       </div>
 
       {/* ── Input ── */}
@@ -301,18 +357,30 @@ export default function InsightPanel({ chart, selectedPalace, selectedSiHua }: I
             placeholder={t('inputPlaceholder')}
             disabled={loading}
             aria-label={t('inputLabel')}
+            aria-invalid={tooLong || undefined}
+            aria-describedby={tooLong || tooMany || input.length >= COUNTER_FROM ? 'insight-input-note' : undefined}
             className="input-base flex-1"
             style={{ minHeight: 44 }}
           />
           <button
             type="button"
             onClick={handleSend}
-            disabled={loading || !input.trim()}
+            disabled={loading || !input.trim() || tooLong || tooMany}
             className="btn-primary btn-sm"
           >
             {loading ? '…' : t('send')}
           </button>
         </div>
+        {/* Why a question can't be sent, or how much room is left; never a silent 400 (#63) */}
+        {tooLong || tooMany ? (
+          <p id="insight-input-note" role="alert" className="mt-2" style={{ fontSize: 'var(--fs-caption)', color: 'var(--ji)' }}>
+            {tooMany ? t('errors.tooMany') : t('errors.tooLong')}
+          </p>
+        ) : input.length >= COUNTER_FROM && (
+          <p id="insight-input-note" className="mt-2" style={{ fontSize: 'var(--fs-caption)', color: 'var(--t-text2)' }}>
+            {t('charsLeft', { n: MAX_CHARS - input.length })}
+          </p>
+        )}
       </div>
 
     </div>

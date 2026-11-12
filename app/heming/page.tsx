@@ -13,6 +13,13 @@ import type { BirthInfo, ZiweiChart } from '@/lib/ziwei/types';
 // Keys, not a JSON array, so next-intl keeps checking every heming.* key (#59).
 const QUICK_QUESTIONS = ['q1', 'q2', 'q3', 'q4', 'q5'] as const;
 
+/** Each cause has its own message, so a used-up limit never reads like a bug (#63). */
+type HemingError = 'network' | 'apiMissing' | 'rateLimited' | 'failed';
+// The per-message limit the reading routes enforce (#5); checked here so the page can say why.
+const MAX_CHARS = 2000;
+/** The character counter appears once a question gets this long. */
+const COUNTER_FROM = 1800;
+
 export default function HemingPage() {
   const router = useRouter();
   const t = useTranslations('heming');
@@ -28,9 +35,8 @@ export default function HemingPage() {
   const [analysis, setAnalysis] = useState('');
   const [analyzing, setAnalyzing] = useState(false);
   const [question, setQuestion] = useState('');
-  const [analysisError, setAnalysisError] = useState(false);
-  // 开源版不含 /api/heming：接口 404 时单独说明，而不是让用户反复重试
-  const [apiMissing, setApiMissing] = useState(false);
+  // 失败按原因分开说明（#63）：开源版不含 /api/heming，404 时单独说明，而不是让用户反复重试
+  const [errorKind, setErrorKind] = useState<HemingError | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
   const analysisRef = useRef<HTMLDivElement>(null);
 
@@ -55,9 +61,10 @@ export default function HemingPage() {
       setFormError(t('errors.formIncomplete'));
       return;
     }
+    if (q && q.length > MAX_CHARS) return; // the input area already says why
     setAnalyzing(true);
     setAnalysis('');
-    setAnalysisError(false);
+    setErrorKind(null);
 
     try {
       // 并行起两张盘（如果还没起）
@@ -70,20 +77,27 @@ export default function HemingPage() {
       cA = newA;
       cB = newB;
       if (!cA || !cB) {
-        setAnalysisError(true);
+        setErrorKind('failed');
         setAnalyzing(false);
         return;
       }
       if (!chartA) setChartA(cA);
       if (!chartB) setChartB(cB);
 
-      const res = await fetch('/api/heming', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ chartA: cA, chartB: cB, question: q ?? undefined }),
-      });
-      if (res.status === 404) { setApiMissing(true); throw new Error('api-missing'); }
-      if (!res.ok || !res.body) throw new Error();
+      let res: Response;
+      try {
+        res = await fetch('/api/heming', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ chartA: cA, chartB: cB, question: q ?? undefined }),
+        });
+      } catch {
+        setErrorKind('network'); // fetch rejects only when no answer came back
+        return;
+      }
+      if (res.status === 404) { setErrorKind('apiMissing'); return; }
+      if (res.status === 429) { setErrorKind('rateLimited'); return; }
+      if (!res.ok || !res.body) { setErrorKind('failed'); return; }
 
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
@@ -107,11 +121,13 @@ export default function HemingPage() {
       // scroll to analysis
       setTimeout(() => analysisRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
     } catch {
-      setAnalysisError(true);
+      setErrorKind('network'); // reading the stream rejects when the connection drops mid-reply
     } finally {
       setAnalyzing(false);
     }
   }, [chartA, chartB, formA, formB, generateChart, t]);
+
+  const tooLong = question.length > MAX_CHARS;
 
   // 设计系统（#57）：颜色和形状都来自 app/globals.css 的 token
   const cardStyle = {
@@ -205,9 +221,13 @@ export default function HemingPage() {
 
           {analysis && <AiContent text={analysis} streaming={analyzing} />}
 
-          {analysisError && (
+          {errorKind && (
             <div style={{ padding: '12px 16px', border: '1px solid var(--bdr)', fontSize: 'var(--fs-small)', color: 'var(--tx-2)', marginTop: '12px' }}>
-              {apiMissing ? t('errors.apiMissing') : t('errors.failed')}
+              {t(`errors.${errorKind}`)}
+              {/* The developer note only shows in `next dev`; visitors see the plain message. */}
+              {errorKind === 'apiMissing' && process.env.NODE_ENV === 'development' && (
+                <p style={{ marginTop: 8 }}>{t('errors.apiMissingDev')}</p>
+              )}
             </div>
           )}
         </div>
@@ -240,10 +260,12 @@ export default function HemingPage() {
                 type="text"
                 value={question}
                 onChange={e => setQuestion(e.target.value)}
-                onKeyDown={e => { if (e.key === 'Enter' && !analyzing) runAnalysis(question || undefined); }}
+                onKeyDown={e => { if (e.key === 'Enter' && !analyzing && !tooLong) runAnalysis(question || undefined); }}
                 placeholder={t('inputPlaceholder')}
                 disabled={analyzing}
                 aria-label={t('inputLabel')}
+                aria-invalid={tooLong || undefined}
+                aria-describedby={question.length >= COUNTER_FROM ? 'heming-input-note' : undefined}
                 className="input-base"
                 style={{ flex: 1 }}
               />
@@ -251,11 +273,21 @@ export default function HemingPage() {
                 type="button"
                 className="btn-primary"
                 onClick={() => runAnalysis(question || undefined)}
-                disabled={analyzing}
+                disabled={analyzing || tooLong}
               >
                 {analyzing ? t('sending') : t('send')}
               </button>
             </div>
+            {/* Why a question can't be sent, or how much room is left (#63) */}
+            {tooLong ? (
+              <p id="heming-input-note" role="alert" style={{ fontSize: 'var(--fs-caption)', color: 'var(--ji)' }}>
+                {t('errors.tooLong')}
+              </p>
+            ) : question.length >= COUNTER_FROM && (
+              <p id="heming-input-note" style={{ fontSize: 'var(--fs-caption)', color: 'var(--tx-2)' }}>
+                {t('charsLeft', { n: MAX_CHARS - question.length })}
+              </p>
+            )}
           </div>
         )}
       </div>
