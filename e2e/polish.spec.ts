@@ -36,7 +36,8 @@ test.describe('on a wide screen', () => {
   test('left-aligned home headings line up with the nav', async ({ page }) => {
     await page.goto('/');
     const left = await navLeft(page);
-    const lefts = await page.evaluate(() => [...document.querySelectorAll('main h2')]
+    // Not `main h2`: the <main> landmark comes with #82, a sibling branch
+    const lefts = await page.evaluate(() => [...document.querySelectorAll('h2')]
       .filter((h) => getComputedStyle(h).textAlign === 'start' && h.getBoundingClientRect().left < innerWidth / 2)
       .map((h) => h.getBoundingClientRect().left));
     expect(lefts.length).toBeGreaterThan(1);
