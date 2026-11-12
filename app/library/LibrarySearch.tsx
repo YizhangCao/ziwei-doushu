@@ -9,11 +9,13 @@
 
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 
 export default function LibrarySearch() {
   const [q, setQ] = useState('');
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
+  const t = useTranslations('library.search');
 
   const submit = () => {
     const query = q.trim();
@@ -29,12 +31,12 @@ export default function LibrarySearch() {
         value={q}
         onChange={e => setQ(e.target.value)}
         onKeyDown={e => e.key === 'Enter' && submit()}
-        aria-label="搜索古籍原文"
-        placeholder="搜索古籍原文，如：七杀朝斗 / 双禄朝垣 / 化忌"
+        aria-label={t('aria')}
+        placeholder={t('placeholder')}
         className="input-base flex-1"
       />
       <button type="button" className="btn-primary" onClick={submit} disabled={isPending || !q.trim()}>
-        {isPending ? '搜索中…' : '搜索'}
+        {isPending ? t('pending') : t('button')}
       </button>
     </div>
   );
