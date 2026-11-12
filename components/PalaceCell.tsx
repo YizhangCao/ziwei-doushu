@@ -134,8 +134,9 @@ export default function PalaceCell({
           {...reveal(edgeDelay)}
           aria-hidden="true"
           data-decade-edge
-          className="absolute inset-y-0 left-0 pointer-events-none"
-          style={{ width: 3, background: 'var(--ac)' }}
+          className="absolute pointer-events-none"
+          // Selected, the cell has a 1px outline; the edge sits inside it so the outline stays whole
+          style={{ width: 3, background: 'var(--ac)', top: isSelected ? 1 : 0, bottom: isSelected ? 1 : 0, left: isSelected ? 1 : 0 }}
         />
       )}
 

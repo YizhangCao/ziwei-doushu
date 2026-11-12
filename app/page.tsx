@@ -429,12 +429,12 @@ export default function HomePage() {
       </section>
 
       {/* ══ 4 大学习板块时间轴 ════════════════════════════ */}
-      <section className="relative z-10 py-20 lg:py-24 px-6"
+      <section className="relative z-10 py-20 lg:py-24 px-[var(--gutter)]"
         style={{
           background: 'linear-gradient(to bottom, transparent 0%, var(--bg-1) 50%, transparent 100%)',
         }}>
         <FadeIn className="text-center mb-14">
-          <div className="text-2xl lg:text-3xl font-bold mb-2" style={{ color: c.textPrimary }}>
+          <div className="mb-2" style={{ fontSize: 'var(--fs-headline)', lineHeight: 1.25, color: c.textPrimary }}>
             {t('roadmap.title')}
           </div>
           <div className="text-xs lg:text-sm" style={{ color: c.textMuted }}>
@@ -529,9 +529,9 @@ export default function HomePage() {
       <section className="relative z-10">
         {features.map((feature, i) => (
           <div key={i}
-            className={`flex items-center px-6 md:px-10 lg:px-14 py-20 md:py-24 ${i <= 2 ? 'min-h-[82svh] lg:min-h-[92vh]' : ''}`}
+            className={`flex items-center px-[var(--gutter)] py-20 md:py-24 ${i <= 2 ? 'min-h-[82svh] lg:min-h-[92vh]' : ''}`}
             style={{ background: i % 2 === 1 ? c.altSection : 'transparent' }}>
-            <div className="mx-auto w-full" style={{ maxWidth: '1280px' }}>
+            <div className="mx-auto w-full" style={{ maxWidth: 'calc(var(--page-max) - 2 * var(--gutter))' }}>
               <div className={`grid grid-cols-1 ${i % 2 === 0 ? 'lg:grid-cols-[0.45fr_0.55fr]' : 'lg:grid-cols-[0.55fr_0.45fr]'} gap-10 lg:gap-16 items-start ${i % 2 === 1 ? 'lg:grid-flow-dense' : ''}`}>
                 {/* 文字区 */}
                 <div className={i % 2 === 1 ? 'lg:col-start-2' : ''}>
@@ -542,9 +542,9 @@ export default function HomePage() {
                     </div>
                   </FadeIn>
                   <FadeIn delay={0.1}>
-                    <h2 className={`grad-text grad-text-dark font-bold leading-tight mb-5`}
+                    <h2 className={`grad-text grad-text-dark leading-tight mb-5`}
                       style={{
-                        fontSize: i < 2 ? 'clamp(36px, 4vw, 56px)' : 'clamp(30px, 3.5vw, 48px)',
+                        fontSize: 'var(--fs-section)',
                         whiteSpace: 'pre-line',
                       }}>
                       {feature.title}
@@ -585,14 +585,14 @@ export default function HomePage() {
       </section>
 
       {/* ══ 天·地·人 三分理论 ════════════════════════════ */}
-      <section className="relative z-10 flex items-center px-6 md:px-10 lg:px-14 py-20"
+      <section className="relative z-10 flex items-center px-[var(--gutter)] py-20"
         style={{ background: c.altSection, minHeight: '82svh' }}>
         <WeakBoundary line={c.navBorder} />
-        <div className="mx-auto w-full" style={{ maxWidth: '1280px' }}>
+        <div className="mx-auto w-full" style={{ maxWidth: 'calc(var(--page-max) - 2 * var(--gutter))' }}>
           <FadeIn>
             <div className="text-center mb-10">
-              <h2 className={`grad-text grad-text-dark font-bold mb-5`}
-                style={{ fontSize: 'clamp(32px, 4vw, 48px)' }}>
+              <h2 className={`grad-text grad-text-dark mb-5`}
+                style={{ fontSize: 'var(--fs-section)' }}>
                 {t('trinity.title')}
               </h2>
               <p className="max-w-2xl mx-auto text-sm leading-relaxed" style={{ color: c.textSecond }}>
@@ -639,9 +639,9 @@ export default function HomePage() {
       </section>
 
       {/* ══ 倪海厦介绍 ════════════════════════════════════ */}
-      <section className="relative z-10 flex items-center px-6 md:px-10 lg:px-14 py-20" style={{ minHeight: '82svh' }}>
+      <section className="relative z-10 flex items-center px-[var(--gutter)] py-20" style={{ minHeight: '82svh' }}>
         <WeakBoundary line={c.navBorder} />
-        <div className="mx-auto w-full" style={{ maxWidth: '1280px' }}>
+        <div className="mx-auto w-full" style={{ maxWidth: 'calc(var(--page-max) - 2 * var(--gutter))' }}>
           <FadeIn>
             <div className="text-center mb-10">
               <div className="flex items-center justify-center gap-3 mb-6">
@@ -649,8 +649,8 @@ export default function HomePage() {
                 <span className="text-[12px] uppercase" style={{ color: c.tagText }}>{t('ni.eyebrow')}</span>
                 <div className="h-px w-12" style={{ background: `linear-gradient(to left, transparent, ${c.goldLine})` }} />
               </div>
-              <h2 className={`grad-text grad-text-dark font-bold mb-6`}
-                style={{ fontSize: 'clamp(32px, 4vw, 48px)' }}>
+              <h2 className={`grad-text grad-text-dark mb-6`}
+                style={{ fontSize: 'var(--fs-section)' }}>
                 {t('ni.title')}
               </h2>
               <p className="max-w-2xl mx-auto leading-relaxed text-sm" style={{ color: c.textSecond }}>
@@ -679,7 +679,7 @@ export default function HomePage() {
                 <p>{t.rich('ni.bio.stance', bioTags)}</p>
                 <p>{t.rich('ni.bio.approach', bioTags)}</p>
                 <p>{t.rich('ni.bio.influence', bioTags)}</p>
-                <p style={{ fontSize: '12px', color: c.textMuted, fontStyle: 'italic', marginTop: '12px' }}>
+                <p style={{ fontSize: 'var(--fs-caption)', color: c.textMuted, marginTop: '12px' }}>
                   {t('ni.disclaimer')}
                 </p>
               </div>
@@ -709,8 +709,8 @@ export default function HomePage() {
       </section>
 
       {/* ══ 合盘入口 ══════════════════════════════════════ */}
-      <section className="relative z-10 px-6 md:px-10 lg:px-14 py-20">
-        <div className="mx-auto" style={{ maxWidth: '1280px' }}>
+      <section className="relative z-10 px-[var(--gutter)] py-20">
+        <div className="mx-auto" style={{ maxWidth: 'calc(var(--page-max) - 2 * var(--gutter))' }}>
           <div className="rounded-2xl p-10 md:p-14 text-center"
             style={{
               background: 'var(--bg-card)',
@@ -718,8 +718,8 @@ export default function HomePage() {
               boxShadow: c.cardShadow,
             }}>
             <FadeIn>
-              <h2 className={`grad-text grad-text-dark font-bold mb-4`}
-                style={{ fontSize: 'clamp(26px, 3.5vw, 40px)' }}>
+              <h2 className={`grad-text grad-text-dark mb-4`}
+                style={{ fontSize: 'var(--fs-section)' }}>
                 {t('heming.title')}
               </h2>
               <p className="text-sm leading-relaxed mb-8 max-w-lg mx-auto" style={{ color: c.textSecond }}>
@@ -728,7 +728,7 @@ export default function HomePage() {
               <div className="flex justify-center gap-3 flex-wrap mb-6">
                 {(t.raw('heming.tags') as string[]).map(item => (
                   <span key={item} style={{
-                    fontSize: '12px', padding: '5px 14px', borderRadius: '20px',
+                    fontSize: 'var(--fs-caption)', padding: '4px 12px',
                     background: 'var(--bg-1)',
                     border: `1px solid ${c.goldLine}`,
                     color: c.goldSolid,
@@ -746,12 +746,12 @@ export default function HomePage() {
       </section>
 
       {/* ══ 最终 CTA ══════════════════════════════════════ */}
-      <section className="relative z-10 py-40 px-6 text-center" style={{ background: c.altSection }}>
+      <section className="relative z-10 py-40 px-[var(--gutter)] text-center" style={{ background: c.altSection }}>
         <FadeIn>
           {/* The product name above the closing headline, the way Apple China names a product above its line (#90) */}
           <p className="text-[12px] mb-6" style={{ color: c.tagText }}>{t('closing.eyebrow')}</p>
-          <h2 className={`grad-text grad-text-dark font-bold mb-8 leading-tight`}
-            style={{ fontSize: 'clamp(32px, 5vw, 60px)' }}>
+          <h2 className={`grad-text grad-text-dark mb-8 leading-tight`}
+            style={{ fontSize: 'var(--fs-section)' }}>
             {t.rich('closing.title', { br })}
           </h2>
           <p className="text-sm mb-10 max-w-md mx-auto leading-relaxed" style={{ color: c.textSecond }}>
@@ -768,7 +768,7 @@ export default function HomePage() {
       </section>
 
       {/* Footer */}
-      <footer className="relative z-10 py-10 px-6"
+      <footer className="relative z-10 py-10 px-[var(--gutter)]"
         style={{ borderTop: `1px solid ${c.niCardBord}` }}>
 
         {/* 4 板块导航占位（已上线 + 即将开放）*/}

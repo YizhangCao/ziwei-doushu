@@ -79,6 +79,8 @@
   --fs-read: 17px;
   --lh-read: 25px;
   --fs-headline: 30px;
+  /* 首页各段标题：一个字号步进，30px 起、48px 封顶（DESIGN.md Section） */
+  --fs-section: clamp(30px, calc(20px + 2vw), 48px);
   --fs-display: clamp(48px, calc(40px + 5vw), 110px);
 
   /* 卡片：日间是实底白卡；夜间半透明，透出星空 */
