@@ -8,6 +8,7 @@
 
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
+import { getTranslations } from 'next-intl/server';
 import { auth } from '@/auth';
 import AdminPanel from '@/components/AdminPanel';
 import ForbiddenPage from '@/app/forbidden/page';
@@ -16,10 +17,10 @@ import { pageAccess } from '@/lib/auth/page-access';
 import { toSessionUser } from '@/lib/auth/session';
 import { prisma } from '@/lib/db';
 
-export const metadata: Metadata = {
-  title: '管理后台 · 紫微命盘',
-  robots: { index: false },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('admin');
+  return { title: t('metaTitle'), robots: { index: false } };
+}
 
 /**
  * Checks the session again (the proxy only answers early), then renders the admin
