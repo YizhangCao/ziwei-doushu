@@ -20,10 +20,18 @@ async function switchTheme(page: Page) {
   return page.evaluate(async (label) => {
     const before = document.documentElement.dataset.theme;
     document.querySelector<HTMLButtonElement>(`button[aria-label="${label}"]`)!.click();
-    await new Promise((r) => setTimeout(r, 50));
-    const fades = document.getAnimations()
+    const viewFades = () => document.getAnimations()
       .map((a) => ({ pseudo: String((a.effect as KeyframeEffect | null)?.pseudoElement ?? ''), duration: a.effect?.getTiming().duration }))
       .filter((a) => a.pseudo.startsWith('::view-transition-old') || a.pseudo.startsWith('::view-transition-new'));
+    // The transition first snapshots the old page, so its animations start a frame or more
+    // after the click; under load that can take a while. Look every frame for up to a second.
+    const start = performance.now();
+    let fades = viewFades();
+    while (fades.length === 0 && performance.now() - start < 1000) {
+      await new Promise((r) => requestAnimationFrame(r));
+      fades = viewFades();
+    }
+    await new Promise((r) => setTimeout(r, 50));
     return { before, after: document.documentElement.dataset.theme, fades };
   }, THEME_SWITCH);
 }
