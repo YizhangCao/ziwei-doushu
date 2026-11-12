@@ -91,7 +91,9 @@ for (const theme of ['dark', 'light'] as const) {
     await lu.scrollIntoViewIfNeeded();
     await lu.click();
     await expect(lu).toHaveAttribute('aria-pressed', 'true');
-    expect(await contrast(lu)).toBeGreaterThanOrEqual(3);
+    // The section fades in as it scrolls into view; measure once the reveal has finished.
+    // Hualu is the lowest-contrast sihua color in day mode, and the label is 12px text.
+    await expect.poll(() => contrast(lu)).toBeGreaterThanOrEqual(4.5);
   });
 
   test(`footer text meets 4.5:1 (${theme})`, async ({ page }) => {
