@@ -62,7 +62,7 @@
       "title": "Finds the geju\nin your chart",
       "subtitle": "Geju are the patterns your stars form together. See what they say about your destiny.",
       "points": [
-        "Automatically detects 11 classic geju, such as Ziwei and Tianfu sharing a palace, Sha Po Lang, Ji Yue Tong Liang, Lianzhen–Tianxiang and Wuqu–Qisha.",
+        "Automatically detects 11 classic geju, such as Zifu tonggong (Ziwei and Tianfu sharing a palace), Shapolang, Jiyue tongliang, Lianzhen–Tianxiang and Wuqu–Qisha.",
         "Precisely spots special geju such as Zuofu and Youbi flanking the Life Palace, or Taiyang and Taiyin (the Sun and the Moon) flanking it, and gives the standard reading from Ni Haixia’s method.",
         "Automatically flags when the Four Transformations land in the Life Palace or the Travel Palace, and points out the life issues to watch.",
         "Geju are sorted from auspicious to inauspicious, so you can see the strengths and challenges in your chart at a glance."
@@ -82,7 +82,7 @@
       "When will my love life be at its best?"
     ],
     "patterns": [
-      { "name": "Sha Po Lang geju", "desc": "A life of pioneering drive" },
+      { "name": "Shapolang geju", "desc": "A life of pioneering drive" },
       { "name": "Lianzhen–Tianxiang geju", "desc": "Suited to administration and office" },
       { "name": "Huaji in the Life Palace", "desc": "Inner struggles need attention" }
     ],
