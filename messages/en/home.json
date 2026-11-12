@@ -13,25 +13,25 @@
     "steps": {
       "ming": {
         "label": "Step 1 · Life Palace",
-        "title": "First, who you are",
+        "title": "Your character, at a glance",
         "body": "The Life Palace is in Zi and holds Wuqu and Tianfu, with Wuqu taking Huaquan. You have strong views; managing money and making decisions are your strengths, and you do best when you call the shots.",
         "basis": "Basis: the Life Palace’s main stars and Huaquan"
       },
       "sanfang": {
         "label": "Step 2 · Sanfang sizheng",
-        "title": "Then, where you put your effort",
+        "title": "Know where your effort goes",
         "body": "The Office Palace holds Ziwei and Tianxiang: you suit a senior role in a large organization. The opposite Travel Palace holds Qisha: a lot of travel and change. The Wealth Palace holds Lianzhen: money comes from professional skill.",
         "basis": "Basis: read the Life Palace together with the Wealth, Office and Travel palaces (paraphrased from Ni Haixia, Tian Ji lecture 2, part 1, 00:12:58)"
       },
       "sihua": {
         "label": "Step 3 · Four Transformations",
-        "title": "Where the weight falls",
+        "title": "What flows, what sticks",
         "body": "Taiyang takes Hualu and Taiyin takes Huake in the Parents Palace: close ties with your elders, and a lot of help from your parents. Tiantong takes Huaji in the Brothers Palace: friction comes easily with siblings and friends.",
         "basis": "Basis: the birth-year Four Transformations (a Geng year: Taiyang Lu, Wuqu Quan, Taiyin Ke, Tiantong Ji)"
       },
       "daxian": {
         "label": "Step 4 · Decade",
-        "title": "Which part of life you’re in",
+        "title": "Ten years at a time: which one is yours",
         "body": "You are {age} now, in the {start}–{end} Decade, in the Children Palace. It has no main star, so read it through the stars of the opposite Estate Palace, Tianji and Jumen: a decade with a lot going on at home, and a good chance of moving house.",
         "basis": "Basis: the Decade, and borrowing stars from the opposite palace"
       }
@@ -103,7 +103,7 @@
     {
       "tag": "AI reading",
       "title": "Easy to read.\nEasy to ask.",
-      "subtitle": "A knowledge base of Ni Haixia’s method × Claude AI",
+      "subtitle": "A knowledge base of Ni Haixia’s method × Claude",
       "points": [
         "Destiny analysis: starting from the Main Stars of your Life Palace and reading them with the sanfang sizheng (the trine and opposition palaces), it gives a full picture of your character and the shape of your life.",
         "Six areas of life: career direction, love and marriage, money patterns, health concerns, family relationships, and your bond with children.",
