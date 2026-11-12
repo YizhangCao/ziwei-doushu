@@ -56,9 +56,14 @@ test('an admin changes a role and the daily AI limit', async ({ page, context })
   await signInAs(context, 'admin@ziweihub.test');
   await page.goto('/admin');
   await expect(page.getByRole('heading', { name: '管理后台' })).toBeVisible();
+  // The first list load proves the page is hydrated; a search sent earlier would be lost,
+  // and a late first load would reset the role picked below.
+  const users = page.getByRole('status').filter({ hasText: /找到 \d+ 位用户/ });
+  await expect(users).toBeVisible();
 
   await page.getByLabel('搜索用户').fill('Demo Member');
   await page.getByRole('button', { name: '搜索' }).click();
+  await expect(users).toHaveText('找到 1 位用户');
   await page.getByLabel('Demo Member 的角色', { exact: true }).selectOption('practitioner');
   await page.getByRole('button', { name: '保存 Demo Member 的角色' }).click();
   await expect(page.getByRole('status').filter({ hasText: '已将 Demo Member 设为执业者' })).toBeVisible();
