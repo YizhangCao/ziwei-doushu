@@ -1,0 +1,279 @@
+openapi: 3.1.0
+info:
+  title: ZiweiHub public API
+  version: 1.0.0
+  summary: Build a Zi Wei Dou Shu (紫微斗数) chart from birth data.
+  description: |
+    The public API runs the same charting engine as the ZiweiHub website and returns the
+    chart as JSON.
+
+    **Authentication.** Every request needs an API key in the `Authorization` header:
+    `Authorization: Bearer zwk_...`. A signed-in user creates keys on `/settings`. Each key
+    is shown once and stored only as a hash, so a lost key can't be recovered and has to be
+    replaced. The scheme name `Bearer` is matched in any letter case, and the key exactly.
+
+    **Errors.** Every error response is JSON of the form `{ "error": string }`. The key is
+    checked before the body, so a request without a valid key gets 401 even if its body is
+    also invalid. A 500 never includes the key or the underlying error.
+
+    **Privacy.** Use made-up birth data when you try the API. The response repeats the birth
+    data it was given in `chart.birthInfo`.
+  license:
+    name: MIT
+    url: https://opensource.org/license/mit
+servers:
+  - url: /
+    description: The site serving these docs
+tags:
+  - name: Charts
+    description: Chart calculation
+paths:
+  /api/v1/charts:
+    post:
+      tags: [Charts]
+      operationId: createChart
+      summary: Build a chart from birth data
+      description: |
+        Calculates the 12-palace chart for a birth date, birth hour and gender. `hour` is the
+        index of the two-hour period (shichen, 时辰), not a clock hour: 0 is zi (子,
+        23:00–00:59) and 11 is hai (亥, 21:00–22:59).
+
+        `currentAge` and `currentDaXianIndex` in the response depend on the date on which the
+        server handles the request.
+      security:
+        - apiKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChartRequest'
+            examples:
+              chart:
+                summary: Made-up birth data
+                value:
+                  date: '1990-06-15'
+                  hour: 6
+                  gender: female
+      responses:
+        '200':
+          description: The chart.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChartResponse'
+              examples:
+                chart:
+                  summary: Chart for the request example (one palace and one decade shown out of 12 each)
+                  value:
+                    chart:
+                      birthInfo: { year: 1990, month: 6, day: 15, hour: 6, gender: female, leapMonthPolicy: split }
+                      lunarInfo: { lunarYear: 1990, lunarMonth: 5, lunarDay: 23, isLeapMonth: false }
+                      mingGongBranch: 0
+                      shenGongBranch: 0
+                      wuxingJu: 6
+                      wuxingJuName: 火六局
+                      ziweiPos: 4
+                      palaces:
+                        - branch: 0
+                          stem: 4
+                          name: 命宫
+                          stars:
+                            - { name: 武曲, type: major, brightness: bright, brightnessRaw: 旺, siHua: 权 }
+                            - { name: 天府, type: major, brightness: bright, brightnessRaw: 庙, siHua: '' }
+                            - { name: 解神, type: lucky, brightness: bright, brightnessRaw: 庙 }
+                          daXianAge: [6, 15]
+                          isMingGong: true
+                          isShenGong: true
+                          isCurrentDaXian: false
+                          oppositeBranch: 6
+                          isEmpty: false
+                      daXians:
+                        - { startAge: 6, endAge: 15, palaceBranch: 0, palaceName: 命宫 }
+                      currentAge: 37
+                      currentDaXianIndex: 3
+                      mingZhu: 贪狼
+                      shenZhu: 火星
+                      yinYangGender: 阳女
+        '400':
+          description: The body is not JSON, or fails validation. Every problem is listed, joined with `; `.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                notJson:
+                  summary: The body is not JSON
+                  value: { error: Request body must be valid JSON }
+                invalidHour:
+                  summary: hour is 12
+                  value: { error: 'hour: must be an integer from 0 (子) to 11 (亥)' }
+                invalidDate:
+                  summary: date is 1990-02-30
+                  value: { error: 'date: must be a real calendar date' }
+                invalidGender:
+                  summary: gender is "other"
+                  value: { error: 'gender: must be "male" or "female"' }
+                unknownField:
+                  summary: An extra field, such as a name, is sent
+                  value: { error: 'unknown field(s): name' }
+        '401':
+          description: No `Authorization` header, not `Bearer <key>`, an unknown key, or a revoked key.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                missingOrInvalidKey:
+                  value: { error: Missing or invalid API key }
+        '500':
+          description: The key lookup or the charting engine failed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                keyLookupFailed:
+                  summary: The key lookup failed (for example, the database is down)
+                  value: { error: Internal server error }
+                engineFailed:
+                  summary: The charting engine failed
+                  value: { error: Could not generate the chart }
+components:
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: zwk_ followed by 43 base64url characters
+      description: An API key created on /settings.
+  schemas:
+    ChartRequest:
+      type: object
+      additionalProperties: false
+      required: [date, hour, gender]
+      properties:
+        date:
+          type: string
+          pattern: '^\d{4}-\d{2}-\d{2}$'
+          description: Birth date in the solar (Gregorian) calendar, YYYY-MM-DD. A real calendar date, year 1900 to 2100.
+          examples: ['1990-06-15']
+        hour:
+          type: integer
+          minimum: 0
+          maximum: 11
+          description: Birth shichen index, 0 = zi (子) to 11 = hai (亥). Not a clock hour.
+          examples: [6]
+        gender:
+          type: string
+          enum: [male, female]
+    ChartResponse:
+      type: object
+      required: [chart]
+      properties:
+        chart:
+          $ref: '#/components/schemas/ZiweiChart'
+    ZiweiChart:
+      type: object
+      description: The engine's `ZiweiChart` (`lib/ziwei/types.ts`). Names of palaces and stars are in Chinese.
+      required: [birthInfo, lunarInfo, mingGongBranch, shenGongBranch, wuxingJu, wuxingJuName, ziweiPos, palaces, daXians, currentAge, currentDaXianIndex]
+      properties:
+        birthInfo:
+          type: object
+          description: The birth data the chart was built from.
+        lunarInfo:
+          type: object
+          description: The lunar date and four pillars for the birth data.
+        mingGongBranch:
+          type: integer
+          minimum: 0
+          maximum: 11
+          description: Earthly-branch index of the life palace (ming gong).
+        shenGongBranch:
+          type: integer
+          minimum: 0
+          maximum: 11
+          description: Earthly-branch index of the body palace (shen gong).
+        wuxingJu:
+          type: integer
+          enum: [2, 3, 4, 5, 6]
+          description: Five-element bureau (wuxing ju) number.
+        wuxingJuName:
+          type: string
+          examples: [火六局]
+        ziweiPos:
+          type: integer
+          minimum: 0
+          maximum: 11
+          description: Earthly-branch index of the Ziwei star.
+        palaces:
+          type: array
+          minItems: 12
+          maxItems: 12
+          description: The 12 palaces.
+          items:
+            $ref: '#/components/schemas/Palace'
+        daXians:
+          type: array
+          description: The 10-year periods (daxian), in order.
+          items:
+            $ref: '#/components/schemas/DaXian'
+        currentAge:
+          type: integer
+          description: Age on the day the request was handled.
+        currentDaXianIndex:
+          type: integer
+          description: Index in `daXians` of the current period.
+        mingZhu:
+          type: string
+          description: Life-master star (ming zhu).
+        shenZhu:
+          type: string
+          description: Body-master star (shen zhu).
+        yinYangGender:
+          type: string
+          description: Yin-yang gender, for example 阳女.
+    Palace:
+      type: object
+      required: [branch, stem, name, stars]
+      properties:
+        branch: { type: integer, minimum: 0, maximum: 11, description: Earthly-branch index. }
+        stem: { type: integer, minimum: 0, maximum: 9, description: Heavenly-stem index. }
+        name: { type: string, description: 'Palace name, for example 命宫.' }
+        stars:
+          type: array
+          items:
+            $ref: '#/components/schemas/Star'
+        daXianAge:
+          type: array
+          items: { type: integer }
+          minItems: 2
+          maxItems: 2
+          description: First and last age of this palace's 10-year period.
+        isMingGong: { type: boolean }
+        isShenGong: { type: boolean }
+        isCurrentDaXian: { type: boolean }
+        oppositeBranch: { type: integer, minimum: 0, maximum: 11 }
+        isEmpty: { type: boolean, description: True when the palace has no major star. }
+    Star:
+      type: object
+      required: [name, type]
+      properties:
+        name: { type: string }
+        type: { type: string, enum: [major, minor, lucky, sha] }
+        brightness: { type: string, enum: [bright, normal, dim] }
+        brightnessRaw: { type: string, description: 'One of the seven traditional brightness grades, for example 庙.' }
+        siHua: { type: string, description: 'Birth-year transformation (sihua): 禄, 权, 科, 忌, or empty.' }
+    DaXian:
+      type: object
+      required: [startAge, endAge, palaceBranch, palaceName]
+      properties:
+        startAge: { type: integer }
+        endAge: { type: integer }
+        palaceBranch: { type: integer, minimum: 0, maximum: 11 }
+        palaceName: { type: string }
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string
