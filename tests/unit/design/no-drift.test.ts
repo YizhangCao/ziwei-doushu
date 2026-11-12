@@ -18,7 +18,7 @@ import { describe, it, expect } from 'vitest';
 
 const ROOT = fileURLToPath(new URL('../../..', import.meta.url));
 
-/** The screens a new user goes through, from landing to the first reading. */
+/** The screens a new user goes through, from landing to the first reading, plus the reading pages linked from home. */
 const CORE = [
   'app/page.tsx',
   'app/chart/page.tsx',
@@ -30,6 +30,14 @@ const CORE = [
   'components/TimeNav.tsx',
   'components/InsightPanel.tsx',
   'components/AiContent.tsx',
+  // Library and knowledge (reading pages one click from home)
+  'app/library/page.tsx',
+  'app/library/LibrarySearch.tsx',
+  'app/library/[book]/page.tsx',
+  'app/library/[book]/[chapter]/page.tsx',
+  'app/library/search/page.tsx',
+  'app/knowledge/page.tsx',
+  'app/knowledge/[star]/[topic]/page.tsx',
 ];
 
 /** Gold (the accent) is for chart meaning: stars, sihua, the life palace, the current decade, AI headers. */
