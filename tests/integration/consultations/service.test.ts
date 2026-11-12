@@ -215,6 +215,22 @@ describe('postMessage / listMessages — only the owner and that practitioner', 
     expect(JSON.stringify(message)).not.toContain('@example.test');
   });
 
+  it('keeps two practitioners on the same chart apart: one cannot use the other\'s share (404)', async () => {
+    const w = await world();
+    const shareA = await shareChart(w.owner, w.chartId, 'prac@example.test');
+    const shareB = await shareChart(w.owner, w.chartId, 'prac2@example.test');
+    await postMessage(w.practitioner, shareA.id, 'Thread A');
+    await postMessage(w.otherPractitioner, shareB.id, 'Thread B');
+
+    // Both can see the chart, but each only through their own share.
+    expect(await statusOf(() => listMessages(w.otherPractitioner, shareA.id))).toBe(404);
+    expect(await statusOf(() => listMessagesSince(w.otherPractitioner, shareA.id, null))).toBe(404);
+    expect(await statusOf(() => postMessage(w.otherPractitioner, shareA.id, 'Not my thread'))).toBe(404);
+    expect(await statusOf(() => listMessages(w.practitioner, shareB.id))).toBe(404);
+    expect((await listMessages(w.practitioner, shareA.id)).map((m) => m.body)).toEqual(['Thread A']);
+    expect(await prisma.consultMessage.count({ where: { shareId: shareA.id } })).toBe(1);
+  });
+
   it('returns 404 for anyone else: a stranger, another practitioner, a missing share', async () => {
     const w = await world();
     const share = await shareChart(w.owner, w.chartId, 'prac@example.test');
@@ -265,13 +281,38 @@ describe('listMessagesSince(user, shareId, cursor) — what the SSE stream polls
     expect((await listMessagesSince(w.practitioner, share.id, first.id)).map((m) => m.body)).toEqual(['two', 'three']);
   });
 
-  it('returns nothing when the cursor is the newest message', async () => {
+  // Messages with explicit timestamps relative to the cursor, so the overlap window is testable.
+  async function at(shareId: string, authorId: string, body: string, ms: number) {
+    return prisma.consultMessage.create({ data: { shareId, authorId, body, createdAt: new Date(ms) } });
+  }
+
+  it('re-sends only the ~5 s overlap window behind the cursor, never older messages', async () => {
     const w = await world();
     const share = await shareChart(w.owner, w.chartId, 'prac@example.test');
-    await postMessage(w.owner, share.id, 'one');
-    const last = await postMessage(w.owner, share.id, 'two');
+    const t = Date.parse('2026-11-12T12:00:00Z');
+    await at(share.id, w.owner.id, 'old', t - 60_000);
+    await at(share.id, w.owner.id, 'recent', t - 3_000);
+    const cursor = await at(share.id, w.owner.id, 'cursor', t);
 
-    expect(await listMessagesSince(w.owner, share.id, last.id)).toEqual([]);
+    // 'recent' is a duplicate the client already has and drops by id; 'old' is never re-sent.
+    expect((await listMessagesSince(w.owner, share.id, cursor.id)).map((m) => m.body)).toEqual(['recent']);
+  });
+
+  it('does not skip a message that commits after a later one was already polled', async () => {
+    const w = await world();
+    const share = await shareChart(w.owner, w.chartId, 'prac@example.test');
+    const t = Date.parse('2026-11-12T12:00:00Z');
+
+    // B is committed and polled first; A has an earlier timestamp but commits afterwards.
+    const b = await at(share.id, w.practitioner.id, 'B', t);
+    const firstPoll = await listMessagesSince(w.owner, share.id, null);
+    expect(firstPoll.map((m) => m.body)).toEqual(['B']);
+    const a = await at(share.id, w.owner.id, 'A', t - 1_500);
+
+    const nextPoll = await listMessagesSince(w.owner, share.id, b.id);
+    expect(nextPoll.map((m) => m.id)).toContain(a.id);
+    // Together the two polls deliver both messages, each with an id the client can dedupe on.
+    expect(new Set([...firstPoll, ...nextPoll].map((m) => m.id))).toEqual(new Set([a.id, b.id]));
   });
 
   it('keeps the order for messages with the same timestamp', async () => {

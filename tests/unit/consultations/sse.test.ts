@@ -158,7 +158,7 @@ describe('createPollingStream', () => {
     expect(poll.mock.calls.length).toBe(calls);
   });
 
-  it('closes with an error event, without details, when a poll fails', async () => {
+  it('closes with a "stream-error" event, without details, when a poll fails', async () => {
     const out = collect(createPollingStream<Item>({
       poll: async () => {
         throw new Error('database said something private');
@@ -166,7 +166,37 @@ describe('createPollingStream', () => {
     }));
     await vi.advanceTimersByTimeAsync(0);
     await out.finished;
-    expect(out.state.text.endsWith(formatSseEvent({ event: 'error', data: { reason: 'poll-failed' } }))).toBe(true);
+    expect(out.state.text.endsWith(formatSseEvent({ event: 'stream-error', data: { reason: 'poll-failed' } }))).toBe(true);
     expect(out.state.text).not.toContain('private');
+  });
+
+  it('never sends an event named "error", which EventSource reserves for connection failures', async () => {
+    const out = collect(createPollingStream<Item>({
+      poll: async () => {
+        throw new Error('boom');
+      },
+    }));
+    await vi.advanceTimersByTimeAsync(0);
+    await out.finished;
+    expect(out.state.text).not.toMatch(/^event: error$/m);
+  });
+
+  it('sends each id once when polls overlap (the cursor query re-reads a short window)', async () => {
+    const batches: Item[][] = [
+      [{ id: 'm1', body: 'one' }, { id: 'm2', body: 'two' }],
+      [{ id: 'm2', body: 'two' }, { id: 'm3', body: 'three' }],
+      [{ id: 'm3', body: 'three' }],
+    ];
+    const poll = vi.fn(async (_cursor: string | null) => batches.shift() ?? []);
+    const out = collect(createPollingStream<Item>({ poll }));
+
+    await vi.advanceTimersByTimeAsync(SSE_POLL_INTERVAL_MS * 2);
+    for (const id of ['m1', 'm2', 'm3']) {
+      expect(out.state.text.split(`id: ${id}\n`).length - 1, id).toBe(1);
+    }
+    // Nothing new on the third poll, so it is a heartbeat; the cursor still advances to the newest id.
+    expect(out.state.text.endsWith(formatHeartbeat())).toBe(true);
+    expect(poll.mock.calls.map(([cursor]) => cursor)).toEqual([null, 'm2', 'm3']);
+    await out.cancel();
   });
 });
