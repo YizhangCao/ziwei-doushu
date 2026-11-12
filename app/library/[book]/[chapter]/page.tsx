@@ -60,6 +60,8 @@ export default async function ChapterPage({ params }: { params: Promise<{ book: 
           <p style={{ fontSize: 'var(--fs-caption)', color: 'var(--tx-2)' }}>{t('byline', { title: labels.title, dynasty: labels.dynasty })}</p>
           <h1 className="mt-2" style={{ fontSize: 'var(--fs-headline)', lineHeight: 1.25, color: 'var(--tx-0)' }}>{ch.title}</h1>
           {ch.subtitle && <p className="mt-2" style={{ color: 'var(--tx-2)' }}>{ch.subtitle}</p>}
+          {/* The passages are modern summaries, not the classic's own words (#63) */}
+          <p className="mt-4" style={{ fontSize: 'var(--fs-small)', color: 'var(--tx-2)' }}>{t('summaryNotice')}</p>
         </header>
 
         {/* 原文：17px、行高 1.9，段与段之间 1px 细线；白话和倪师注是退后一级的灰底块 */}
