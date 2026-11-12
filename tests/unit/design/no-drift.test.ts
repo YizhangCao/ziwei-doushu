@@ -38,6 +38,7 @@ const CORE = [
   'app/library/search/page.tsx',
   'app/knowledge/page.tsx',
   'app/knowledge/[star]/[topic]/page.tsx',
+  'app/not-found.tsx',
 ];
 
 /** Gold (the accent) is for chart meaning: stars, sihua, the life palace, the current decade, AI headers. */
