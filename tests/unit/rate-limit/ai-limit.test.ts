@@ -12,7 +12,7 @@
 import { describe, it, expect } from 'vitest';
 import { AI_HOURLY_LIMIT, limitAiRequest, tooManyRequests } from '@/lib/rate-limit/ai-limit';
 import { createMemoryStore, type RateLimitStore } from '@/lib/rate-limit/limiter';
-import { rateLimitMessage } from '@/lib/rate-limit/message';
+import { rateLimitWait } from '@/lib/rate-limit/message';
 
 const NOW = Date.UTC(2026, 10, 12, 10, 15, 0);
 
@@ -66,15 +66,16 @@ describe('tooManyRequests(result)', () => {
   });
 });
 
-describe('rateLimitMessage(retryAfterSeconds)', () => {
-  it('tells the user how long to wait, in minutes or hours', () => {
-    expect(rateLimitMessage(2700)).toBe('AI 解读请求太频繁，请约 45 分钟后再试。');
-    expect(rateLimitMessage(20)).toBe('AI 解读请求太频繁，请约 1 分钟后再试。');
-    expect(rateLimitMessage(5 * 3600 + 60)).toBe('AI 解读请求太频繁，请约 6 小时后再试。');
+describe('rateLimitWait(retryAfterSeconds)', () => {
+  // The words live in messages/{zh,en}/insight.json (#9 after #59); this only works out the wait.
+  it('says how long to wait, in minutes or hours', () => {
+    expect(rateLimitWait(2700)).toEqual({ minutes: 45 });
+    expect(rateLimitWait(20)).toEqual({ minutes: 1 });
+    expect(rateLimitWait(5 * 3600 + 60)).toEqual({ hours: 6 });
   });
 
-  it('falls back to "later" when the header is missing or invalid', () => {
-    expect(rateLimitMessage(Number.NaN)).toBe('AI 解读请求太频繁，请稍后再试。');
-    expect(rateLimitMessage(0)).toBe('AI 解读请求太频繁，请稍后再试。');
+  it('has no wait to give when the header is missing or invalid', () => {
+    expect(rateLimitWait(Number.NaN)).toBeNull();
+    expect(rateLimitWait(0)).toBeNull();
   });
 });
