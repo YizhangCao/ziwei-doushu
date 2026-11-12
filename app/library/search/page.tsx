@@ -1,121 +1,101 @@
 /**
  * /library/search?q=xxx — 搜索结果页
+ *
+ * 版式随全站设计系统（#57）：面包屑 + 30px 标题 + 结果列表（1px 细线分隔）。
+ * 命中词用中性高亮（.search-snippet mark，见 globals.css）；没有结果时，
+ * 推荐词直接就是可点的搜索链接。
  */
 
 import Link from 'next/link';
-import { searchClassics, getParagraphById } from '@/lib/classics';
+import type { Metadata } from 'next';
+import { getLocale, getTranslations } from 'next-intl/server';
+import { searchClassics, getParagraphById, getBookBySlug } from '@/lib/classics';
+import { bookLabels, chapterLabels } from '@/lib/classics/localize';
+import LibrarySearch from '../LibrarySearch';
 
-export const metadata = {
-  title: '搜索 · 古籍原典库',
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('library.meta');
+  return { title: t('searchTitle') };
+}
+
+// Suggested searches differ by language: Chinese terms match the originals, and the
+// English ones match the English renderings (#59).
+const SUGGESTIONS = ['s1', 's2', 's3', 's4', 's5', 's6'] as const;
 
 export default async function SearchPage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
   const sp = await searchParams;
   const q = sp.q?.trim() || '';
-  const hits = q ? searchClassics(q, 50) : [];
+  const locale = await getLocale();
+  const t = await getTranslations('library');
+  const hits = q ? searchClassics(q, 50, locale) : [];
 
   return (
-    <div style={{ background: 'var(--bg-page)', minHeight: '100vh' }}>
-      <div className="px-6 py-4 flex items-center justify-between"
-        style={{ borderBottom: '1px solid rgba(184,146,42,0.15)', background: 'var(--bg-page)' }}>
-        <Link href="/library" style={{ fontSize: '12px', color: 'var(--ac)', letterSpacing: '0.3em', textDecoration: 'none' }}>
-          ← 古籍库
-        </Link>
-        <div style={{ fontSize: '12px', color: 'var(--tx-3)', letterSpacing: '0.2em' }}>
-          搜索结果
-        </div>
-        <Link href="/" style={{ fontSize: '12px', color: 'var(--ac)', letterSpacing: '0.2em', textDecoration: 'none' }}>
-          首页 →
-        </Link>
-      </div>
+    <main className="page" style={{ paddingTop: 48, paddingBottom: 96 }}>
+      <div style={{ maxWidth: 720 }}>
+        <nav aria-label={t('breadcrumb')} className="breadcrumb">
+          <Link href="/library">{t('home')}</Link>
+          <span aria-hidden="true">/</span>
+          <span style={{ color: 'var(--tx-0)' }}>{t('search.crumb')}</span>
+        </nav>
 
-      <div className="max-w-3xl mx-auto px-6 py-12">
-        <div className="text-center mb-10">
-          <div style={{ fontSize: '13px', color: 'var(--tx-3)', letterSpacing: '0.15em', marginBottom: '4px' }}>
-            搜索关键词
-          </div>
-          <h1 style={{ fontSize: 'clamp(22px, 3.5vw, 32px)', fontWeight: 700, color: 'var(--tx-0)', letterSpacing: '0.1em' }}>
-            「{q || '（空）'}」
+        <header className="mt-8">
+          <h1 style={{ fontSize: 'var(--fs-headline)', lineHeight: 1.25, color: 'var(--tx-0)' }}>
+            {q ? t('search.query', { q }) : t('search.heading')}
           </h1>
-          <div style={{ fontSize: '12px', color: 'var(--tx-3)', marginTop: '8px' }}>
-            共找到 <strong style={{ color: 'var(--ac)' }}>{hits.length}</strong> 条古籍原文匹配
-          </div>
+          {q && (
+            <p className="mt-2 tabular-nums" style={{ color: 'var(--tx-2)' }}>
+              {t('search.found', { n: hits.length })}
+            </p>
+          )}
+        </header>
+
+        <div className="mt-6">
+          <LibrarySearch />
         </div>
 
         {hits.length === 0 ? (
-          <div style={{
-            background: 'var(--bg-card)',
-            padding: '40px 20px',
-            borderRadius: '12px',
-            textAlign: 'center',
-            color: 'var(--tx-2)',
-            border: '1px solid rgba(184,146,42,0.15)',
-          }}>
-            <div style={{ fontSize: '40px', marginBottom: '12px', opacity: 0.4 }}>📜</div>
-            {q ? (
-              <>
-                <div style={{ fontSize: '14px', marginBottom: '6px' }}>暂未在已收录古籍中找到这个关键词</div>
-                <div style={{ fontSize: '11px', color: 'var(--tx-3)', lineHeight: 1.7 }}>
-                  我们持续补充内容中。可尝试搜索：<br />
-                  <span style={{ color: 'var(--ac)' }}>七杀朝斗 / 双禄朝垣 / 化忌 / 紫微 / 命宫 / 机月同梁</span>
-                </div>
-              </>
-            ) : (
-              <div style={{ fontSize: '13px' }}>请输入要搜索的关键词</div>
-            )}
-          </div>
+          <section className="mt-10 pt-6" style={{ borderTop: '1px solid var(--bdr)' }}>
+            <p style={{ color: 'var(--tx-0)' }}>
+              {q ? t('search.none') : t('search.empty')}
+            </p>
+            <p className="mt-4" style={{ fontSize: 'var(--fs-small)', color: 'var(--tx-2)' }}>{t('search.try')}</p>
+            <ul className="mt-2 flex flex-wrap gap-x-6 gap-y-2">
+              {SUGGESTIONS.map(key => t(`suggestions.${key}`)).map(s => (
+                <li key={s}>
+                  <Link href={`/library/search?q=${encodeURIComponent(s)}`} style={{ color: 'var(--tx-0)' }}>
+                    {s} <span aria-hidden="true">→</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </section>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          <ol className="mt-10" style={{ borderBottom: '1px solid var(--bdr)' }}>
             {hits.map((hit, i) => {
               const ctx = getParagraphById(hit.paragraphId);
               const chapterIdx = ctx?.chapterIdx ?? 0;
+              const book = getBookBySlug(hit.bookSlug);
+              const bookTitle = book ? bookLabels(book, locale).title : hit.bookTitle;
+              const chapterTitle = book ? chapterLabels(book, chapterIdx, locale).title : hit.chapterTitle;
               return (
-                <Link
-                  key={i}
-                  href={`/library/${hit.bookSlug}/${chapterIdx}#${hit.paragraphId}`}
-                  style={{
-                    display: 'block',
-                    background: 'var(--bg-card)',
-                    padding: '16px 20px',
-                    borderRadius: '10px',
-                    border: '1px solid rgba(184,146,42,0.18)',
-                    textDecoration: 'none',
-                    color: 'inherit',
-                    transition: 'border-color 0.15s',
-                  }}
-                >
-                  <div style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    fontSize: '11px',
-                    color: 'var(--tx-3)',
-                    marginBottom: '8px',
-                    letterSpacing: '0.1em',
-                  }}>
-                    <span style={{ color: 'var(--ac)', fontWeight: 600 }}>《{hit.bookTitle}》</span>
-                    <span style={{ opacity: 0.5 }}>·</span>
-                    <span>{hit.chapterTitle}</span>
-                  </div>
-                  <div
-                    style={{
-                      fontSize: '14px',
-                      color: 'var(--tx-0)',
-                      lineHeight: 1.9,
-                      letterSpacing: '0.02em',
-                    }}
-                    dangerouslySetInnerHTML={{ __html: hit.snippet }}
-                  />
-                </Link>
+                <li key={i} style={{ borderTop: '1px solid var(--bdr)' }}>
+                  <Link href={`/library/${hit.bookSlug}/${chapterIdx}#${hit.paragraphId}`} className="block py-5" style={{ color: 'var(--tx-0)' }}>
+                    <span style={{ display: 'block', fontSize: 'var(--fs-caption)', color: 'var(--tx-2)' }}>
+                      {t('search.hitMeta', { book: bookTitle, chapter: chapterTitle })}
+                    </span>
+                    <span
+                      className="search-snippet"
+                      lang={hit.snippetLang === 'en' ? undefined : 'zh-Hans'}
+                      style={{ display: 'block', marginTop: 6, fontSize: 'var(--fs-body)', lineHeight: 1.9 }}
+                      dangerouslySetInnerHTML={{ __html: hit.snippet }}
+                    />
+                  </Link>
+                </li>
               );
             })}
-          </div>
+          </ol>
         )}
       </div>
-
-      <style>{`
-        mark { background: rgba(184,146,42,0.3); color: #8b6a14; padding: 0 2px; border-radius: 2px; font-weight: 600; }
-      `}</style>
-    </div>
+    </main>
   );
 }

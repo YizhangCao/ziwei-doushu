@@ -1,0 +1,36 @@
+{
+  "title": "Compatibility",
+  "lead": "Enter two people’s birth details. The AI compares the two natal charts the way Ni Haixia’s system does: your bond, how you get along, and where love is heading.",
+  "personA": "Person A",
+  "personB": "Person B",
+  "analysisTitle": "Compatibility reading",
+  "emptyState": "Fill in both people’s birth details, then press the button below.<br></br>The AI will read how well the two of you match, following Ni Haixia’s system.",
+  "start": "Compare charts",
+  "loading": "Comparing the two charts…",
+  "errors": {
+    "formIncomplete": "Fill in full birth details for both people first.",
+    "apiMissing": "Compatibility readings aren’t available yet. You can still build each chart on the Chart page.",
+    "apiMissingDev": "(Developer note: the open-source version has no compatibility endpoint at /api/heming; add your own.)",
+    "rateLimited": "You’ve used today’s readings. You can continue tomorrow.",
+    "network": "The connection dropped, so the compatibility reading didn’t finish.",
+    "tooLong": "Keep your question under 2,000 characters.",
+    "failed": "The compatibility reading didn’t finish. Please try again in a moment."
+  },
+  "followUpTitle": "Ask more about this match",
+  "inputPlaceholder": "Ask a follow-up, e.g. Which stars sit in each of our Marriage Palaces?",
+  "inputLabel": "Ask a follow-up",
+  "send": "Ask",
+  "sending": "Reading…",
+  "quickQuestions": {
+    "q1": "How do our Life Palaces relate?",
+    "q2": "Working together, where is each of us strong?",
+    "q3": "Which palace needs the most care between us?",
+    "q4": "How do we differ in our attitude to money?",
+    "q5": "Which stars sit in each of our Marriage Palaces?"
+  },
+  "meta": {
+    "title": "Compatibility · Ziwei Natal Chart",
+    "description": "Enter two people’s birth details to compare the Life Palace, Marriage Palace and sanfang sizheng of both charts."
+  },
+  "charsLeft": "{n, plural, one {# character} other {# characters}} left"
+}

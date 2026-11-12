@@ -126,9 +126,9 @@ export default function ChatPanel({ chart }: ChatPanelProps) {
               <div
                 className="max-w-[85%] rounded-xl px-3.5 py-2.5 text-sm leading-relaxed"
                 style={msg.role === 'user' ? {
-                  background: 'rgba(212,168,67,0.1)',
-                  border: '1px solid rgba(212,168,67,0.2)',
-                  color: 'var(--t-gold)',
+                  background: 'var(--bg-2)',
+                  border: '1px solid var(--bdr)',
+                  color: 'var(--t-text)',
                 } : {
                   background: 'var(--t-card)',
                   border: '1px solid var(--t-border)',
@@ -166,8 +166,8 @@ export default function ChatPanel({ chart }: ChatPanelProps) {
                   background: 'transparent',
                 }}
                 onMouseEnter={e => {
-                  e.currentTarget.style.borderColor = 'rgba(212,168,67,0.3)';
-                  e.currentTarget.style.color = 'var(--t-gold)';
+                  e.currentTarget.style.borderColor = 'var(--tx-0)';
+                  e.currentTarget.style.color = 'var(--t-text)';
                 }}
                 onMouseLeave={e => {
                   e.currentTarget.style.borderColor = 'var(--t-border)';
@@ -203,9 +203,9 @@ export default function ChatPanel({ chart }: ChatPanelProps) {
             disabled={loading || !input.trim()}
             className="px-3 py-2 rounded-lg text-xs font-medium transition-all disabled:opacity-30 disabled:cursor-not-allowed"
             style={{
-              background: 'rgba(212,168,67,0.15)',
-              border: '1px solid rgba(212,168,67,0.25)',
-              color: 'var(--t-gold)',
+              background: 'var(--tx-0)',
+              border: '1px solid var(--tx-0)',
+              color: 'var(--bg-0)',
             }}
           >
             解读

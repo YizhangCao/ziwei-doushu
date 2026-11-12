@@ -34,6 +34,7 @@ those contracts (section 2.3) and build around them.
 | Database | PostgreSQL 16 + Prisma | Schema in `prisma/schema.prisma`. One shared client in `lib/db.ts`. Change the schema only with a migration (`npx prisma migrate dev --name <name>`). |
 | Auth | Auth.js (NextAuth v5), JWT sessions | GitHub OAuth. Config in `auth.ts`. Read the session with `auth()` on the server. |
 | Validation | `zod` | Every request body, query, and env variable is parsed with a zod schema. |
+| i18n | next-intl 4, no locale routing | Chinese and English (#59). The locale comes from the `NEXT_LOCALE` cookie, else `Accept-Language` (`lib/i18n/locale.ts`); URLs don't change. Messages live in `messages/{zh,en}/<namespace>.json`, and Chinese is the source of truth. Chosen over hand-written dictionaries (server-only, needs `/[lang]` routes), i18next (hand-written server/client glue) and Lingui or Paraglide (Next 16 support unverified). |
 | Unit / integration tests | Vitest | New app code. See "Testing strategy". |
 | E2E tests | Playwright | `e2e/*.spec.ts`, Chromium in CI. |
 | API docs | OpenAPI 3.1 + Swagger UI | Spec in `docs/openapi.yaml`, served at `/api-docs`. |
@@ -137,7 +138,15 @@ A user only ever sees their own charts and charts explicitly shared with them. C
 - **Chart board (`ChartBoard`, `PalaceCell`)**: 4×4 grid of the 12 palaces around a center summary. Clicking a palace selects it and updates the reading panel.
 - **Time navigation (`TimeNav`)**: switches between natal (本命), decade (大限), and annual (流年) views.
 - **Reading panel (`InsightPanel`)** and **chat (`ChatPanel`)**: stream an AI reading for the current chart, text appearing as it arrives, with a loading state and a readable error message.
-- **Visual style**: dark, gold-accented "glass card" look. Use the existing CSS variables (`var(--t-gold)`, `var(--t-border)`, `var(--t-faint)`) and the `card-glass` class. Do not add new colors or a new UI library.
+- **Visual style** (design system, #57): calm and precise, after Polestar's web design, over a quiet night sky. The default theme is night; day mode follows Polestar's white pages.
+  - **Calm:** Polestar's measured specs. Monochrome surfaces, 0px radius on controls and containers (2px only on small badges), 1px hairlines, 52 px controls, a 72 px nav and page gutters of up to 112 px. Hierarchy comes from size and opacity, not weight; weights are only 400 and 600. No text is smaller than 12 px.
+  - **Accent:** one gold, used only for chart meaning (stars, sihua, the life palace, the current decade, AI text), the way Polestar uses Swedish Gold on small details. Buttons, navigation and selected states stay monochrome.
+  - **Type:** Chinese follows Apple's China site (PingFang SC, normal tracking, line height about 1.5). Latin letters and digits use Helvetica Neue.
+  - **Motion:** 200 ms for interactions and 600 ms for reveals, on one easing curve. Pressing a button lowers its opacity, with no scaling or bouncing. `prefers-reduced-motion` turns motion off.
+  - **Tokens:** every color, radius, shadow and duration comes from the tokens in `app/globals.css`, which also defines the `--t-*` aliases and `card-glass`. Tailwind's color families map onto the five semantic tokens (`--ac`, `--lu`, `--quan`, `--ke`, `--ji`). Don't write hex or rgba values in components.
+  - **Shared pieces:** one `SiteNav` in the layout, `.btn-primary` / `.btn-ghost` for every button, `.input-base` for inputs, `AiContent` for streamed readings, and the pole-star mark (`.pole-mark`) as the brand's only symbol.
+  - **Language switch:** `LanguageToggle` in `SiteNav` shows the other language's name in that language ("EN" / "中文"), so its visible text is its accessible name.
+  - **Tests:** `tests/unit/design/design-system.test.ts` checks that every token used is defined and that text keeps 4.5:1 contrast in both themes. `tests/unit/design/no-drift.test.ts` keeps the core screens free of hard-coded colors, text under 12 px, wide or tight tracking, scale or lift motion, and gold outside chart meaning.
 
 ### 2.3 Fixed API contract (build the backend to this)
 
@@ -157,6 +166,7 @@ The frontend already calls these endpoints. **Do not change the frontend to fit 
 1. **Chart + reading:** user fills `BirthForm` → `generateChart()` runs in the browser → chart renders → user opens the reading → `InsightPanel` posts to `/api/interpret` → text streams in. Guests can build charts, but a reading needs login: the panel shows a login prompt on 401.
 2. **Follow-up question:** user types in `ChatPanel` → the full message history plus the chart is posted → answer streams in below the history.
 3. **Compatibility:** user enters two people on `/heming` → both charts build in the browser → page posts to `/api/heming` → analysis streams in.
+4. **Language:** user taps EN / 中文 in `SiteNav` → `setLocale` stores `NEXT_LOCALE` → the page re-renders in that language → `/api/interpret` answers in it too (the server reads the cookie; the request body is unchanged).
 
 When a feature changes one of these flows, update this section in the same PR.
 
@@ -188,6 +198,11 @@ When a feature changes one of these flows, update this section in the same PR.
 - Validate every API request body before using it: `chart.palaces` must have 12 entries, at most **30 messages**, each at most **2,000 characters**, roles only `user` / `assistant` (limits from issue #5).
 - Stream responses; the UI is built for streaming.
 - Write the failing test first (TDD), and add a test for each new `lib/` function.
+- Put every user-visible string in `messages/zh` and `messages/en` (#59), never in components. English follows the product owner's rules:
+  - **Terms:** the academic English rendering where one exists, with its source in `lib/i18n/glossary.ts`; a Western-astrology or plain substitute only after the product owner approves it; otherwise pinyin. Stars, brightness grades and sihua show in pinyin on the board, with the academic English as a gloss.
+  - **Descriptions:** direct English at about a high-school reading level.
+  - **Classical quotes:** the original, then `which means: "…"`, with technical terms in pinyin inside the quotes.
+  - **Parallel couplets:** rhyming heroic couplets in 18th to 19th century English.
 
 ### Don't
 - **Don't add Jest, Mocha, or any other test framework.** Use tsx for engine tests, Vitest for unit/integration, Playwright for E2E.
@@ -244,3 +259,5 @@ A task is done when: the acceptance criteria are all met, `npm run typecheck` an
   - Don't delete existing `.env.example` entries; no hardcoded dated model ID (both runs did this).
   - Required end-of-task summary with acceptance criteria, branch, commit, and `Closes #N`.
 - v3.3 (11/11/2026): documented that API keys are hashed with SHA-256 on purpose. CodeQL flagged it as a weak password hash (alerts #2–#4 on PRs #42 and #45); the keys are random 256-bit tokens, not passwords, and lookup by hash needs a fast, deterministic hash, so the alerts were dismissed as false positives.
+- v3.6 (11/11/2026): English version (#59). next-intl is in the stack table, the language switch in 2.2 and 2.4, and the translation rules under "Do".
+- v3.5 (11/11/2026): new design system (#57). Section 2.2 now describes it: Polestar-style calm, gold only for chart meaning, Chinese type after Apple's China site. The old rule pointed at CSS variables and a `card-glass` class that were never defined, so most component colors fell back to browser defaults.

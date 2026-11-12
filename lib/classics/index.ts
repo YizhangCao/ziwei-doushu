@@ -5,6 +5,8 @@
  * 数据为 JSON 静态打包，零 DB 依赖、零网络请求
  */
 
+import type { Locale } from '@/lib/i18n/locale';
+import { PARAGRAPH_EN } from './en';
 import type { Book, Paragraph, SearchHit } from './types';
 import { guSuiFu } from './data/gusuifu';
 import { ziWeiQuanJi } from './data/quanji';
@@ -51,13 +53,27 @@ export function getParagraphById(id: string) {
   return null;
 }
 
+/** Highlights `length` characters at `idx` with `radius` characters of context, HTML-escaped. */
+function snippetAround(text: string, idx: number, length: number, radius: number): string {
+  const start = Math.max(0, idx - radius);
+  const end = Math.min(text.length, idx + length + radius);
+  return (start > 0 ? '…' : '')
+    + escapeHtml(text.slice(start, idx))
+    + `<mark>${escapeHtml(text.slice(idx, idx + length))}</mark>`
+    + escapeHtml(text.slice(idx + length, end))
+    + (end < text.length ? '…' : '');
+}
+
 /**
  * 全文搜索
  *
  * 简单子字符串匹配（不分词，对中文 OK）
  * 大小写不敏感、繁简转换暂不支持
+ *
+ * In English (#59) a passage also matches through its English rendering, case-insensitively,
+ * and the snippet then comes from the English.
  */
-export function searchClassics(query: string, limit = 30): SearchHit[] {
+export function searchClassics(query: string, limit = 30, locale: Locale = 'zh'): SearchHit[] {
   const q = query.trim();
   if (q.length < 1) return [];
 
@@ -66,7 +82,22 @@ export function searchClassics(query: string, limit = 30): SearchHit[] {
     for (const chapter of book.chapters) {
       for (const p of chapter.paragraphs) {
         const idx = p.text.indexOf(q);
-        if (idx < 0) continue;
+        if (idx < 0) {
+          const en = locale === 'en' ? PARAGRAPH_EN[p.id] : undefined;
+          const enIdx = en ? en.toLowerCase().indexOf(q.toLowerCase()) : -1;
+          if (!en || enIdx < 0) continue;
+          hits.push({
+            bookSlug: book.slug,
+            bookTitle: book.title,
+            chapterTitle: chapter.title,
+            paragraphId: p.id,
+            snippet: snippetAround(en.replace(/\n/g, ' / '), enIdx, q.length, 60),
+            snippetLang: 'en',
+            text: p.text,
+          });
+          if (hits.length >= limit) return hits;
+          continue;
+        }
 
         // 提取上下文（前后各 40 字）
         const start = Math.max(0, idx - 40);
