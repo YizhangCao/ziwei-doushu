@@ -8,9 +8,6 @@ import { useLocale, useTranslations } from 'next-intl';
 import { termLabel } from '@/lib/i18n/glossary';
 import { formatList } from '@/lib/i18n/format';
 
-// Shown when /api/interpret returns 401: AI readings require login.
-const LOGIN_REQUIRED_MESSAGE = 'AI 解读需要登录。请点击首页右上角的「登录」，或打开 /login 使用 GitHub 账号登录。';
-
 interface Message {
   role: 'user' | 'assistant';
   content: string;
@@ -20,7 +17,7 @@ interface Message {
 }
 
 /** Each cause has its own message, so a used-up limit never reads like a bug (#63). */
-type ReadingError = 'network' | 'apiMissing' | 'rateLimited' | 'failed';
+type ReadingError = 'network' | 'apiMissing' | 'loginRequired' | 'rateLimited' | 'failed';
 const RETRYABLE: ReadonlySet<ReadingError> = new Set(['network', 'failed']);
 
 // The limits the server enforces (lib/ai/interpret.ts, #5). Checking them here lets the
@@ -157,10 +154,7 @@ export default function InsightPanel({ chart, selectedPalace, selectedSiHua }: I
         return fail('network'); // fetch rejects only when no answer came back
       }
       if (res.status === 404) return fail('apiMissing');
-      if (res.status === 401) {
-        setMessages(prev => [...prev, { role: 'assistant', content: LOGIN_REQUIRED_MESSAGE }]);
-        return;
-      }
+      if (res.status === 401) return fail('loginRequired'); // AI readings are for members (#15)
       if (res.status === 429) return fail('rateLimited');
       if (!res.ok || !res.body) return fail('failed');
 
