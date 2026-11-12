@@ -4,17 +4,17 @@ import { resetE2eMember, signInAsE2eMember } from './helpers/auth';
 // #18 main flow: save a chart from /chart, then list, open, rename and delete it on /charts.
 // Made-up birth data only.
 
-const selectWithOption = (page: Page, optionText: string) =>
-  page.locator('select').filter({ has: page.locator('option', { hasText: new RegExp(`^${optionText}$`) }) });
-
+// The birth form as redesigned in #57: year, month and day selects, the clock-hour select
+// (#bf-hour), gender buttons and one 起盘 button.
 async function buildChart(page: Page) {
   await page.goto('/chart');
-  await selectWithOption(page, '年份').selectOption('1992');
-  await selectWithOption(page, '月份').selectOption('3');
-  await selectWithOption(page, '日期').selectOption('8');
-  await selectWithOption(page, '00 时').selectOption('9');
-  await page.getByRole('button', { name: '♂ 男' }).click();
-  await page.getByRole('button', { name: /立即起盘/ }).click();
+  const selects = page.locator('form select');
+  await selects.nth(0).selectOption('1992');
+  await selects.nth(1).selectOption('3');
+  await selects.nth(2).selectOption('8');
+  await page.locator('#bf-hour').selectOption('9');
+  await page.getByRole('button', { name: '男', exact: true }).click();
+  await page.getByRole('button', { name: '起盘', exact: true }).click();
   await expect(page.getByText('仆役', { exact: true }).first()).toBeVisible();
 }
 
