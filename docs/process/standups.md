@@ -22,7 +22,7 @@ Format: what I did · what I'll do next · blockers.
 | 11/11 | Yizhang | Sprint 2 planning PR | #24 and #18 lib layers (TDD) | #15 and #20 needed before #18 routes and any migration |
 | 11/11 PM | Yizhang | #24 and #18 lib layers with 256-bit encryption (PRs #42, #43); #21 lib layer and the Vercel SSE spike (PR #44); E2E for the public API (#26, PR #45) | Wire #18, #21, #24 routes and pages once #15 merges | #15 (login); eight PRs awaiting review (#37–#39, #41–#45) |
 | 11/11 | Yikang | | | |
-| 11/12 | Yizhang | | | |
+| 11/12 | Yizhang | Applied Yikang's review fixes on #37, #38, #39, #43 (birth data validated on write) and #45 (seed guard: CI or localhost only); merged #41 and #42; #44 cursor overlap window and the isolation test; Preview got its own DATA_ENCRYPTION_KEY; required CI checks on main (#19); #18 routes and pages (PR #76) and the #24 /settings page (PR #78), both TDD with E2E; #79 ignore *.tmp (PR #80) | Merge the queue once Yikang re-approves (#37, #38, #43, #45, #44, then #76 and #78 after #48); #21 SSE route and /consultations page; #4 browser check | Neon free plan's 10-branch limit is full, so new preview deploys fail; #76 and #78 wait on #48 |
 | 11/12 | Yikang | | | |
 | 11/13 | Yizhang | | | |
 | 11/13 | Yikang | | | |
