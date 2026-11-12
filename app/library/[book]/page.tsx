@@ -26,76 +26,41 @@ export default async function BookPage({ params }: { params: Promise<{ book: str
   if (!book) notFound();
 
   return (
-    <div style={{ background: 'var(--bg-page)', minHeight: '100vh' }}>
-      <div className="px-6 py-4 flex items-center justify-between"
-        style={{ borderBottom: '1px solid rgba(184,146,42,0.15)', background: 'var(--bg-page)' }}>
-        <Link href="/library" style={{ fontSize: '12px', color: 'var(--ac)', letterSpacing: '0.3em', textDecoration: 'none' }}>
-          ← 古籍库
-        </Link>
-        <div style={{ fontSize: '12px', color: 'var(--tx-3)', letterSpacing: '0.2em' }}>
-          《{book.title}》
-        </div>
-        <Link href="/" style={{ fontSize: '12px', color: 'var(--ac)', letterSpacing: '0.2em', textDecoration: 'none' }}>
-          首页 →
-        </Link>
-      </div>
+    <main className="page" style={{ paddingTop: 48, paddingBottom: 96 }}>
+      <div style={{ maxWidth: 720 }}>
+        <nav aria-label="面包屑" className="breadcrumb">
+          <Link href="/library">古籍库</Link>
+          <span aria-hidden="true">/</span>
+          <span style={{ color: 'var(--tx-0)' }}>《{book.title}》</span>
+        </nav>
 
-      <div className="max-w-3xl mx-auto px-6 py-12">
         {/* 书名信息 */}
-        <div className="text-center mb-12">
-          <div style={{ fontSize: '11px', color: 'var(--tx-3)', letterSpacing: '0.3em', marginBottom: '8px' }}>
-            {book.dynasty} · {book.author}
-          </div>
-          <h1 style={{ fontSize: 'clamp(28px, 4vw, 42px)', fontWeight: 700, color: 'var(--tx-0)', letterSpacing: '0.15em', marginBottom: '14px' }}>
-            《{book.title}》
-          </h1>
-          <p style={{ fontSize: '13px', color: 'var(--tx-2)', lineHeight: 1.8, maxWidth: '500px', margin: '0 auto' }}>
-            {book.intro}
-          </p>
-        </div>
+        <header className="mt-8">
+          <p style={{ fontSize: 'var(--fs-caption)', color: 'var(--tx-2)' }}>{book.dynasty} · {book.author}</p>
+          <h1 className="mt-2" style={{ fontSize: 'var(--fs-headline)', lineHeight: 1.25, color: 'var(--tx-0)' }}>《{book.title}》</h1>
+          <p className="mt-3" style={{ lineHeight: 1.8, color: 'var(--tx-2)' }}>{book.intro}</p>
+        </header>
 
-        {/* 章节目录 */}
-        <div style={{ background: 'var(--bg-card)', borderRadius: '14px', border: '1px solid rgba(184,146,42,0.2)', overflow: 'hidden' }}>
-          <div style={{ padding: '14px 20px', borderBottom: '1px solid rgba(184,146,42,0.15)', fontSize: '11px', color: 'var(--tx-3)', letterSpacing: '0.3em' }}>
-            CHAPTERS · 章节目录
-          </div>
+        {/* 章节目录：每章一行，1px 细线分隔 */}
+        <section aria-label="章节目录" className="mt-10" style={{ borderBottom: '1px solid var(--bdr)' }}>
+          <h2 className="pb-3" style={{ fontSize: 'var(--fs-small)', color: 'var(--tx-2)' }}>章节目录</h2>
           {book.chapters.map((chapter, i) => (
-            <Link
-              key={i}
-              href={`/library/${book.slug}/${i}`}
-              style={{
-                display: 'flex',
-                alignItems: 'baseline',
-                gap: '14px',
-                padding: '14px 20px',
-                borderBottom: i === book.chapters.length - 1 ? 'none' : '1px dashed rgba(184,146,42,0.15)',
-                textDecoration: 'none',
-                color: 'inherit',
-                transition: 'background 0.15s',
-              }}
-              className="hover:bg-amber-50"
-            >
-              <div style={{ fontSize: '12px', color: 'var(--ac)', fontWeight: 600, minWidth: '40px', letterSpacing: '0.1em' }}>
+            <Link key={i} href={`/library/${book.slug}/${i}`} className="list-row">
+              <span className="tabular-nums" style={{ minWidth: 32, fontSize: 'var(--fs-small)', color: 'var(--tx-2)' }}>
                 {String(i + 1).padStart(2, '0')}
-              </div>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontSize: '15px', color: 'var(--tx-0)', fontWeight: 500, letterSpacing: '0.08em', marginBottom: '2px' }}>
-                  {chapter.title}
-                </div>
+              </span>
+              <span style={{ flex: 1 }}>
+                <span style={{ display: 'block', fontSize: 'var(--fs-body)', color: 'var(--tx-0)' }}>{chapter.title}</span>
                 {chapter.subtitle && (
-                  <div style={{ fontSize: '11px', color: 'var(--tx-3)' }}>
-                    {chapter.subtitle}
-                  </div>
+                  <span style={{ display: 'block', fontSize: 'var(--fs-caption)', color: 'var(--tx-2)' }}>{chapter.subtitle}</span>
                 )}
-              </div>
-              <div style={{ fontSize: '10px', color: 'var(--tx-3)', letterSpacing: '0.1em' }}>
-                {chapter.paragraphs.length} 段
-              </div>
-              <div style={{ fontSize: '12px', color: 'var(--ac)' }}>→</div>
+              </span>
+              <span className="tabular-nums" style={{ fontSize: 'var(--fs-caption)', color: 'var(--tx-2)' }}>{chapter.paragraphs.length} 段</span>
+              <span aria-hidden="true">→</span>
             </Link>
           ))}
-        </div>
+        </section>
       </div>
-    </div>
+    </main>
   );
 }

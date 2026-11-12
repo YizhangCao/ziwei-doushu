@@ -4,7 +4,7 @@
  */
 
 import Link from 'next/link';
-import { ALL_STARS, ALL_TOPICS, getKnowledge, STAR_BRIEF_SEO, STAR_TO_SLUG } from '@/lib/seo/knowledge';
+import { ALL_STARS, ALL_TOPICS, getAllKnowledgeRoutes, getKnowledge, STAR_BRIEF_SEO, STAR_TO_SLUG } from '@/lib/seo/knowledge';
 import { TOPIC_LABEL } from '@/lib/ziwei/db-analysis';
 
 export const metadata = {
@@ -14,103 +14,66 @@ export const metadata = {
 };
 
 export default function KnowledgeHomePage() {
-  const STAR_DESCRIPTIONS_QUICK = STAR_BRIEF_SEO;
+  // 只链接真的有内容的专题：开源版的 STAR_DB 是空的，以前 14 个主星全都链到 404
+  const available = getAllKnowledgeRoutes().length;
+  const hasOverview = (star: string) => getKnowledge(star, 'overview').exists;
 
   return (
-    <div style={{ background: 'var(--bg-page)', minHeight: '100vh' }}>
+    <main className="page" style={{ paddingTop: 48, paddingBottom: 96 }}>
+      <header style={{ maxWidth: 720 }}>
+        <p style={{ fontSize: 'var(--fs-caption)', color: 'var(--tx-2)' }}>倪海厦《天纪》体系 · 含古籍引证</p>
+        <h1 className="mt-4" style={{ fontSize: 'var(--fs-headline)', lineHeight: 1.25, color: 'var(--tx-0)' }}>紫微斗数知识库</h1>
+        {available > 0 ? (
+          <p className="mt-2 tabular-nums" style={{ color: 'var(--tx-2)' }}>
+            14 主星 × 13 宫位，已上线 {available} / {ALL_STARS.length * ALL_TOPICS.length} 项专题。
+          </p>
+        ) : (
+          <p className="mt-2" style={{ color: 'var(--tx-2)' }}>
+            专题内容整理中。先从古籍原典读起：<Link href="/library" style={{ color: 'var(--tx-0)' }}>古籍原典库 <span aria-hidden="true">→</span></Link>
+          </p>
+        )}
+      </header>
 
-      {/* Hero */}
-      <div className="text-center px-6 py-14">
-        <div className="flex items-center justify-center gap-3 mb-4">
-          <div style={{ height: '1px', width: '48px', background: 'linear-gradient(to right, transparent, rgba(184,146,42,0.4))' }} />
-          <span style={{ fontSize: '11px', color: 'var(--ac)', letterSpacing: '0.4em' }}>KNOWLEDGE BASE</span>
-          <div style={{ height: '1px', width: '48px', background: 'linear-gradient(to left, transparent, rgba(184,146,42,0.4))' }} />
-        </div>
-        <h1 style={{ fontSize: 'clamp(28px, 4vw, 42px)', fontWeight: 700, color: 'var(--tx-0)', letterSpacing: '0.15em', marginBottom: '12px' }}>
-          紫微斗数知识库
-        </h1>
-        <p style={{ fontSize: '14px', color: 'var(--tx-2)', letterSpacing: '0.08em', maxWidth: '600px', margin: '0 auto', lineHeight: 1.7 }}>
-          14 主星 × 13 宫位 = <strong style={{ color: 'var(--ac)' }}>{ALL_STARS.length * ALL_TOPICS.length}</strong> 项专题<br />
-          基于倪海厦《天纪》体系编纂 · 含古籍引证
-        </p>
-      </div>
-
-      {/* 14 主星卡片 */}
-      <div className="max-w-5xl mx-auto px-6 pb-20">
-        <div style={{ fontSize: '11px', color: 'var(--tx-3)', letterSpacing: '0.3em', textAlign: 'center', marginBottom: '24px' }}>
-          十四主星
-        </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-3">
-          {ALL_STARS.map(star => (
-            <Link
-              key={star}
-              href={`/knowledge/${STAR_TO_SLUG[star]}/overview`}
-              style={{
-                display: 'block',
-                padding: '14px 10px',
-                background: 'var(--bg-card)',
-                border: '1px solid rgba(184,146,42,0.2)',
-                borderRadius: '10px',
-                textDecoration: 'none',
-                textAlign: 'center',
-                transition: 'all 0.2s',
-              }}
-              className="hover:shadow-md hover:border-amber-400"
-            >
-              <div style={{ fontSize: '18px', fontWeight: 700, color: 'var(--tx-0)', letterSpacing: '0.15em' }}>
-                {star}
-              </div>
+      {/* 十四主星：直达各星的总论 */}
+      <section aria-labelledby="stars-heading" className="mt-12">
+        <h2 id="stars-heading" style={{ fontSize: 'var(--fs-small)', color: 'var(--tx-2)' }}>十四主星</h2>
+        <div className="mt-4 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-7 gap-2">
+          {ALL_STARS.map(star => hasOverview(star) ? (
+            <Link key={star} href={`/knowledge/${STAR_TO_SLUG[star]}/overview`} className="tile text-center" style={{ padding: '16px 8px', fontSize: 'var(--fs-read)' }}>
+              {star}
             </Link>
-          ))}
-        </div>
-
-        {/* 详细列表（每个主星 + 简介 + 进入按钮） */}
-        <div className="mt-14 space-y-4">
-          {ALL_STARS.map(star => (
-            <div key={star} style={{
-              background: 'var(--bg-card)',
-              border: '1px solid rgba(184,146,42,0.18)',
-              borderRadius: '12px',
-              padding: '18px 22px',
-            }}>
-              <div className="flex items-baseline gap-3 mb-2">
-                <span style={{ fontSize: '20px', fontWeight: 700, color: 'var(--tx-0)', letterSpacing: '0.1em' }}>
-                  {star}星
-                </span>
-                <span style={{ fontSize: '11px', color: 'var(--tx-3)', letterSpacing: '0.15em' }}>
-                  ZI WEI · 14 STARS
-                </span>
-              </div>
-              <p style={{ fontSize: '12px', color: 'var(--tx-2)', lineHeight: 1.7, marginBottom: '12px' }}>
-                {STAR_DESCRIPTIONS_QUICK[star] || ''}
-              </p>
-              <div className="flex flex-wrap gap-2">
-                {ALL_TOPICS.map(t => {
-                  const k = getKnowledge(star, t);
-                  if (!k.exists) return null;
-                  return (
-                    <Link
-                      key={t}
-                      href={`/knowledge/${STAR_TO_SLUG[star]}/${t}`}
-                      style={{
-                        fontSize: '11px',
-                        padding: '4px 10px',
-                        background: 'rgba(184,146,42,0.06)',
-                        border: '1px solid rgba(184,146,42,0.15)',
-                        borderRadius: '999px',
-                        color: 'var(--tx-2)',
-                        textDecoration: 'none',
-                      }}
-                    >
-                      入{k.palaceName} · {TOPIC_LABEL[t]}
-                    </Link>
-                  );
-                })}
-              </div>
+          ) : (
+            <div key={star} className="text-center" style={{ padding: '16px 8px', fontSize: 'var(--fs-read)', border: '1px solid var(--bdr)', color: 'var(--tx-2)' }}>
+              {star}
             </div>
           ))}
         </div>
-      </div>
-    </div>
+      </section>
+
+      {/* 每颗主星：简介 + 入各宫的专题 */}
+      <section aria-label="主星专题" className="mt-14" style={{ borderBottom: '1px solid var(--bdr)' }}>
+        {ALL_STARS.map(star => (
+          <article key={star} className="py-6" style={{ borderTop: '1px solid var(--bdr)' }}>
+            <h2 style={{ fontSize: 'var(--fs-read)', fontWeight: 600, color: 'var(--tx-0)' }}>{star}星</h2>
+            {STAR_BRIEF_SEO[star] && (
+              <p className="mt-2" style={{ maxWidth: 720, fontSize: 'var(--fs-small)', lineHeight: 1.8, color: 'var(--tx-2)' }}>{STAR_BRIEF_SEO[star]}</p>
+            )}
+            <ul className="mt-3 flex flex-wrap gap-x-5 gap-y-2" style={{ fontSize: 'var(--fs-small)' }}>
+              {ALL_TOPICS.map(t => {
+                const k = getKnowledge(star, t);
+                if (!k.exists) return null;
+                return (
+                  <li key={t}>
+                    <Link href={`/knowledge/${STAR_TO_SLUG[star]}/${t}`} style={{ color: 'var(--tx-0)' }}>
+                      入{k.palaceName} · {TOPIC_LABEL[t]}
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          </article>
+        ))}
+      </section>
+    </main>
   );
 }
