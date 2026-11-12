@@ -268,8 +268,17 @@ The star field behind the home page turns around the pole-star mark in the hero.
 ### Chart Walkthrough (home)
 A sample chart, worked out in the browser from a made-up birthday, pinned beside four steps that scroll past: the Life Palace, its sanfang sizheng, the birth-year Four Transformations, and the current decade. It reuses the chart page's palace cells and sanfang lines, so it looks exactly like `/chart`. The palaces a step is about stay at full strength and the rest dim to 30%. Below 1024px it stacks, unpinned, with every highlight shown at once.
 
+### Chart Reveal (chart page)
+When a chart is built, the board lays itself out the way the rules do:
+- the Life Palace appears first, on its own for 150ms;
+- the other eleven follow one branch back at a time, one every 40ms. That is the traditional palace order, counterclockwise on the board;
+- the Life Palace's sanfang sizheng lines and dots draw next;
+- the current decade's gold edge appears last.
+
+Each piece fades or draws over 600ms, and everything is in place within 1.4s. It runs once per chart and never blocks a click; picking a palace later draws its lines at once. Under reduced motion the whole board is simply there. The timing lives in `lib/design/chart-reveal.ts`.
+
 ### Reading Panel
-Streamed AI text sits in an `aria-live="polite"` region. Section headers are 14px at weight 600 in Pole-Star Gold, and paragraphs are 16px body text. While a reply is on its way, the pole-star mark breathes next to a line that says what is being read.
+Streamed AI text sits in an `aria-live="polite"` region. Section headers are 14px at weight 600 in Pole-Star Gold, and paragraphs are 16px body text. While a reply is on its way, the pole-star mark breathes next to a line that says what is being read and names that palace's major stars with their sihua ("Reading the Life Palace: Taiyang (Hualu) and Taiyin (Huake)…"). An empty palace gets the line without stars.
 
 ## Do's and Don'ts
 
