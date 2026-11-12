@@ -1,10 +1,13 @@
 'use client';
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { rateLimitMessage } from '@/lib/rate-limit/message';
 import type { ZiweiChart } from '@/lib/ziwei/types';
 
 // Shown when /api/interpret returns 401: AI readings require login.
 const LOGIN_REQUIRED_MESSAGE = 'AI 解读需要登录。请点击首页右上角的「登录」，或打开 /login 使用 GitHub 账号登录。';
+// Error-message prefix for a 429; the rest is the Retry-After header value.
+const RATE_LIMITED = 'rate-limited:';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -52,6 +55,7 @@ export default function ChatPanel({ chart }: ChatPanelProps) {
 
       if (res.status === 404) throw new Error('api-missing');
       if (res.status === 401) throw new Error('login-required');
+      if (res.status === 429) throw new Error(RATE_LIMITED + (res.headers.get('retry-after') ?? ''));
       if (!res.ok) throw new Error('请求失败');
       if (!res.body) throw new Error('无响应流');
 
@@ -86,9 +90,12 @@ export default function ChatPanel({ chart }: ChatPanelProps) {
     } catch (e) {
       const missing = e instanceof Error && e.message === 'api-missing';
       const loginRequired = e instanceof Error && e.message === 'login-required';
+      const limited = e instanceof Error && e.message.startsWith(RATE_LIMITED)
+        ? rateLimitMessage(Number(e.message.slice(RATE_LIMITED.length)))
+        : null;
       setMessages(prev => [...prev, {
         role: 'assistant',
-        content: loginRequired ? LOGIN_REQUIRED_MESSAGE : missing ? '开源版不含 AI 解读接口（/api/interpret），需要你自己实现后才能用，详见 README「快速开始」。排盘本身不需要任何 API Key。' : '解读失败，请检查API配置或稍后重试。',
+        content: limited ?? (loginRequired ? LOGIN_REQUIRED_MESSAGE : missing ? '开源版不含 AI 解读接口（/api/interpret），需要你自己实现后才能用，详见 README「快速开始」。排盘本身不需要任何 API Key。' : '解读失败，请检查API配置或稍后重试。'),
       }]);
     } finally {
       setLoading(false);
