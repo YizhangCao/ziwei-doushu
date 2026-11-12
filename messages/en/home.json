@@ -1,0 +1,333 @@
+{
+  "hero": {
+    "eyebrow": "Ziwei Doushu (Purple Star Astrology) · Ni Haixia’s method",
+    "title": "Ziwei Natal Chart",
+    "claim": "<phrase>Enter the date and hour of your birth</phrase> <phrase>to build your Ziwei natal chart.</phrase>",
+    "subclaim": "<phrase>Charted by Ni Haixia’s method,</phrase> <phrase>read by AI palace by palace.</phrase>",
+    "cta": "Build your chart"
+  },
+  "outlook": {
+    "eyebrow": "Fate · Fortune · Outlook",
+    "line1": "The point of glimpsing your fate ahead of time",
+    "line2": "is not to foresee the future",
+    "line3": "but to keep coming to know yourself",
+    "closing": "and, in the end, to write the story of your own life"
+  },
+  "roadmap": {
+    "eyebrow": "Curriculum",
+    "title": "Ni Haixia’s method, step by step",
+    "subtitle": "Start with Ziwei, then the Tian Ji / Di Ji / Ren Ji study modules open one by one",
+    "sections": [
+      {
+        "name": "Ziwei",
+        "desc": "14 Main Stars · 12 palaces · AI readings",
+        "when": "November"
+      },
+      {
+        "name": "Tian Ji",
+        "desc": "Ziwei · Zhouyi (Book of Changes) · Qimen Dunjia",
+        "when": "December"
+      },
+      {
+        "name": "Di Ji",
+        "desc": "Ni Haixia’s unfinished work · notes by later students",
+        "when": "January",
+        "note": "Manuscript study"
+      },
+      {
+        "name": "Ren Ji",
+        "desc": "Neijing (Inner Classic) · Shanghan (Cold Damage) · Jingui (Golden Cabinet) · Zhenjiu (Acupuncture)",
+        "when": "February"
+      }
+    ]
+  },
+  "features": [
+    {
+      "tag": "Charting method",
+      "title": "Ziwei Doushu\nas Ni Haixia taught it",
+      "subtitle": "Not a simplified version. It follows Ni Haixia’s teaching strictly.",
+      "points": [
+        "Builds the chart from the Nayin Five Phases Configuration, not from the simplified formulas found online.",
+        "Places the Life Palace by counting the birth hour backward and the Body Palace by counting it forward, exactly as the lessons teach.",
+        "Works out the 14 Main Stars and the Four Transformations (sihua) by the original method, complete and easy to check."
+      ]
+    },
+    {
+      "tag": "Chart display",
+      "title": "All 14 Main Stars,\nall Four Transformations",
+      "subtitle": "A clear structure that shows the main themes and key points at a glance.",
+      "points": [
+        "All 14 Main Stars sit in their palaces, and how they relate to each other is easy to read.",
+        "Secondary Stars and Baleful Stars appear on the same screen, so no key detail is left out.",
+        "Brightness grades (Miao, Wang, Li, Xian) show at a glance which stars are strong and which are weak.",
+        "Click any Main Star to read Ni Haixia’s detailed explanation of it."
+      ]
+    },
+    {
+      "tag": "AI reading",
+      "title": "A deep reading,\nnot just a calculation",
+      "subtitle": "A knowledge base of Ni Haixia’s method × Claude AI",
+      "points": [
+        "Destiny analysis: starting from the Main Stars of your Life Palace and reading them with the sanfang sizheng (the trine and opposition palaces), it gives a full picture of your character and the shape of your life.",
+        "Six areas of life: career direction, love and marriage, money patterns, health concerns, family relationships, and your bond with children.",
+        "Decade and Year tracking: the focus of your current 10-year Decade, plus specific tips and next steps from this year’s Year palace.",
+        "Ask follow-ups: when something is unclear, ask about it, for example “My Life Palace has no main star. How do I read it?”"
+      ]
+    },
+    {
+      "tag": "Geju detection",
+      "title": "Finds the geju\nin your chart",
+      "subtitle": "Geju are fixed combinations of stars, as the old books name them.",
+      "points": [
+        "Automatically detects 11 classic geju, such as Zifu tonggong (Ziwei and Tianfu sharing a palace), Shapolang, Jiyue tongliang, Lianzhen–Tianxiang and Wuqu–Qisha.",
+        "Precisely spots special geju such as Zuofu and Youbi flanking the Life Palace, or Taiyang and Taiyin (the Sun and the Moon) flanking it, and gives the standard reading from Ni Haixia’s method.",
+        "Automatically flags when the Four Transformations land in the Life Palace or the Travel Palace, and points out the life issues to watch."
+      ]
+    }
+  ],
+  "visuals": {
+    "chartCaption": "Ni Haixia’s charting method",
+    "starGroups": {
+      "ziwei": "Ziwei group",
+      "tianfu": "Tianfu group"
+    },
+    "sihuaLabel": "Four Transformations",
+    "chat": [
+      "How should I read my Office Palace?",
+      "Your Office Palace holds Tianliang, which the old books call the sheltering star. With Zuofu in its sanfang, you tend to find help when you take things on…",
+      "What does Huaji in the Marriage Palace mean?"
+    ],
+    "patterns": [
+      {
+        "name": "Shapolang geju",
+        "desc": "A life of pioneering drive"
+      },
+      {
+        "name": "Lianzhen–Tianxiang geju",
+        "desc": "Suited to administration and office"
+      },
+      {
+        "name": "Huaji in the Life Palace",
+        "desc": "Inner struggles need attention"
+      }
+    ],
+    "patternsCaption": "Detects 11 classic geju automatically"
+  },
+  "stars": {
+    "ziwei": {
+      "name": "Ziwei",
+      "heading": "Ziwei",
+      "attr": "Earth · Sovereign star",
+      "brief": "The noble star of heaven, leader of all the stars. People with Ziwei in the Life Palace have a proud, aloof air. It stands for authority and success, and for a born leader’s presence. They do best in leading roles where they take full charge."
+    },
+    "tianji": {
+      "name": "Tianji",
+      "heading": "Tianji",
+      "attr": "Wood · Star of wisdom",
+      "brief": "A star of long life, standing for strategy and change. Bright and quick-witted, good at planning and attentive to detail. Suited to planning, consulting and technical work."
+    },
+    "taiyang": {
+      "name": "Taiyang",
+      "heading": "Taiyang (the Sun)",
+      "attr": "Fire · Office star",
+      "brief": "The main star of the Office Palace, standing for reputation and fame. Generous and big-hearted, it cares about its public image and favors government and public service. It is stronger in a man’s chart, and at Miao brightness it is open and upright."
+    },
+    "wuqu": {
+      "name": "Wuqu",
+      "heading": "Wuqu (Military Corner)",
+      "attr": "Metal · Wealth star",
+      "brief": "The main star of the Wealth Palace, standing for money and decisiveness. Strong-willed and bold in action, it suits finance, banking, the military and the police. A lonely star that clashes with others, so marrying later is better."
+    },
+    "tiantong": {
+      "name": "Tiantong",
+      "heading": "Tiantong",
+      "attr": "Water · Star of blessings",
+      "brief": "The main star of the Fortune Palace, standing for enjoyment and getting along with people. Gentle and very well liked, it values a good quality of life and has tender feelings. Fortune is good in later years."
+    },
+    "lianzhen": {
+      "name": "Lianzhen",
+      "heading": "Lianzhen (Pure Virtue)",
+      "attr": "Fire · Star of talent",
+      "brief": "A lesser romance star, standing for talent and desire. Highly gifted and full of feeling, it suits the arts and politics. Talented in many ways, but it should beware of romantic trouble."
+    },
+    "tianfu": {
+      "name": "Tianfu",
+      "heading": "Tianfu",
+      "attr": "Earth · Treasury star",
+      "brief": "The lead star of the Southern Dipper, standing for the treasury and savings. Steady, careful and good with money, it is the stabilizing force in a chart. Suited to managing finances and administration."
+    },
+    "taiyin": {
+      "name": "Taiyin",
+      "heading": "Taiyin (the Moon)",
+      "attr": "Water · Estate star",
+      "brief": "The main star of the Estate Palace, standing for wealth and a gentle, yin nature. Tender and sensitive, it is especially good in a woman’s chart. Good for property and savings, and suited to the arts or service work."
+    },
+    "tanlang": {
+      "name": "Tanlang",
+      "heading": "Tanlang (Greedy Wolf)",
+      "attr": "Wood and Water · Romance star",
+      "brief": "The romance star, standing for desire and talent. Talented in many ways, with strong desires and an active social life. Suited to the arts, public relations and business, and very well liked."
+    },
+    "jumen": {
+      "name": "Jumen",
+      "heading": "Jumen (Huge Gate)",
+      "attr": "Water · Star of disputes",
+      "brief": "The dark star, standing for speech and disputes. A gifted speaker and sharp thinker, it suits law, teaching and the media. Watch out for gossip and quarrels; it makes its way by the power of argument."
+    },
+    "tianxiang": {
+      "name": "Tianxiang",
+      "heading": "Tianxiang",
+      "attr": "Water · Seal star",
+      "brief": "The seal star, standing for support and official authority. Good at bringing people together, polite, honest and law-abiding. Suited to advisory, administrative and legal work, and lucky in finding helpful patrons."
+    },
+    "tianliang": {
+      "name": "Tianliang",
+      "heading": "Tianliang",
+      "attr": "Earth · Shelter star",
+      "brief": "The shelter star, standing for maturity and protection. Upright, steady and deeply kind, it is watched over by heaven. Suited to medicine, social work and religion."
+    },
+    "qisha": {
+      "name": "Qisha",
+      "heading": "Qisha",
+      "attr": "Metal and Fire · General star",
+      "brief": "The general star, standing for fierce strength and pioneering. Tough, quick to act and unafraid of challenges, it suits starting a business, the military and police, and competitive fields. It can turn bad luck into good."
+    },
+    "pojun": {
+      "name": "Pojun",
+      "heading": "Pojun (Destroyer of the Army)",
+      "attr": "Water · Star of spending",
+      "brief": "The spending star, standing for change and breaking new ground. Bold and unafraid of change, it brings a life of big changes but plenty of nerve. Suited to pioneering work, taking roads no one has walked before."
+    }
+  },
+  "sihua": {
+    "hualu": {
+      "name": "Hualu",
+      "heading": "Hualu (Transformation of Luck)",
+      "attr": "Auspicious · Gain",
+      "brief": "A star of blessing comes to the palace, bringing more wealth and good fortune. Things in that palace go smoothly and abilities grow. It is the most welcome transformation in a chart."
+    },
+    "huaquan": {
+      "name": "Huaquan",
+      "heading": "Huaquan",
+      "attr": "Auspicious · Authority",
+      "brief": "A star of power comes to the palace, bringing control and leadership. In that palace it brings strength and decisiveness. It does best in the Office Palace and the Life Palace, where it means real power at work."
+    },
+    "huake": {
+      "name": "Huake",
+      "heading": "Huake",
+      "attr": "Auspicious · Reputation",
+      "brief": "A star of honors comes to the palace, bringing a good name and helpful patrons. In that palace it brings a name for learning and luck in exams, with support from others. Good for study, exams and public life."
+    },
+    "huaji": {
+      "name": "Huaji",
+      "heading": "Huaji (Transformation of Taboo)",
+      "attr": "Inauspicious · Obstacles",
+      "brief": "A star of trials comes to the palace, bringing fixations and obstacles. Watch that palace closely: the part of life it covers will become an important test."
+    }
+  },
+  "trinity": {
+    "eyebrow": "Ni Haixia · Philosophy",
+    "title": "Heaven · Earth · Humanity",
+    "intro": "Ni Haixia’s core view of fate: fate is never the whole of life.<br></br>He divided the forces that shape a life into three equally important parts.",
+    "ofLife": "of life",
+    "cards": [
+      {
+        "glyph": "Heaven",
+        "label": "Fate at birth",
+        "sub": "Natal chart · Stars · Five Phases",
+        "desc": "Ziwei Doushu reveals the natal chart you are born with: the layout of the stars, your Five Phases Configuration and the Main Stars of your Life Palace, all set by your time of birth. This is only one third of fate. It is the base color of a life, not the whole picture."
+      },
+      {
+        "glyph": "Earth",
+        "label": "Where you live",
+        "sub": "Region · Feng shui · Environment",
+        "desc": "Your surroundings, your city and country, the feng shui around you, even your family background and the society you grow up in, together form the second part of fate. The same chart, born in different places, can lead to lives as different as heaven and earth."
+      },
+      {
+        "glyph": "Humanity",
+        "label": "Heart and mind",
+        "sub": "Will · Choice · Action",
+        "desc": "Your own will, attitude, choices and actions are the most active force for changing fate. Ni Haixia stressed that we learn our chart to become better people, not to sit and wait for fate to decide. Working to improve yourself is the strongest way to break free."
+      }
+    ],
+    "quote": "Ni Haixia held that a natal chart is only one third of a life; the other two are where you live and your own choices.",
+    "attribution": "— as taught by Ni Haixia"
+  },
+  "ni": {
+    "eyebrow": "Master · 1954 – 2012",
+    "title": "Ni Haixia",
+    "intro": "One of the most influential masters of Chinese medicine and the divination arts in the modern Chinese-speaking world<br></br>Founder of the Hantang College of Chinese Medicine in the US · His Ren Ji and Tian Ji teaching series live on",
+    "stats": [
+      {
+        "label": "Born",
+        "value": "1954",
+        "sub": "Taiwan"
+      },
+      {
+        "label": "Died",
+        "value": "2012",
+        "sub": "January 31 · aged 58"
+      },
+      {
+        "label": "Legacy",
+        "value": "Ziwei Doushu",
+        "sub": "Classical formula medicine · Yijing (Book of Changes)"
+      }
+    ],
+    "bio": {
+      "life": "<label>Life and career</label>: Ni Haixia (1954–2012) was born in Taiwan. As a young man he studied under several noted doctors of Chinese medicine and specialized in the Jingfang (classical formula) school, the tradition of the Shanghan lun (Treatise on Cold Damage). In midlife he moved to the United States to practice medicine and founded the <strong>Hantang College of Chinese Medicine</strong>, where for more than twenty years he taught Chinese medicine and the traditional divination arts in a systematic way. He died of liver cancer in Taiwan on January 31, 2012, at the age of 58.",
+      "teaching": "<label>Teaching</label>: Ni Haixia organized everything he had learned into two public teaching series. <strong>Ren Ji</strong> covers the Zhenjiu dacheng (Great Compendium of Acupuncture and Moxibustion), the Shennong bencao jing (Divine Farmer’s Classic of Materia Medica), the Huangdi neijing (Inner Classic of the Yellow Emperor), the Shanghan lun (Treatise on Cold Damage) and the Jingui yaolüe (Essentials from the Golden Cabinet). It is the “principles of humankind,” a complete path for learning Chinese medicine. <strong>Tian Ji</strong> covers Ziwei Doushu and the Yijing (Book of Changes). It is the “principles of heaven,” his systematic work on the divination arts. Together they are the most complete legacy Ni Haixia left to later generations.",
+      "stance": "<label>On Ziwei</label>: In Ziwei Doushu, Ni Haixia belonged to the <strong>Southern Sanhe (Three Harmonies) school</strong>. He read the Life Palace as the root and the sanfang sizheng as its use, and he used only the birth-year Four Transformations, not feihua (transformations flown from palace stems).",
+      "approach": "<label>Approach to learning</label>: Ni Haixia was against memorizing formulas by rote; he put understanding the principles and sound logic first. This attitude helped Ziwei Doushu move from secrets passed from master to student toward knowledge anyone can study systematically.",
+      "influence": "<label>Influence today</label>: Ni Haixia’s lecture videos are widely shared on Bilibili, YouTube and other major platforms, and a new generation of fate-reading and Chinese medicine fans sees them as required viewing for beginners. He was not only an heir to Ziwei Doushu but also one of the key figures who brought traditional fate reading and Chinese medicine into modern knowledge."
+    },
+    "disclaimer": "All readings on this site draw on Ni Haixia’s public Tian Ji lecture notes, the Ming edition of the Ziwei doushu quanshu (Complete Book of Ziwei Doushu) and classic texts of the traditional Sanhe school. They are for cultural interest and personal growth only. Ni Haixia himself has no commercial connection with this site.",
+    "teachings": [
+      {
+        "title": "The minggong is the root from whence we start;\nThe sanfang is the use that plays its part.",
+        "body": "Ni Haixia always stressed that reading a chart starts with the Life Palace (minggong). Its Main Stars set a person’s basic pattern and inborn character, while the sanfang (the Wealth, Office and Travel palaces) decide where that person can put their strengths to use. Only the four palaces read together give the full picture of a life."
+      },
+      {
+        "title": "Never overlook stars borrowed from the opposite palace",
+        "body": "What set Ni Haixia apart was the weight he gave to the opposite palace. When a palace is empty, with no Main Star, it must be read using the stars of the palace across from it. Across from the Life Palace is the Travel Palace, and the two shape each other. Many beginners miss this key point."
+      },
+      {
+        "title": "The Four Transformations mark what weighs most",
+        "body": "Hualu, Huaquan, Huake and Huaji mark what weighs most in a chart. The same star reads differently with Hualu than with Huaji."
+      },
+      {
+        "title": "Each Decade lasts ten years, and fortune moves in stages",
+        "body": "Ni Haixia divided life into 12 Decades of 10 years each. He held that a person’s fortunes are completely different from one Decade palace to the next. Only by knowing which Decade you are in now, and which stars sit in its palace, can you truly make the most of your fortune today."
+      }
+    ]
+  },
+  "heming": {
+    "eyebrow": "Compatibility · Analysis",
+    "title": "Ziwei Compatibility",
+    "desc": "Enter two people’s birth details. Following Ni Haixia’s method, AI reads their Marriage Palaces side by side and looks at how their Life Palaces and sanfang sizheng fit together, <br></br>to see how the two of you get along and where you complement each other.",
+    "tags": [
+      "Love match analysis",
+      "Business partnership check",
+      "Parent–child bond reading",
+      "Premarital compatibility check"
+    ],
+    "cta": "Check compatibility"
+  },
+  "closing": {
+    "eyebrow": "Start your chart journey",
+    "title": "Your Ziwei natal chart<br></br>is waiting to be read",
+    "desc": "Enter the date and hour of your birth to build your own natal chart in seconds,<br></br>then let AI read it in depth by Ni Haixia’s method",
+    "cta": "Build your chart",
+    "knowledge": "Ziwei Doushu knowledge base",
+    "library": "Classics library"
+  },
+  "footer": {
+    "label": "Ni Haixia’s method · Areas of study",
+    "live": "Live",
+    "opensIn": "Opens in {when}",
+    "tagline": "Ziwei Natal Chart · Based on Ni Haixia’s authentic method · For reference only; your fate is in your own hands",
+    "disclaimer": "This site is based on research into traditional Chinese culture and is for learning only. <br></br>It is not medical, investment or legal advice, nor advice for any major decision.",
+    "terms": "Terms of Service",
+    "privacy": "Privacy Policy"
+  }
+}
