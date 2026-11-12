@@ -136,9 +136,17 @@ export async function postMessage(
 }
 
 /**
- * Messages after `cursor` (a message id), oldest first; the whole thread for null. Ties on
- * createdAt are broken by id, so polling never skips or repeats a message. A cursor that isn't
- * in this thread is ignored.
+ * How far behind the cursor's timestamp each poll re-reads. createdAt is set when a row is
+ * written, but rows become visible when they commit, so a message can appear after a newer one
+ * was already polled. Re-reading this window catches it; clients drop ids they already have.
+ */
+export const CURSOR_OVERLAP_MS = 5_000;
+
+/**
+ * Messages from just before `cursor` (a message id) onwards, oldest first; the whole thread for
+ * null. Each poll re-reads the last CURSOR_OVERLAP_MS behind the cursor, so a late-committing
+ * message is never skipped. Messages in that window may repeat; every message has an `id` to
+ * dedupe on. The cursor itself is never returned. A cursor that isn't in this thread is ignored.
  */
 export async function listMessagesSince(
   sessionUser: SessionUser | null,
@@ -156,7 +164,7 @@ export async function listMessagesSince(
     where: {
       shareId: share.id,
       ...(after
-        ? { OR: [{ createdAt: { gt: after.createdAt } }, { createdAt: after.createdAt, id: { gt: after.id } }] }
+        ? { createdAt: { gte: new Date(after.createdAt.getTime() - CURSOR_OVERLAP_MS) }, id: { not: after.id } }
         : {}),
     },
     orderBy: [{ createdAt: 'asc' }, { id: 'asc' }],

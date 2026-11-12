@@ -54,7 +54,7 @@ export interface PollingStreamOptions<T extends { id: string }> {
 /**
  * Polls right away, then every `pollIntervalMs`. New items go out as events with their id;
  * a poll with nothing new sends a heartbeat. Closes with a `close` event after `maxDurationMs`,
- * or with an `error` event (no details) if a poll fails.
+ * or with a `stream-error` event (no details) if a poll fails.
  */
 export function createPollingStream<T extends { id: string }>(options: PollingStreamOptions<T>): ReadableStream<Uint8Array> {
   const {
@@ -66,6 +66,8 @@ export function createPollingStream<T extends { id: string }>(options: PollingSt
   } = options;
   const encoder = new TextEncoder();
   let cursor = options.cursor ?? null;
+  // Ids already sent on this connection (at most ~55 s of messages).
+  const sent = new Set<string>();
   let closed = false;
   let pollTimer: ReturnType<typeof setTimeout> | undefined;
   let deadline: ReturnType<typeof setTimeout> | undefined;
@@ -101,15 +103,22 @@ export function createPollingStream<T extends { id: string }>(options: PollingSt
         try {
           items = await poll(cursor);
         } catch {
-          return finish({ event: 'error', data: { reason: 'poll-failed' } });
+          // Not "error": EventSource fires its own `error` for connection failures.
+          return finish({ event: 'stream-error', data: { reason: 'poll-failed' } });
         }
         if (closed) return;
-        if (items.length === 0) {
+        // Polls overlap (the cursor query re-reads a short window), so send each id once per
+        // connection. After a reconnect the client drops any repeats by id.
+        const fresh = items.filter((item) => !sent.has(item.id));
+        if (fresh.length === 0) {
           send(formatHeartbeat());
         } else {
-          for (const item of items) send(formatSseEvent({ id: item.id, data: item }));
-          cursor = items[items.length - 1].id;
+          for (const item of fresh) {
+            sent.add(item.id);
+            send(formatSseEvent({ id: item.id, data: item }));
+          }
         }
+        if (items.length > 0) cursor = items[items.length - 1].id;
         pollTimer = setTimeout(tick, pollIntervalMs);
       };
       void tick();
