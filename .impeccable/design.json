@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-11-12T17:16:43+00:00",
+  "generatedAt": "2026-11-12T18:04:17+00:00",
   "title": "Design System: Ziwei Natal Chart",
   "extensions": {
     "colorMeta": {
@@ -480,13 +480,13 @@
   ],
   "narrative": {
     "northStar": "The Pole Star at Night",
-    "overview": "A calm, monochrome night with one fixed point of gold. The brand's only symbol is the pole star, a thin ring around a gold dot. In Chinese astronomy, Ziwei is the emperor's star by the celestial pole, so the mark and the name come from the same place.\n\nNight is the default theme: pure black surfaces, with white text at full or 60% strength. Day mode is the same system on white. Hierarchy comes from size and opacity, never from weight, which is only 400 or 600. Edges are 1px hairlines and corners are square; only the small sihua badges round to 2px. Controls are 52px tall, the nav is 72px, and page gutters grow from 16px to 112px.\n\nMotion is short and quiet: 200ms for interaction and 600ms for reveals, on one easing curve, moving opacity and stroke only. It turns off when the system asks for reduced motion.\n\nGold is reserved for chart meaning: the star names, the Life Palace, the current decade, the trine-and-opposition lines and the AI reading headers. Wherever it appears, it says \"this matters in your chart\". The sihua keep their own four colors, always paired with their character.\n\nThe specs were measured after polestar.com's web pages in November 2026. None of its logo, fonts, imagery or copy is used. Chinese typesetting follows Apple's China site: PingFang SC at normal tracking.",
+    "overview": "A calm, monochrome night with one fixed point of gold. The brand's only symbol is the pole star, a thin ring around a gold dot. In Chinese astronomy, Ziwei is the emperor's star by the celestial pole, so the mark and the name come from the same place.\n\nNight is the default theme: pure black surfaces, with white text at full or 60% strength. Day mode is the same system on white. Hierarchy comes from size and opacity, never from weight, which is only 400 or 600. Edges are 1px hairlines and corners are square; only the small sihua badges round to 2px. Controls are 52px tall, the nav is 72px, and page gutters grow from 16px to 112px.\n\nMotion is short and quiet: 200ms for interaction and 600ms for reveals, on one easing curve, moving opacity and stroke only. The one exception is the home page's night sky, which turns slowly around the pole star. All motion turns off when the system asks for reduced motion.\n\nGold is reserved for chart meaning: the star names, the Life Palace, the current decade, the trine-and-opposition lines and the AI reading headers. Wherever it appears, it says \"this matters in your chart\". The sihua keep their own four colors, always paired with their character.\n\nThe specs were measured after polestar.com's web pages in November 2026. None of its logo, fonts, imagery or copy is used. Chinese typesetting follows Apple's China site: PingFang SC at normal tracking.",
     "keyCharacteristics": [
       "Monochrome surfaces with one gold accent, kept for chart meaning only.",
       "Square corners and 1px hairlines; no rounded cards.",
       "Hierarchy from size and opacity; two weights only (400, 600).",
       "Flat: depth comes from tonal panels, not shadows.",
-      "Quiet motion: opacity and stroke only, 200ms and 600ms on one curve.",
+      "Quiet motion: opacity and stroke only, 200ms and 600ms on one curve; the home sky's slow turn around the pole star is the one exception.",
       "Night by default; day mode mirrors it on white."
     ],
     "rules": [
@@ -524,6 +524,11 @@
         "name": "The Flat-By-Default Rule",
         "body": "Surfaces don't cast shadows. To separate a layer, step up a tone or add a hairline.",
         "section": "elevation & depth"
+      },
+      {
+        "name": "The Turning Sky Rule",
+        "body": "The sky turns slowly at rest. Scrolling through the first screen speeds it up and leaves short trails; past the first screen it settles back to a calm turn. It is the site's only motion that isn't opacity or stroke, it always sits behind the content, and it stops under reduced motion.",
+        "section": "components"
       }
     ],
     "dos": [
@@ -541,6 +546,7 @@
       "**Don't** add shadows to cards or panels.",
       "**Don't** use weights other than 400 and 600, or text smaller than 12px.",
       "**Don't** scale or lift elements on hover or press. Pressing dims, nothing moves.",
+      "**Don't** add a second ambient motion. The turning sky is the only one.",
       "**Don't** widen Chinese letter spacing.",
       "**Don't** use Polestar's logo, fonts, imagery or copy. Only its measured specs informed this system."
     ]

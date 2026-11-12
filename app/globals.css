@@ -379,16 +379,18 @@ a.rounded-full,
   border-radius: 9999px;
   background: var(--ac);
 }
+/* 首屏的北辰：星空绕它转 */
+.pole-mark.pole-mark-lg { width: 36px; height: 36px; }
+.pole-mark.pole-mark-lg::after { inset: 13px; }
 
 /* ─── 标题字（原“渐变金字”）──────────────────────────────── */
-/* 单色：白 / 黑；夜间带一圈极淡的金色星辉。类名保留，页面不用改 */
+/* 单色：白 / 黑。金色星辉已去掉：首页的金色只留给北辰和命盘含义（overdrive）。类名保留，页面不用改 */
 .grad-text { display: inline-block; }
 .grad-text-dark,
 .grad-text-light {
   color: var(--tx-0);
   -webkit-text-fill-color: var(--tx-0);
   background: none;
-  text-shadow: 0 0 48px var(--ac-glow);
 }
 
 /* ─── 主题开关：文字和滑块位置由 data-theme 决定，避免水合不一致 ─── */
