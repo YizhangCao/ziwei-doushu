@@ -60,8 +60,8 @@ function request(path: string, method: string, cookie?: string, body?: unknown):
   });
 }
 
-/** Unwraps the Auth.js-wrapped handler result. */
-async function call(result: Promise<unknown>): Promise<Response> {
+/** Unwraps the Auth.js-wrapped handler result, which is typed as possibly void. */
+async function call(result: unknown): Promise<Response> {
   const res = await result;
   if (!(res instanceof Response)) throw new Error('route returned no Response');
   return res;

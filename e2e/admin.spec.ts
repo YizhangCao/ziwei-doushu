@@ -12,23 +12,35 @@
 
 import { test, expect, type BrowserContext } from '@playwright/test';
 import { encode } from 'next-auth/jwt';
-import { prisma } from '../lib/db';
+import { Client } from 'pg';
 
 const SESSION_COOKIE = 'authjs.session-token';
 
+// Plain pg, not lib/db: Playwright loads specs as CommonJS, and the generated Prisma
+// client is an ES module.
+const db = new Client({ connectionString: process.env.DATABASE_URL });
+
+/** Returns one column of the first row of a query. */
+async function one<T>(sql: string, params: unknown[]): Promise<T> {
+  const { rows } = await db.query(sql, params);
+  return Object.values(rows[0] as Record<string, T>)[0];
+}
+
 /** Signs the browser in as the seeded user with `email`. */
 async function signInAs(context: BrowserContext, email: string): Promise<void> {
-  const { id } = await prisma.user.findUniqueOrThrow({ where: { email }, select: { id: true } });
+  const id = await one<string>('SELECT id FROM "User" WHERE email = $1', [email]);
   // Only `sub`: the jwt callback reads the role from the database on the first request.
   const value = await encode({ token: { sub: id }, secret: process.env.AUTH_SECRET!, salt: SESSION_COOKIE });
   await context.addCookies([{ name: SESSION_COOKIE, value, domain: 'localhost', path: '/' }]);
 }
 
+test.beforeAll(() => db.connect());
+
 test.afterAll(async () => {
   // Put the seeded data back, so the spec can run again on the same database.
-  await prisma.user.update({ where: { email: 'member@ziweihub.test' }, data: { role: 'member' } });
-  await prisma.setting.deleteMany({ where: { key: 'dailyAiLimit' } });
-  await prisma.$disconnect();
+  await db.query(`UPDATE "User" SET role = 'member' WHERE email = 'member@ziweihub.test'`);
+  await db.query(`DELETE FROM "Setting" WHERE key = 'dailyAiLimit'`);
+  await db.end();
 });
 
 test('a member gets 403 on /admin', async ({ page, context }) => {
@@ -47,11 +59,11 @@ test('an admin changes a role and the daily AI limit', async ({ page, context })
 
   await page.getByLabel('搜索用户').fill('Demo Member');
   await page.getByRole('button', { name: '搜索' }).click();
-  await page.getByLabel('Demo Member 的角色').selectOption('practitioner');
+  await page.getByLabel('Demo Member 的角色', { exact: true }).selectOption('practitioner');
   await page.getByRole('button', { name: '保存 Demo Member 的角色' }).click();
   await expect(page.getByRole('status').filter({ hasText: '已将 Demo Member 设为执业者' })).toBeVisible();
   await expect
-    .poll(async () => (await prisma.user.findUniqueOrThrow({ where: { email: 'member@ziweihub.test' } })).role)
+    .poll(() => one<string>('SELECT role FROM "User" WHERE email = $1', ['member@ziweihub.test']))
     .toBe('practitioner');
 
   await page.getByLabel('每位用户每天最多 AI 解读次数').fill('5');
