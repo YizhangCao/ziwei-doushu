@@ -1,6 +1,6 @@
 /**
  * Author: Yikang (Richard) Liu, M.S. Candidate in Computer Science, Khoury College of Computer Sciences, Northeastern University
- * Version: 1.3
+ * Version: 1.4
  * Created: November 10, 2026 · San Francisco, California, USA
  * Last Edited: November 11, 2026 · San Francisco, California, USA
  */
@@ -96,6 +96,9 @@ export interface GitHubProfile {
  * - New user: gets the schema default role, `member`. Email is stored only if
  *   GitHub provides one that no other row already uses.
  *
+ * Several first sign-ins of one account at once (two tabs, a double-click on the
+ * OAuth consent) create one row: see the retry below.
+ *
  * @throws Error if the profile has no GitHub account id.
  */
 export async function upsertUserFromProfile(db: Pick<PrismaClient, 'user'>, profile: GitHubProfile): Promise<SessionUser> {
@@ -104,13 +107,61 @@ export async function upsertUserFromProfile(db: Pick<PrismaClient, 'user'>, prof
 
   const details = { name: profile.name ?? null, image: profile.image ?? null };
   const select = { id: true, role: true } as const;
-
-  const existing = await db.user.findUnique({ where: { githubId }, select: { id: true } });
-  if (existing) {
-    return db.user.update({ where: { id: existing.id }, data: details, select });
-  }
-
   const email = profile.email?.trim().toLowerCase() || null;
-  const emailTaken = email !== null && (await db.user.findUnique({ where: { email }, select: { id: true } })) !== null;
-  return db.user.create({ data: { githubId, email: emailTaken ? null : email, ...details }, select });
+
+  // The upsert resolves a githubId conflict atomically (INSERT ... ON CONFLICT), but a
+  // concurrent first sign-in can still fail first on the unique email index. By the
+  // retry the other sign-in has committed the row, so the upsert takes its update path.
+  for (let attempt = 1; ; attempt++) {
+    const emailTaken = email !== null && (await db.user.findUnique({ where: { email }, select: { id: true } })) !== null;
+    try {
+      return await db.user.upsert({
+        where: { githubId },
+        update: details,
+        create: { githubId, email: emailTaken ? null : email, ...details },
+        select,
+      });
+    } catch (error) {
+      if (attempt >= 2 || !isUniqueViolation(error)) throw error;
+    }
+  }
+}
+
+/** True for Prisma's unique-constraint error (P2002). */
+function isUniqueViolation(error: unknown): boolean {
+  return typeof error === 'object' && error !== null && (error as { code?: unknown }).code === 'P2002';
+}
+
+/** The `jwt` callback arguments that `resolveToken` reads. */
+export interface TokenEvent<T extends RoleToken> {
+  token: T;
+  /** Set only on sign-in: the profile Auth.js built from GitHub. */
+  user?: { email?: string | null; name?: string | null; image?: string | null } | null;
+  /** Set only on sign-in. */
+  account?: { provider: string; providerAccountId: string } | null;
+}
+
+/**
+ * The Auth.js `jwt` callback. On a GitHub sign-in it resolves the account to our
+ * User row and puts our user id, role and check time in the token. On every later
+ * read it hands over to `refreshTokenRole`.
+ *
+ * @param now The current time in epoch milliseconds.
+ * @return The token, or null to end the session.
+ */
+export async function resolveToken<T extends RoleToken>(
+  db: Pick<PrismaClient, 'user'>,
+  { token, user, account }: TokenEvent<T>,
+  now: number,
+): Promise<T | null> {
+  if (account?.provider === 'github' && user) {
+    const dbUser = await upsertUserFromProfile(db, {
+      githubId: account.providerAccountId,
+      email: user.email,
+      name: user.name,
+      image: user.image,
+    });
+    return { ...token, sub: dbUser.id, role: dbUser.role, roleCheckedAt: now };
+  }
+  return refreshTokenRole(db, token, now);
 }
