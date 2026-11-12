@@ -19,7 +19,8 @@ export interface BirthFormState {
   province: string;
   city: string;
   longitude: number;
-  gender: 'male' | 'female';
+  /** Empty until the visitor picks one: the form never guesses (#63). */
+  gender: 'male' | 'female' | '';
 }
 
 interface BirthFormProps {
@@ -60,13 +61,13 @@ export default function BirthForm({ onSubmit, loading, initialData, onFormSave, 
     year: initialData?.year ?? '',
     month: initialData?.month ?? '',
     day: initialData?.day ?? '',
-    clockHour: initialData?.clockHour ?? '8',
+    clockHour: initialData?.clockHour ?? '',
     clockMinute: initialData?.clockMinute ?? '0',
     unknownTime: initialData?.unknownTime ?? false,
     province: initialData?.province ?? '',
     city: initialData?.city ?? '',
     longitude: initialData?.longitude ?? 120,
-    gender: initialData?.gender ?? 'male',
+    gender: initialData?.gender ?? '',
   });
 
   const [touched, setTouched] = useState<Record<string, boolean>>({});
@@ -108,6 +109,9 @@ export default function BirthForm({ onSubmit, loading, initialData, onFormSave, 
     day: !form.day ? t('errors.dayRequired')
       : form.year && form.month && !isValidDate(y, m, d) ? t('errors.noSuchDay', { month: String(m), day: String(d) })
       : '',
+    // No silent 08:00 or default gender: the visitor picks both, or says the hour is unknown (#63)
+    hour: !form.unknownTime && form.clockHour === '' ? t('errors.hourRequired') : '',
+    gender: !form.gender ? t('errors.genderRequired') : '',
   };
   const hasError = Object.values(errors).some(Boolean);
 
@@ -115,8 +119,8 @@ export default function BirthForm({ onSubmit, loading, initialData, onFormSave, 
   const steps = [
     !!form.year && !!form.month && !!form.day && !errors.year && !errors.month && !errors.day,
     !!form.province && !!form.city,
-    form.unknownTime || (!!form.clockHour && !!form.clockMinute),
-    true, // 性别有默认值
+    form.unknownTime || (form.clockHour !== '' && !!form.clockMinute),
+    !!form.gender,
   ];
   const completedSteps = steps.filter(Boolean).length;
 
@@ -146,8 +150,8 @@ export default function BirthForm({ onSubmit, loading, initialData, onFormSave, 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitAttempted(true);
-    setTouched({ year: true, month: true, day: true });
-    if (hasError) return;
+    setTouched({ year: true, month: true, day: true, hour: true, gender: true });
+    if (hasError || !form.gender) return;
     onFormSave?.({ ...form });
     onSubmit({ year: y, month: m, day: d, hour: branch, gender: form.gender, name: form.name || undefined, province: form.province || undefined, city: form.city || undefined, longitude: form.province ? form.longitude : undefined });
   };
@@ -208,6 +212,7 @@ export default function BirthForm({ onSubmit, loading, initialData, onFormSave, 
   return (
     <motion.form
       onSubmit={handleSubmit}
+      noValidate
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, ease: [0.15, 1, 0.35, 1] }}
@@ -342,9 +347,10 @@ export default function BirthForm({ onSubmit, loading, initialData, onFormSave, 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '8px' }}>
             <select
               id="bf-hour" value={form.clockHour}
-              onChange={e => setForm({ ...form, clockHour: e.target.value })}
-              style={inputStyle}
+              onChange={e => { setForm({ ...form, clockHour: e.target.value }); setTouched(prev => ({ ...prev, hour: true })); }}
+              style={showErr('hour') && errors.hour ? errorInputStyle : inputStyle}
             >
+              <option value="">{t('time.hourPlaceholder')}</option>
               {Array.from({ length: 24 }, (_, i) => i).map(h => (
                 <option key={h} value={String(h)}>{t('time.hourOption', { hour: h.toString().padStart(2, '0') })}</option>
               ))}
@@ -359,8 +365,9 @@ export default function BirthForm({ onSubmit, loading, initialData, onFormSave, 
               ))}
             </select>
           </div>
-          {/* 真太阳时结果 */}
-          <div style={{ padding: '4px 0' }}>
+          <FieldError msg={showErr('hour') ? errors.hour : ''} />
+          {/* 真太阳时结果：选了时间才显示 */}
+          {form.clockHour !== '' && <div style={{ padding: '4px 0' }}>
             <span style={{ fontSize: '14px', color: hintClr }}>{t('time.trueSolar')}</span>
             <span style={{ fontSize: '16px', color: goldText, fontWeight: 600 }}>
               {t('time.branchHour', { branch: termLabel(SHICHEN_NAMES[branch], locale) })}
@@ -370,7 +377,7 @@ export default function BirthForm({ onSubmit, loading, initialData, onFormSave, 
                 {t('time.range', { range: shichenInfo.range })}
               </span>
             )}
-          </div>
+          </div>}
         </div>
         <label style={{ display: 'flex', alignItems: 'center', gap: '7px', marginTop: '8px', cursor: 'pointer' }}>
           <input
@@ -398,7 +405,7 @@ export default function BirthForm({ onSubmit, loading, initialData, onFormSave, 
                 key={g}
                 type="button"
                 aria-pressed={active}
-                onClick={() => setForm({ ...form, gender: g })}
+                onClick={() => { setForm({ ...form, gender: g }); setTouched(prev => ({ ...prev, gender: true })); }}
                 className="btn-ghost"
                 style={{ flex: 1 }}
               >
@@ -407,6 +414,7 @@ export default function BirthForm({ onSubmit, loading, initialData, onFormSave, 
             );
           })}
         </div>
+        <FieldError msg={showErr('gender') ? errors.gender : ''} />
       </div>
 
       {/* ── 确认信息 Summary Chip ── */}

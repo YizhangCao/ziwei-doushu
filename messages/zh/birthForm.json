@@ -4,7 +4,9 @@
     "yearRange": "年份范围：1900–2026",
     "monthRequired": "请选择月份",
     "dayRequired": "请选择日期",
-    "noSuchDay": "{month}月没有{day}日"
+    "noSuchDay": "{month}月没有{day}日",
+    "hourRequired": "请选择出生时间，或勾选「不知道出生时间」",
+    "genderRequired": "请选择性别"
   },
   "summary": {
     "date": "{year}年{month}月{day}日",
@@ -43,7 +45,8 @@
     "trueSolar": "真太阳时 → ",
     "branchHour": "{branch}时",
     "range": "（{range}）",
-    "unknown": "不知道出生时间，以子时（23:00–01:00）起盘"
+    "unknown": "不知道出生时间，以子时（23:00–01:00）起盘",
+    "hourPlaceholder": "时"
   },
   "gender": {
     "label": "性别",
