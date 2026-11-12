@@ -748,6 +748,8 @@ export default function HomePage() {
       {/* ══ 最终 CTA ══════════════════════════════════════ */}
       <section className="relative z-10 py-40 px-6 text-center" style={{ background: c.altSection }}>
         <FadeIn>
+          {/* The product name above the closing headline, the way Apple China names a product above its line (#90) */}
+          <p className="text-[12px] mb-6" style={{ color: c.tagText }}>{t('closing.eyebrow')}</p>
           <h2 className={`grad-text grad-text-dark font-bold mb-8 leading-tight`}
             style={{ fontSize: 'clamp(32px, 5vw, 60px)' }}>
             {t.rich('closing.title', { br })}

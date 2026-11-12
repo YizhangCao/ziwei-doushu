@@ -52,7 +52,7 @@
     "closing": "and, in the end, to write the story of your own life"
   },
   "roadmap": {
-    "title": "Course roadmap: Ziwei, Tian Ji, Di Ji and Ren Ji",
+    "title": "Four courses, one a month",
     "subtitle": "Start with Ziwei, then the Tian Ji / Di Ji / Ren Ji study modules open one by one",
     "sections": [
       {
@@ -102,7 +102,7 @@
     },
     {
       "tag": "AI reading",
-      "title": "AI reading,\nfrom the Life Palace out",
+      "title": "Easy to read.\nEasy to ask.",
       "subtitle": "A knowledge base of Ni Haixia’s method × Claude AI",
       "points": [
         "Destiny analysis: starting from the Main Stars of your Life Palace and reading them with the sanfang sizheng (the trine and opposition palaces), it gives a full picture of your character and the shape of your life.",
@@ -282,7 +282,7 @@
         "glyph": "Humanity",
         "label": "Heart and mind",
         "sub": "Will · Choice · Action",
-        "desc": "Your own will, attitude, choices and actions are the most active force for changing fate. Ni Haixia stressed that we learn our chart to become better people, not to sit and wait for fate to decide. Only by improving yourself can you change what life brings you."
+        "desc": "Your own will, attitude, choices and actions are the most active force for changing fate. Ni Haixia stressed that we learn our chart to become better people, not to sit and wait for fate to decide. The chart sets the base. What you make of it is yours."
       }
     ],
     "quote": "Ni Haixia held that a natal chart is only one third of a life; the other two are where you live and your own choices.",
@@ -348,8 +348,9 @@
     "cta": "Check compatibility"
   },
   "closing": {
-    "title": "Enter your birth date and hour,<br></br>see which star sits in your Life Palace",
-    "desc": "Enter the date and hour of your birth to build your chart in seconds.<br></br>AI reads it from the Life Palace out: your character, career, love life and current Decade.",
+    "eyebrow": "Ziwei Natal Chart",
+    "title": "Twelve palaces.<br></br>One clear chart.",
+    "desc": "Enter the date and hour of your birth, and all twelve palaces are laid out in seconds.<br></br>AI then reads them from the Life Palace out: character, career, love, wealth and health.",
     "cta": "Build your chart",
     "knowledge": "Ziwei Doushu knowledge base",
     "library": "Classics library"
