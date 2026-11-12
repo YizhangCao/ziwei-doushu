@@ -85,8 +85,13 @@ describe('chart glossary rules', () => {
     expect(GLOSSARY.filter((t) => banned.test(t.en ?? '')).map((t) => t.zh)).toEqual([]);
   });
 
-  it('writes pinyin without tone marks', () => {
-    expect(GLOSSARY.filter((t) => !/^[A-Za-z0-9]+(?:[ '-][A-Za-z0-9]+)*$/.test(t.pinyin)).map((t) => t.zh)).toEqual([]);
+  it('writes pinyin without tone marks (ü is a letter, not a tone mark)', () => {
+    expect(GLOSSARY.filter((t) => !/^[A-Za-zÜü0-9]+(?:[ '-][A-Za-zÜü0-9]+)*$/.test(t.pinyin)).map((t) => t.zh)).toEqual([]);
+  });
+
+  it('names each Chinese term once', () => {
+    const names = GLOSSARY.map((t) => t.zh);
+    expect(names.filter((n, i) => names.indexOf(n) !== i)).toEqual([]);
   });
 
   it('shows palaces and other fully attested terms in academic English', () => {

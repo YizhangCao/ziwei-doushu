@@ -53,7 +53,8 @@ test('an English browser lands in English, and the switch moves between language
   await page.goto('/');
   await expect(page.locator('html')).toHaveAttribute('lang', 'en');
 
-  await page.getByRole('button', { name: 'Switch to Chinese' }).click();
+  // The switch shows the other language's name in that language, and that text is its accessible name.
+  await page.getByRole('button', { name: '中文', exact: true }).click();
   await expect(page.locator('html')).toHaveAttribute('lang', 'zh-CN');
   await expect(page.getByRole('navigation').getByRole('link', { name: '起盘' })).toBeVisible();
 
@@ -61,7 +62,7 @@ test('an English browser lands in English, and the switch moves between language
   await page.reload();
   await expect(page.locator('html')).toHaveAttribute('lang', 'zh-CN');
 
-  await page.getByRole('button', { name: '切换到英文版' }).click();
+  await page.getByRole('button', { name: 'EN', exact: true }).click();
   await expect(page.locator('html')).toHaveAttribute('lang', 'en');
 });
 
@@ -76,7 +77,7 @@ test('the chart reads in English, with palace names in academic English', async 
 test('a classical passage shows the original, then which means', async ({ page }) => {
   await page.goto('/library/quanshu/0');
   await expect(page.locator('[lang="zh-Hans"]').first()).toBeVisible();
-  await expect(page.getByText(/^which means: "/).first()).toBeVisible();
+  await expect(page.getByText(/^which means: [“"]/).first()).toBeVisible();
 });
 
 for (const path of ['/', '/heming', '/library', '/library/quanshu', '/library/quanshu/0', '/library/search?q=minggong', '/knowledge', '/terms', '/privacy', '/no-such-page']) {
