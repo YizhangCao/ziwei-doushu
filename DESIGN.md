@@ -32,6 +32,11 @@ typography:
     fontWeight: 400
     lineHeight: 1
     letterSpacing: "0.04em"
+  section:
+    fontFamily: "Helvetica Neue, Helvetica, Arial, PingFang SC, Hiragino Sans GB, Microsoft YaHei, Noto Sans SC, Noto Sans CJK SC, sans-serif"
+    fontSize: "clamp(30px, calc(20px + 2vw), 48px)"
+    fontWeight: 400
+    lineHeight: 1.25
   headline:
     fontFamily: "Helvetica Neue, Helvetica, Arial, PingFang SC, Hiragino Sans GB, Microsoft YaHei, Noto Sans SC, Noto Sans CJK SC, sans-serif"
     fontSize: "30px"
@@ -186,6 +191,7 @@ Tailwind's color families map onto these five tokens: amber, purple, violet, ind
 
 ### Hierarchy
 - **Display** (400, `clamp(48px, calc(40px + 5vw), 110px)`, line height 1, `0.04em`): the home page title only.
+- **Section** (400, `--fs-section`: `clamp(30px, calc(20px + 2vw), 48px)`): the home page's section headings, one step for all of them.
 - **Headline** (400, 30px, line height 1.25): page titles and section headings.
 - **Read** (400, 17px, 25px line height): long reading text.
 - **Body** (400, 16px, line height 1.5): default text and controls. Inputs stay at 16px so iOS doesn't zoom.
@@ -208,7 +214,7 @@ One page grid for everything. The `.page` container is at most 1440px wide, and 
 
 The nav, the hero, every home section, the chart and the compatibility page all align to that gutter. The nav is 72px tall and sticks to the top.
 
-The chart page stacks the board above the reading panel on phones and sets them side by side from 1024px. Reading pages (the library, knowledge index, chapters and the About Ni Haixia page) are left-aligned and hold text to about 720px. Section rhythm comes from 1px top rules and generous vertical padding, not from boxes.
+The chart page stacks the board above the reading panel on phones and sets them side by side from 1024px. Reading pages (the library, knowledge index, chapters, the About Ni Haixia page, and the terms and privacy pages) are left-aligned and hold text to about 720px. Home sections use the same gutter, and their content is as wide as the page grid's (1440px less two gutters), so every left edge lines up with the nav. Section rhythm comes from 1px top rules and generous vertical padding, not from boxes.
 
 ## Elevation & Depth
 
@@ -243,7 +249,7 @@ Square, monochrome and quiet: they press by dimming, never by moving.
 
 ### Navigation
 - **Style:** one sticky nav in the layout, 72px tall, on the page background and aligned to the page gutter.
-- **Left:** the pole-star mark and the site name.
+- **Left:** the pole-star mark and the site name at 17px.
 - **Right:** text links for building a chart (起盘) and compatibility (合盘), the language switch and the day/night switch.
 - **States:** links dim to 60% on hover. The language switch shows the other language in that language (EN / 中文), so its visible text is its name.
 
@@ -293,7 +299,7 @@ Streamed AI text sits in an `aria-live="polite"` region. Section headers are 14p
 - **Do** take every color, radius, shadow and duration from the tokens in `app/globals.css`.
 - **Do** keep gold for chart meaning: star names, the Life Palace, the current decade, the trine-and-opposition lines and the AI reading headers.
 - **Do** pair every sihua color with its character label.
-- **Do** build hierarchy with size (12, 14, 16, 17, 30px and display) and opacity (100% and 60%).
+- **Do** build hierarchy with size (12, 14, 16, 17, 30px, the section step and display) and opacity (100% and 60%).
 - **Do** use `.btn-primary`, `.btn-ghost` and `.input-base` for every button and input, at 52px (44px for small buttons).
 - **Do** use 200ms for interaction and 600ms for reveals on `cubic-bezier(0.15, 1, 0.35, 1)`, and turn motion off under `prefers-reduced-motion`.
 
@@ -307,3 +313,8 @@ Streamed AI text sits in an `aria-live="polite"` region. Section headers are 14p
 - **Don't** add a second ambient motion. The turning sky is the only one.
 - **Don't** widen Chinese letter spacing.
 - **Don't** use Polestar's logo, fonts, imagery or copy. Only its measured specs informed this system.
+
+### Approved exceptions
+The product owner kept these on purpose (2026-11-12). Don't flag or change them in polish, critique or drift passes:
+- **The manifesto's closing line** keeps `clamp(24px, 3.4vw, 48px)`. The four lines grow line by line, and a 30px floor would wrap the last one on a phone.
+- **The trinity cards' colors:** earth in Sihua Quan Blue and humanity in Sihua Lu Green.

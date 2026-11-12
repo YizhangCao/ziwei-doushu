@@ -60,7 +60,7 @@ export default function SiteNav() {
   return (
     <nav aria-label={t('label')} className="no-print sticky top-0 z-50" style={{ background: 'var(--bg-0)' }}>
       <div className="page flex items-center justify-between gap-4" style={{ height: 'var(--nav-h)' }}>
-        <Link href="/" aria-label={t('brand')} className="flex items-center gap-3 flex-shrink-0" style={{ fontSize: '18px', color: 'var(--tx-0)' }}>
+        <Link href="/" aria-label={t('brand')} className="flex items-center gap-3 flex-shrink-0" style={{ fontSize: 'var(--fs-read)', color: 'var(--tx-0)' }}>
           <span aria-hidden="true" className="pole-mark" />
           <span className={compactBrand ? 'hidden sm:inline' : undefined}>{t('brand')}</span>
         </Link>

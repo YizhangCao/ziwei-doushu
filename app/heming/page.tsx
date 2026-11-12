@@ -205,8 +205,8 @@ export default function HemingPage() {
                 {t('start')} <span aria-hidden="true">→</span>
               </button>
               {formError && (
-                <div role="alert" style={{ marginTop: '20px', fontSize: '13px', color: 'var(--ji)' }}>
-                  {formError}
+                <div role="alert" style={{ marginTop: '20px', fontSize: 'var(--fs-caption)', color: 'var(--ji)' }}>
+                  ✕ {formError}
                 </div>
               )}
             </div>
