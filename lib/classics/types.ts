@@ -49,6 +49,8 @@ export interface SearchHit {
   paragraphId: string;
   /** 高亮片段（含 <mark> 标签） */
   snippet: string;
+  /** Which text the snippet comes from: the original ('zh') or its English rendering ('en', #59). */
+  snippetLang?: 'zh' | 'en';
   /** 原文 */
   text: string;
 }

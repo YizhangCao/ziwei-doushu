@@ -28,7 +28,7 @@ export const ziWeiQuanJi: Book = {
         {
           id: 'qj-1-2',
           idx: 2,
-          text: '安星之法：先以年干起紫微，紫微所在宫位定，则诸星皆按其法位列十二宫。十四主星各居其位，六吉六煞辅而行之。一盘既定，万象皆现。',
+          text: '安星之法：先依五行局与农历生日定紫微所在之宫，紫微定，则诸星皆按其法位列十二宫。十四主星各居其位，六吉六煞辅而行之。一盘既定，万象皆现。',
         },
         {
           id: 'qj-1-3',
@@ -64,7 +64,7 @@ export const ziWeiQuanJi: Book = {
       ],
     },
     {
-      title: '卷三·南斗六星论',
+      title: '卷三·六星论（上）',
       subtitle: '天府、太阴、贪狼、巨门、天相、天梁',
       paragraphs: [
         {
@@ -100,7 +100,7 @@ export const ziWeiQuanJi: Book = {
       ],
     },
     {
-      title: '卷四·北斗六星论',
+      title: '卷四·六星论（下）',
       subtitle: '紫微、天机、太阳、武曲、廉贞、破军',
       paragraphs: [
         {

@@ -1,0 +1,30 @@
+{
+  "title": "你的命盘",
+  "titleNamed": "{name}的命盘",
+  "lead": "你的命宫在{branch}，{desc}。",
+  "withStars": "坐{stars}",
+  "empty": "空宫（借对宫）",
+  "emptyBorrowed": "空宫（借对宫 {stars}）",
+  "hint": "点击任一宫位，查看它的三方四正。",
+  "region": "命盘",
+  "summary": {
+    "life": "命宫",
+    "body": "身宫",
+    "ju": "五行局",
+    "currentDecade": "当前大限",
+    "ages": "{start}–{end} 岁",
+    "lunar": "农历 {year}·{leap}{month}·{day}",
+    "leap": "闰"
+  },
+  "overlay": {
+    "daxian": "限",
+    "liunian": "年"
+  },
+  "palace": {
+    "aria": "{name}，{stars}",
+    "empty": "空宫",
+    "emptyBorrowed": "空宫（借{stars}）",
+    "lifeBadge": "命",
+    "bodyBadge": "身"
+  }
+}

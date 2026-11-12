@@ -1,56 +1,28 @@
 'use client';
 import { useState, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import BirthForm, { type BirthFormState } from '@/components/BirthForm';
+import AiContent from '@/components/AiContent';
 import { formToBirthInfo } from '@/lib/ziwei/share';
 import { generateChart as buildChart } from '@/lib/ziwei/algorithm';
 import type { BirthInfo, ZiweiChart } from '@/lib/ziwei/types';
-import { useTheme } from '@/components/ThemeProvider';
 
 // ─── AiContent 渲染器（与 InsightPanel 一致）────────────────
-function AiContent({ text, streaming }: { text: string; streaming?: boolean }) {
-  const lines = text.split('\n');
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-      {lines.map((line, i) => {
-        const sectionMatch = line.match(/^\*\*【(.+?)】\*\*$/);
-        if (sectionMatch) {
-          return (
-            <div key={i} style={{ paddingTop: i === 0 ? 0 : '14px', paddingBottom: '4px' }}>
-              <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--ac)', letterSpacing: '0.04em' }}>
-                【{sectionMatch[1]}】
-              </span>
-            </div>
-          );
-        }
-        if (line.trim() === '') return <div key={i} style={{ height: '4px' }} />;
-        const parts = line.split(/\*\*(.+?)\*\*/);
-        return (
-          <div key={i} style={{ fontSize: '13px', lineHeight: 1.75, color: 'var(--tx-2)' }}>
-            {parts.map((part, j) =>
-              j % 2 === 0
-                ? part
-                : <strong key={j} style={{ fontWeight: 500, color: 'var(--tx-0)' }}>{part}</strong>
-            )}
-          </div>
-        );
-      })}
-      {streaming && (
-        <span style={{
-          display: 'inline-block', width: '7px', height: '13px',
-          background: 'var(--ac)', opacity: 0.5, borderRadius: '2px',
-          animation: 'pulse 1s ease-in-out infinite',
-          verticalAlign: 'middle', marginLeft: '2px',
-        }} />
-      )}
-    </div>
-  );
-}
+
+// Keys, not a JSON array, so next-intl keeps checking every heming.* key (#59).
+const QUICK_QUESTIONS = ['q1', 'q2', 'q3', 'q4', 'q5'] as const;
+
+/** Each cause has its own message, so a used-up limit never reads like a bug (#63). */
+type HemingError = 'network' | 'apiMissing' | 'rateLimited' | 'failed';
+// The per-message limit the reading routes enforce (#5); checked here so the page can say why.
+const MAX_CHARS = 2000;
+/** The character counter appears once a question gets this long. */
+const COUNTER_FROM = 1800;
 
 export default function HemingPage() {
   const router = useRouter();
-  const { theme } = useTheme();
-  const isDark = theme === 'dark';
+  const t = useTranslations('heming');
 
   // ─── 双方命盘状态 ─────────────────────────────────────────
   const [chartA, setChartA] = useState<ZiweiChart | null>(null);
@@ -63,9 +35,8 @@ export default function HemingPage() {
   const [analysis, setAnalysis] = useState('');
   const [analyzing, setAnalyzing] = useState(false);
   const [question, setQuestion] = useState('');
-  const [analysisError, setAnalysisError] = useState(false);
-  // 开源版不含 /api/heming：接口 404 时单独说明，而不是让用户反复重试
-  const [apiMissing, setApiMissing] = useState(false);
+  // 失败按原因分开说明（#63）：开源版不含 /api/heming，404 时单独说明，而不是让用户反复重试
+  const [errorKind, setErrorKind] = useState<HemingError | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
   const analysisRef = useRef<HTMLDivElement>(null);
 
@@ -87,12 +58,13 @@ export default function HemingPage() {
   const runAnalysis = useCallback(async (q?: string) => {
     setFormError(null);
     if (!isFormReady(formA) || !isFormReady(formB)) {
-      setFormError('请先填写双方完整出生信息');
+      setFormError(t('errors.formIncomplete'));
       return;
     }
+    if (q && q.length > MAX_CHARS) return; // the input area already says why
     setAnalyzing(true);
     setAnalysis('');
-    setAnalysisError(false);
+    setErrorKind(null);
 
     try {
       // 并行起两张盘（如果还没起）
@@ -105,20 +77,27 @@ export default function HemingPage() {
       cA = newA;
       cB = newB;
       if (!cA || !cB) {
-        setAnalysisError(true);
+        setErrorKind('failed');
         setAnalyzing(false);
         return;
       }
       if (!chartA) setChartA(cA);
       if (!chartB) setChartB(cB);
 
-      const res = await fetch('/api/heming', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ chartA: cA, chartB: cB, question: q ?? undefined }),
-      });
-      if (res.status === 404) { setApiMissing(true); throw new Error('api-missing'); }
-      if (!res.ok || !res.body) throw new Error();
+      let res: Response;
+      try {
+        res = await fetch('/api/heming', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ chartA: cA, chartB: cB, question: q ?? undefined }),
+        });
+      } catch {
+        setErrorKind('network'); // fetch rejects only when no answer came back
+        return;
+      }
+      if (res.status === 404) { setErrorKind('apiMissing'); return; }
+      if (res.status === 429) { setErrorKind('rateLimited'); return; }
+      if (!res.ok || !res.body) { setErrorKind('failed'); return; }
 
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
@@ -142,71 +121,48 @@ export default function HemingPage() {
       // scroll to analysis
       setTimeout(() => analysisRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
     } catch {
-      setAnalysisError(true);
+      setErrorKind('network'); // reading the stream rejects when the connection drops mid-reply
     } finally {
       setAnalyzing(false);
     }
-  }, [chartA, chartB, formA, formB, generateChart]);
+  }, [chartA, chartB, formA, formB, generateChart, t]);
 
+  const tooLong = question.length > MAX_CHARS;
+
+  // 设计系统（#57）：颜色和形状都来自 app/globals.css 的 token
   const cardStyle = {
-    background: isDark ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.9)',
-    border: `1px solid ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(200,160,60,0.2)'}`,
-    borderRadius: '16px',
+    background: 'var(--bg-card)',
+    border: '1px solid var(--bdr)',
+    borderRadius: 'var(--r-md)',
     padding: '24px',
   };
 
   const labelStyle = {
-    fontSize: '10px', letterSpacing: '0.4em', color: 'var(--ac)', opacity: 0.7,
+    fontSize: 'var(--fs-small)', color: 'var(--tx-2)',
     marginBottom: '16px', display: 'block',
   };
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg-0)' }}>
-      {/* 顶栏 */}
-      <header style={{
-        position: 'sticky', top: 0, zIndex: 50,
-        background: isDark ? 'rgba(2,8,16,0.88)' : 'rgba(250,245,235,0.92)',
-        backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)',
-        borderBottom: '1px solid var(--bdr)',
-        display: 'flex', alignItems: 'center', padding: '0 24px', height: '52px', gap: '16px',
-      }}>
-        <button
-          onClick={() => router.push('/')}
-          style={{
-            display: 'flex', alignItems: 'center', gap: '4px', fontSize: '13px',
-            color: 'var(--tx-3)', background: 'none', border: 'none', cursor: 'pointer',
-          }}
-        >
-          <span style={{ fontSize: '16px' }}>‹</span>
-          <span>返回</span>
-        </button>
-        <div style={{ width: '1px', height: '20px', background: 'var(--bdr-med)' }} />
-        <span style={{ fontSize: '12px', color: 'var(--ac)', letterSpacing: '0.2em' }}>合盘分析</span>
-        <div style={{ flex: 1 }} />
-        <span style={{ fontSize: '11px', color: 'var(--tx-3)' }}>感情 · 合伙 · 亲子 · 朋友</span>
-      </header>
 
       {/* 主体 */}
-      <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '32px 24px 80px' }}>
+      <div className="page" style={{ paddingTop: 48, paddingBottom: 96 }}>
 
         {/* 标题 */}
-        <div style={{ textAlign: 'center', marginBottom: '36px' }}>
-          <div style={{ fontSize: '28px', color: 'var(--ac)', opacity: 0.15, marginBottom: '12px' }}>☯</div>
-          <h1 style={{ fontSize: '22px', fontWeight: 600, letterSpacing: '0.15em', color: 'var(--tx-0)', marginBottom: '8px' }}>
-            紫微合盘
-          </h1>
-          <p style={{ fontSize: '13px', color: 'var(--tx-3)', lineHeight: 1.6 }}>
-            输入两个人的出生信息，AI 基于倪海厦体系分析双方命盘的缘分匹配度、感情走向与相处建议
+        <div style={{ maxWidth: 720, marginBottom: 32 }}>
+          <h1 style={{ fontSize: 'var(--fs-headline)', lineHeight: 1.25, color: 'var(--tx-0)' }}>{t('title')}</h1>
+          <p style={{ marginTop: 8, color: 'var(--tx-2)' }}>
+            {t('lead')}
           </p>
         </div>
 
         {/* 双栏表单 */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '24px' }}
-          className="heming-grid">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
           {/* 甲方 */}
           <div style={cardStyle}>
-            <span style={labelStyle}>甲方 — A</span>
+            <span style={labelStyle}>{t('personA')}</span>
             <BirthForm
+              bare
               hideSubmit
               onSubmit={() => {}}
               onFormSave={setFormA}
@@ -215,8 +171,9 @@ export default function HemingPage() {
 
           {/* 乙方 */}
           <div style={cardStyle}>
-            <span style={labelStyle}>乙方 — B</span>
+            <span style={labelStyle}>{t('personB')}</span>
             <BirthForm
+              bare
               hideSubmit
               onSubmit={() => {}}
               onFormSave={setFormB}
@@ -225,7 +182,7 @@ export default function HemingPage() {
         </div>
 
         {/* ═══ 大合盘分析框（视觉中心，始终显示）════════════════ */}
-        <div ref={analysisRef} style={{
+        <div ref={analysisRef} aria-live="polite" aria-busy={analyzing} style={{
           ...cardStyle,
           minHeight: '320px',
           padding: '32px',
@@ -235,34 +192,20 @@ export default function HemingPage() {
         }}>
           {/* 区块标题 */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: (analysis || analyzing) ? '20px' : '24px' }}>
-            <span style={{ color: 'var(--ac)', opacity: 0.6 }}>◉</span>
-            <span style={{ fontSize: '11px', letterSpacing: '0.3em', color: 'var(--tx-3)' }}>合盘分析 · HEMING</span>
+            <h2 style={{ fontSize: 'var(--fs-small)', color: 'var(--tx-2)' }}>{t('analysisTitle')}</h2>
           </div>
 
           {/* 状态分支 */}
           {!analysis && !analyzing && (
             <div style={{ textAlign: 'center', padding: '32px 0' }}>
-              <div style={{ fontSize: '13px', color: 'var(--tx-3)', marginBottom: '24px', lineHeight: 1.7 }}>
-                填好双方出生信息后，点击下方按钮<br />
-                AI 将基于倪海厦体系深度分析两人缘分匹配度
+              <div style={{ color: 'var(--tx-2)', marginBottom: '24px' }}>
+                {t.rich('emptyState', { br: () => <br /> })}
               </div>
-              <button
-                onClick={() => runAnalysis()}
-                style={{
-                  padding: '14px 40px', borderRadius: 'var(--r-pill)', border: 'none',
-                  background: 'linear-gradient(135deg, #9a6210, #c88020)',
-                  color: '#fff8e8', fontSize: '14px', fontWeight: 600,
-                  letterSpacing: '0.15em', cursor: 'pointer',
-                  boxShadow: '0 4px 16px rgba(140,100,20,0.25)',
-                  transition: 'transform 0.15s',
-                }}
-                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = 'translateY(-1px)'; }}
-                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = 'translateY(0)'; }}
-              >
-                开始合盘分析
+              <button type="button" className="btn-primary" onClick={() => runAnalysis()}>
+                {t('start')} <span aria-hidden="true">→</span>
               </button>
               {formError && (
-                <div style={{ marginTop: '20px', fontSize: '13px', color: '#dc2626' }}>
+                <div role="alert" style={{ marginTop: '20px', fontSize: '13px', color: 'var(--ji)' }}>
                   {formError}
                 </div>
               )}
@@ -270,23 +213,21 @@ export default function HemingPage() {
           )}
 
           {analyzing && !analysis && (
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', padding: '40px 0', color: 'var(--tx-3)', fontSize: '13px' }}>
-              <div style={{
-                width: '14px', height: '14px',
-                border: '2px solid var(--bdr-med)', borderTopColor: 'var(--ac)',
-                borderRadius: '50%', animation: 'spin 0.8s linear infinite',
-              }} />
-              正在对比双方命盘…
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', padding: '40px 0', color: 'var(--tx-2)', fontSize: 'var(--fs-small)' }}>
+              <span aria-hidden="true" className="pole-mark animate-breathe" />
+              {t('loading')}
             </div>
           )}
 
           {analysis && <AiContent text={analysis} streaming={analyzing} />}
 
-          {analysisError && (
-            <div style={{ padding: '12px 16px', borderRadius: '10px', border: '1px solid var(--bdr)', background: 'var(--bg-card)', fontSize: '13px', color: 'var(--tx-2)', marginTop: '12px' }}>
-              {apiMissing
-                ? '开源版不含合盘 AI 分析接口（/api/heming），需要你自己实现后才能用。两人的命盘可以分别到「排盘」页（/chart）查看。'
-                : '分析暂时不可用，请重试。'}
+          {errorKind && (
+            <div style={{ padding: '12px 16px', border: '1px solid var(--bdr)', fontSize: 'var(--fs-small)', color: 'var(--tx-2)', marginTop: '12px' }}>
+              {t(`errors.${errorKind}`)}
+              {/* The developer note only shows in `next dev`; visitors see the plain message. */}
+              {errorKind === 'apiMissing' && process.env.NODE_ENV === 'development' && (
+                <p style={{ marginTop: 8 }}>{t('errors.apiMissingDev')}</p>
+              )}
             </div>
           )}
         </div>
@@ -294,34 +235,19 @@ export default function HemingPage() {
         {/* ═══ 针对合盘的追问聊天框（仅分析完成后显示）═══════════ */}
         {analysis && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '16px' }}>
-            <div style={{ fontSize: '11px', letterSpacing: '0.2em', color: 'var(--tx-3)', marginBottom: '4px' }}>
-              针对此次合盘继续追问
+            <div style={{ fontSize: 'var(--fs-small)', color: 'var(--tx-2)', marginBottom: '4px' }}>
+              {t('followUpTitle')}
             </div>
 
             {/* 快捷问题 */}
             <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-              {[
-                '感情匹配度如何？',
-                '适合合伙创业吗？',
-                '两人结婚是否合适？',
-                '哪方面最容易产生矛盾？',
-                '财运是否互补？',
-              ].map(q => (
+              {QUICK_QUESTIONS.map(key => t(`quickQuestions.${key}`)).map(q => (
                 <button
+                  type="button"
                   key={q}
+                  className="btn-ghost btn-sm"
                   onClick={() => { setQuestion(q); runAnalysis(q); }}
                   disabled={analyzing}
-                  style={{
-                    fontSize: '12px', padding: '6px 14px',
-                    borderRadius: 'var(--r-pill)',
-                    border: '1px solid var(--bdr-med)',
-                    background: 'transparent', color: 'var(--tx-2)',
-                    cursor: analyzing ? 'not-allowed' : 'pointer',
-                    opacity: analyzing ? 0.5 : 1,
-                    transition: 'border-color 0.15s',
-                  }}
-                  onMouseEnter={e => { if (!analyzing) (e.currentTarget as HTMLElement).style.borderColor = 'var(--ac-bdr)'; }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--bdr-med)'; }}
                 >
                   {q}
                 </button>
@@ -334,36 +260,38 @@ export default function HemingPage() {
                 type="text"
                 value={question}
                 onChange={e => setQuestion(e.target.value)}
-                onKeyDown={e => { if (e.key === 'Enter' && !analyzing) runAnalysis(question || undefined); }}
-                placeholder="继续追问，如：哪几年是两人感情关键期？"
+                onKeyDown={e => { if (e.key === 'Enter' && !analyzing && !tooLong) runAnalysis(question || undefined); }}
+                placeholder={t('inputPlaceholder')}
                 disabled={analyzing}
+                aria-label={t('inputLabel')}
+                aria-invalid={tooLong || undefined}
+                aria-describedby={question.length >= COUNTER_FROM ? 'heming-input-note' : undefined}
                 className="input-base"
-                style={{ fontSize: '13px', flex: 1 }}
+                style={{ flex: 1 }}
               />
               <button
+                type="button"
+                className="btn-primary"
                 onClick={() => runAnalysis(question || undefined)}
-                disabled={analyzing}
-                style={{
-                  padding: '10px 20px', borderRadius: 'var(--r-sm)', border: 'none',
-                  background: analyzing ? 'var(--bg-2)' : 'var(--tx-0)',
-                  color: analyzing ? 'var(--tx-3)' : 'white',
-                  fontSize: '13px', fontWeight: 500,
-                  cursor: analyzing ? 'not-allowed' : 'pointer',
-                  transition: 'all 0.15s', whiteSpace: 'nowrap',
-                }}
+                disabled={analyzing || tooLong}
               >
-                {analyzing ? '分析中…' : '继续追问'}
+                {analyzing ? t('sending') : t('send')}
               </button>
             </div>
+            {/* Why a question can't be sent, or how much room is left (#63) */}
+            {tooLong ? (
+              <p id="heming-input-note" role="alert" style={{ fontSize: 'var(--fs-caption)', color: 'var(--ji)' }}>
+                {t('errors.tooLong')}
+              </p>
+            ) : question.length >= COUNTER_FROM && (
+              <p id="heming-input-note" style={{ fontSize: 'var(--fs-caption)', color: 'var(--tx-2)' }}>
+                {t('charsLeft', { n: MAX_CHARS - question.length })}
+              </p>
+            )}
           </div>
         )}
       </div>
 
-      <style>{`
-        @media (max-width: 680px) {
-          .heming-grid { grid-template-columns: 1fr !important; }
-        }
-      `}</style>
     </div>
   );
 }
