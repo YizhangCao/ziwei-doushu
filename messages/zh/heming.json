@@ -16,7 +16,7 @@
     "tooLong": "问题请在 2000 字以内。",
     "failed": "合盘没有完成，请稍后重试。"
   },
-  "followUpTitle": "针对此次合盘继续追问",
+  "followUpTitle": "接着问",
   "inputPlaceholder": "继续追问，如：两人的夫妻宫各坐什么星？",
   "inputLabel": "继续追问",
   "send": "追问",

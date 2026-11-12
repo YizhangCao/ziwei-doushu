@@ -5,7 +5,7 @@
   "withStars": "with {stars}",
   "empty": "an empty palace that borrows from the opposite palace",
   "emptyBorrowed": "an empty palace that borrows {stars} from the opposite palace",
-  "hint": "Click any palace to see its sanfang sizheng (the trine and opposition palaces).",
+  "hint": "Tap any palace to see its sanfang sizheng.",
   "region": "Natal chart",
   "summary": {
     "life": "Life Palace",

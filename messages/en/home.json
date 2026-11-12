@@ -7,8 +7,8 @@
     "cta": "Build your chart"
   },
   "walkthrough": {
-    "title": "Four steps from a chart to your life",
-    "lead": "In the order Ni Haixia read a chart: first the Life Palace, then its sanfang sizheng (the trine and opposition palaces), then the Four Transformations, and last, the part of life you are in now.",
+    "title": "One chart, read in four steps",
+    "lead": "The Life Palace first, then sanfang sizheng, then the Four Transformations, and the Decade last. That is the order Ni Haixia read a chart in.",
     "note": "Sample chart: a made-up birthday, worked out by the charting engine in your browser",
     "steps": {
       "ming": {
@@ -53,7 +53,7 @@
   },
   "roadmap": {
     "title": "Four courses, one a month",
-    "subtitle": "Start with Ziwei, then the Tian Ji / Di Ji / Ren Ji study modules open one by one",
+    "subtitle": "Ziwei first. Tian Ji, Di Ji and Ren Ji follow.",
     "sections": [
       {
         "name": "Ziwei",
@@ -80,7 +80,7 @@
   },
   "features": [
     {
-      "tag": "Charting method",
+      "tag": "Charting",
       "title": "Ziwei Doushu\nas Ni Haixia taught it",
       "subtitle": "Not a simplified version. It follows Ni Haixia’s teaching strictly.",
       "points": [
@@ -90,13 +90,13 @@
       ]
     },
     {
-      "tag": "Chart display",
-      "title": "All 14 Main Stars,\nall Four Transformations",
-      "subtitle": "A clear structure that shows the main themes and key points at a glance.",
+      "tag": "The chart",
+      "title": "All 14 Main Stars.\nNot one missing.",
+      "subtitle": "Main Stars, Secondary Stars and the Four Transformations, all on one screen",
       "points": [
-        "All 14 Main Stars sit in their palaces, and how they relate to each other is easy to read.",
-        "Secondary Stars and Baleful Stars appear on the same screen, so no key detail is left out.",
-        "Brightness grades (Miao, Wang, Li, Xian) show at a glance which stars are strong and which are weak.",
+        "Each of the 14 Main Stars in its palace, with how they relate in plain view",
+        "Secondary Stars and Baleful Stars on the same screen, nothing important left out",
+        "Brightness grades (Miao, Wang, Li, Xian) beside each star name, so strong and weak show at a glance",
         "Click any Main Star to read Ni Haixia’s detailed explanation of it."
       ]
     },
@@ -105,10 +105,10 @@
       "title": "Easy to read.\nEasy to ask.",
       "subtitle": "A knowledge base of Ni Haixia’s method × Claude",
       "points": [
-        "Destiny analysis: starting from the Main Stars of your Life Palace and reading them with the sanfang sizheng (the trine and opposition palaces), it gives a full picture of your character and the shape of your life.",
-        "Six areas of life: career direction, love and marriage, money patterns, health concerns, family relationships, and your bond with children.",
+        "Your character: read from the Main Stars of your Life Palace, together with its sanfang sizheng",
+        "Six topics, one tap apart: overview, personality, career, love, wealth and health",
         "Decade and Year tracking: the focus of your current 10-year Decade, plus specific tips and next steps from this year’s Year palace.",
-        "Ask follow-ups: when something is unclear, ask about it, for example “My Life Palace has no main star. How do I read it?”"
+        "Follow-ups: ask about anything you didn’t follow, like “My Life Palace has no main star. How do I read it?”"
       ]
     },
     {
@@ -264,19 +264,19 @@
   },
   "trinity": {
     "title": "Heaven · Earth · Humanity",
-    "intro": "Ni Haixia’s core view of fate: fate is never the whole of life.<br></br>He divided the forces that shape a life into three equally important parts.",
+    "intro": "A chart is not your whole life.<br></br>Ni Haixia divided what shapes a life into three parts: heaven, earth and people.",
     "cards": [
       {
         "glyph": "Heaven",
         "label": "Fate at birth",
         "sub": "Natal chart · Stars · Five Phases",
-        "desc": "Ziwei Doushu reveals the natal chart you are born with: the layout of the stars, your Five Phases Configuration and the Main Stars of your Life Palace, all set by your time of birth. This is only one third of fate. It is the base color of a life, not the whole picture."
+        "desc": "The moment you are born fixes where the stars fall, your Five Phases Configuration and the Main Stars of your Life Palace. That is the base of a life, and only a third of it."
       },
       {
         "glyph": "Earth",
         "label": "Where you live",
         "sub": "Region · Feng shui · Environment",
-        "desc": "Your surroundings, your city and country, the feng shui around you, even your family background and the society you grow up in, together form the second part of fate. The same chart, born in different places, can lead to lives as different as heaven and earth."
+        "desc": "The city and family you are born into, and the place you live, make up another third. The same chart can lead to very different lives in different places."
       },
       {
         "glyph": "Humanity",

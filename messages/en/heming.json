@@ -16,7 +16,7 @@
     "tooLong": "Keep your question under 2,000 characters.",
     "failed": "The compatibility reading didn’t finish. Please try again in a moment."
   },
-  "followUpTitle": "Ask more about this match",
+  "followUpTitle": "Ask more",
   "inputPlaceholder": "Ask a follow-up, e.g. Which stars sit in each of our Marriage Palaces?",
   "inputLabel": "Ask a follow-up",
   "send": "Ask",
