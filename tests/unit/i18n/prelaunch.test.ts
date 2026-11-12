@@ -13,6 +13,9 @@
  */
 
 import { describe, it, expect } from 'vitest';
+import { readdirSync, readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { MESSAGES } from '@/messages';
 import { ALL_BOOKS } from '@/lib/classics';
 import { PARAGRAPH_EN } from '@/lib/classics/en';
@@ -30,6 +33,14 @@ const found = (texts: string[], banned: string[]) =>
 const zhAll = strings(MESSAGES.zh);
 const enAll = strings(MESSAGES.en);
 const zhLegal = strings(MESSAGES.zh.legal);
+
+const ROOT = fileURLToPath(new URL('../../..', import.meta.url));
+/** Page and library code that still holds text of its own, outside the message catalogs. */
+const sourceTexts = ['app', 'components', 'lib'].flatMap((dir) =>
+  readdirSync(join(ROOT, dir), { recursive: true, encoding: 'utf8' })
+    .filter((file) => /\.tsx?$/.test(file))
+    .map((file) => readFileSync(join(ROOT, dir, file), 'utf8')),
+);
 const enLegal = strings(MESSAGES.en.legal);
 
 describe('no fatalism, verdict-seeking examples or contradictions', () => {
@@ -55,6 +66,15 @@ describe('one name for everything', () => {
     expect(MESSAGES.en.meta.siteName).toBe('Ziwei Natal Chart');
     expect(found(zhAll, ['紫微研究'])).toEqual([]);
     expect(found(enAll, ['Ziwei Research'])).toEqual([]);
+    // Pages that are still Chinese-only keep their text in code, so the old name is checked there too.
+    expect(found(sourceTexts, ['紫微研究'])).toEqual([]);
+  });
+
+  it('says 起盘 for building a chart; 排盘 stays only inside the method and engine nouns', () => {
+    const verbs = zhAll
+      .map((text) => text.replace(/排盘(体系|法|引擎)/g, ''))
+      .filter((text) => text.includes('排盘'));
+    expect(verbs).toEqual([]);
   });
 
   it('never counts thirteen palaces, and calls the chart page by its one name', () => {
