@@ -104,7 +104,7 @@ When asked to implement an issue, **stop after step 1** and show the failing tes
 | E2E | Playwright | `e2e/*.spec.ts` | One spec per user story's main flow, in the browser. |
 
 - Engine tests keep the `ok()` pattern (no `node:assert`). New tests use Vitest's `describe` / `it` / `expect`.
-- Integration tests run `prisma migrate deploy` once (global setup) and truncate every table before each test, only on `DATABASE_URL_TEST`. They refuse to run if `DATABASE_URL_TEST` equals `DATABASE_URL`, and never touch the dev or production DB.
+- Integration tests run `prisma migrate deploy` once (global setup) and truncate every table before each test, only on `DATABASE_URL_TEST`. They refuse to run if `DATABASE_URL_TEST` equals the `DATABASE_URL` in `.env.local`, and never touch the dev or production DB.
 - Never call the real Anthropic API in any test.
 - **Coverage goal:** 80% lines for `lib/` (`vitest --coverage`), every acceptance criterion covered by a test or a written manual step in the PR, and every user story has an E2E spec.
 - **Commands:** `npm run typecheck`, `npm test` (engine), `npm run test:unit`, `npm run test:integration`, `npm run test:e2e`. All must pass locally and in CI.
@@ -204,8 +204,8 @@ When a feature changes one of these flows, update this section in the same PR.
 - Birth data (`birthInfo`) is stored encrypted at rest (`lib/crypto.ts`, key in `DATA_ENCRYPTION_KEY`).
 - Public API keys are stored hashed, never in plain text. Rate-limit `/api/v1/*` and AI routes per key / per user.
 - API keys only in `.env.local` (git-ignored). Add any new variable to `.env.example` with a fake value.
-- Production and preview use their own AUTH_SECRET and DATA_ENCRYPTION_KEY, set only in Vercel; development uses the values in .env.local.
-- Local development uses the Neon dev branch; never point .env.local at production.
+- Production and preview share AUTH_SECRET (needed for preview login through the production URL); each environment has its own DATA_ENCRYPTION_KEY. Production and preview values are set only in Vercel; development uses the values in .env.local.
+- Local development uses a non-production database (Neon dev or a local Postgres); never point .env.local at production.
 - Preview deployments must never run migrations against the production database (see #20).
 - Never import server code or read `process.env` secrets in a `'use client'` file. Only `NEXT_PUBLIC_*` variables may reach the browser.
 - **Birth data is personal data.** Don't log full birth details or chat contents on the server, don't put real people's birth data in tests or issues, and don't send more of the chart to the AI than the reading needs.
@@ -235,7 +235,8 @@ A task is done when: the acceptance criteria are all met, `npm run typecheck` an
 - v1 (10/30/2026): first version.
 - v3.2 (11/10/2026): after Sprint 1.
   - The integration-test rule now describes what we actually do: `prisma migrate deploy` once, then truncate tables before each test, on `DATABASE_URL_TEST` only. Prisma blocks `migrate reset --force` when an AI agent runs it, and resetting isn't needed for a clean state.
-  - Added "local development uses the Neon dev branch". `.env.local` had pointed at production, because Vercel shares one `DATABASE_URL` across environments.
+  - Added "local development uses a non-production database". `.env.local` had pointed at production, because Vercel shares one `DATABASE_URL` across environments.
+  - Clarified the secrets rule: production and preview share `AUTH_SECRET` for preview login, but each environment has its own `DATA_ENCRYPTION_KEY`, because preview databases are copies of production.
   - Added "previews never migrate production". PR #35's preview ran `prisma migrate deploy` on the production database, because previews have no Neon branch yet (#20).
 - v3.1 (11/08/2026): re-planned for the Nov 12 deadline: GitHub OAuth only; Vercel and Neon integrations handle previews, production, and per-preview databases.
 - v3 (11/01/2026): P2 approved as ZiweiHub. Added database, auth, roles, public API, and hosting to the stack; added the roles table and auth rules; replaced the tsx-only test rule with a layered strategy (engine tests stay on tsx, new code uses Vitest and Playwright) because P2 requires unit, integration, and E2E tests; added TDD commit order. PRD now points to docs/PRD.md.
