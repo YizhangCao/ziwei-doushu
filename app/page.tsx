@@ -99,7 +99,7 @@ const SECTIONS = [
     en: 'Zi Wei',
     desc: '14 主星 · 13 宫位 · AI 解读',
     status: 'ready' as const,
-    when: '已上线',
+    when: '11 月',
     icon: '◉',  // 实心圆+内点，紫微星视觉
     note: '',
   },
@@ -109,7 +109,7 @@ const SECTIONS = [
     en: 'Tian Ji',
     desc: '紫微 · 周易 · 奇门遁甲',
     status: 'soon' as const,
-    when: '筹备中',
+    when: '12 月',
     icon: '⊙',  // 圆+内点（古文"日"），与 ◉ 同字宽
     note: '',
   },
@@ -119,7 +119,7 @@ const SECTIONS = [
     en: 'Di Ji',
     desc: '倪师未竟之业 · 后辈补注',
     status: 'soon' as const,
-    when: '筹备中',
+    when: '1 月',
     icon: '⊞',  // 方+井（地/田视觉），与 ⊙ 同字宽
     note: '遗稿研读',
   },
@@ -129,7 +129,7 @@ const SECTIONS = [
     en: 'Ren Ji',
     desc: '内经 · 伤寒 · 金匮 · 针灸',
     status: 'soon' as const,
-    when: '筹备中',
+    when: '2 月',
     icon: '⊕',  // 圆+十字（医道/阴阳调和），与 ⊙/⊞ 同字宽
     note: '',
   },
