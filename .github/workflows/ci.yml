@@ -22,7 +22,8 @@ env:
   DATABASE_URL_TEST: postgresql://postgres:postgres@localhost:5432/ziwei_test
   DATABASE_URL: postgresql://postgres:postgres@localhost:5432/ziwei_test
   AUTH_SECRET: ci-only-secret
-  DATA_ENCRYPTION_KEY: 0000000000000000000000000000000000000000000000000000000000000000
+  # Quoted: unquoted, YAML reads 64 zeros as the number 0, which the 64-hex check rejects.
+  DATA_ENCRYPTION_KEY: '0000000000000000000000000000000000000000000000000000000000000000'
 
 jobs:
   static:
