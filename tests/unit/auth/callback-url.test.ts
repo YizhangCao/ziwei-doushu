@@ -34,6 +34,20 @@ describe('safeCallbackUrl(value)', () => {
     expect(safeCallbackUrl(value)).toBe('/');
   });
 
+  // Found in review on #53: URL parsing resolves dot segments, so these came back as "//evil.com"
+  it.each([
+    ['/..//evil.com'],
+    ['/.//evil.com'],
+    ['/a/..//evil.com'],
+    ['/%2e%2e//evil.com'],
+  ])('rejects %s, which dot segments resolve to a protocol-relative URL', (value) => {
+    expect(safeCallbackUrl(value)).toBe('/');
+  });
+
+  it('keeps a same-site path that only looks unusual after dot segments resolve', () => {
+    expect(safeCallbackUrl('/a/../charts')).toBe('/charts');
+  });
+
   it('rejects a missing or repeated parameter', () => {
     expect(safeCallbackUrl(undefined)).toBe('/');
     expect(safeCallbackUrl(['/charts', '/admin'])).toBe('/');
