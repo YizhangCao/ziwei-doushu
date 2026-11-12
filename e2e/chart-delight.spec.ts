@@ -154,6 +154,20 @@ test('while it waits on a palace, the reading panel names that palace and its st
   await expect(page.getByText('正在读夫妻宫：天同化忌…')).toBeVisible();
 });
 
+test('an empty palace keeps the plain waiting line', async ({ page }) => {
+  let calls = 0;
+  await page.route('**/api/interpret', (route) => {
+    if (calls++ > 0) return;
+    return route.fulfill({ status: 200, contentType: 'text/event-stream', body: 'data: {"delta":{"text":"好"}}\n\ndata: [DONE]\n\n' });
+  });
+  await fillBirth(page);
+  await page.getByRole('button', { name: '起盘', exact: true }).click();
+  await expect(page.getByText('好', { exact: true })).toBeVisible();
+
+  await page.locator('[data-palace="迁移"]').click(); // no major star in this chart
+  await expect(page.getByText('正在读迁移宫…', { exact: true })).toBeVisible();
+});
+
 test.describe('in English', () => {
   test.use({ locale: 'en-US' });
 
