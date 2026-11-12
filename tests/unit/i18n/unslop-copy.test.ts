@@ -42,12 +42,34 @@ function uiStrings(tree: Record<string, Tree>): [string, string][] {
 const offenders = (tree: Record<string, Tree>, test: (text: string) => boolean) =>
   uiStrings(tree).filter(([, text]) => test(text)).map(([path, text]) => `${path}: ${text}`);
 
+// B follows the drafts the product owner approved on 11/12, written after the tone of
+// Apple's mainland China site: a short headline with a product noun, the facts in the line below.
 describe('B: specific instead of generic copy', () => {
-  it('the closing title names the Life Palace and its star, with no eyebrow above it', () => {
-    expect(at(zh, 'home.closing.title')).toContain('命宫');
-    expect(at(en, 'home.closing.title')).toContain('Life Palace');
-    expect(at(zh, 'home.closing.eyebrow')).toBeUndefined();
-    expect(at(en, 'home.closing.eyebrow')).toBeUndefined();
+  it('the closing names the product above a headline about the twelve palaces', () => {
+    expect(at(zh, 'home.closing.eyebrow')).toBe(at(zh, 'meta.siteName'));
+    expect(at(en, 'home.closing.eyebrow')).toBe(at(en, 'meta.siteName'));
+    expect(at(zh, 'home.closing.title')).toBe('十二宫，<br></br>一盘看清');
+    expect(at(en, 'home.closing.title')).toBe('Twelve palaces.<br></br>One clear chart.');
+  });
+
+  it('the closing description lists what the reading covers', () => {
+    for (const word of ['十二宫', '命宫', '性格', '事业', '感情', '财运', '健康']) expect(at(zh, 'home.closing.desc')).toContain(word);
+    for (const word of ['twelve palaces', 'Life Palace', 'character', 'career', 'love', 'wealth', 'health']) expect(at(en, 'home.closing.desc')).toContain(word);
+  });
+
+  it('the AI feature title says you can read it and ask more', () => {
+    expect(at(zh, 'home.features.2.title')).toBe('看得懂，\n还能接着问');
+    expect(at(en, 'home.features.2.title')).toBe('Easy to read.\nEasy to ask.');
+  });
+
+  it('the roadmap title says four courses open month by month', () => {
+    expect(at(zh, 'home.roadmap.title')).toBe('四门课，按月开放');
+    expect(at(en, 'home.roadmap.title')).toBe('Four courses, one a month');
+  });
+
+  it('the third trinity card ends on what you make of your chart', () => {
+    expect(at(zh, 'home.trinity.cards.2.desc')).toMatch(/底色天定，成色自修。$/);
+    expect(at(en, 'home.trinity.cards.2.desc')).toMatch(/The chart sets the base\. What you make of it is yours\.$/);
   });
 
   it('drops the hype words from the closing, the AI feature title and the trinity card', () => {
@@ -55,11 +77,6 @@ describe('B: specific instead of generic copy', () => {
       expect(at(zh, path), path).not.toMatch(/深度|专属|最强/);
       expect(at(en, path), path).not.toMatch(/\bdeep|in depth|strongest/i);
     }
-  });
-
-  it('the roadmap title names the four courses', () => {
-    for (const course of ['紫微', '天纪', '地纪', '人纪']) expect(at(zh, 'home.roadmap.title')).toContain(course);
-    for (const course of ['Ziwei', 'Tian Ji', 'Di Ji', 'Ren Ji']) expect(at(en, 'home.roadmap.title')).toContain(course);
   });
 });
 
