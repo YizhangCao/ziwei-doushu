@@ -42,37 +42,20 @@ function ThemeToggle() {
   return (
     <motion.button
       onClick={toggle}
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.93 }}
+      whileTap={{ opacity: 0.72 }}
       aria-label={isDark ? '切换亮色主题' : '切换暗色主题'}
       className="flex items-center gap-2 px-3 py-1.5 rounded-full border"
-      style={{
-        borderColor: isDark ? 'rgba(212,168,67,0.3)' : 'rgba(140,100,20,0.35)',
-        background: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(255,252,242,0.85)',
-        transition: 'background 0.35s ease, border-color 0.35s ease',
-      }}
+      style={{ borderColor: 'var(--bdr-med)', background: 'transparent' }}
     >
-      <div className="relative w-10 h-5 rounded-full flex-shrink-0"
-        style={{
-          background: isDark ? 'rgba(12,24,64,0.95)' : 'rgba(230,195,80,0.55)',
-          transition: 'background 0.35s ease',
-        }}>
+      <div className="relative w-10 h-5 rounded-full flex-shrink-0" style={{ background: 'var(--bg-2)' }}>
         <motion.div
           animate={{ x: isDark ? 2 : 22 }}
-          transition={{ type: 'spring', stiffness: 400, damping: 28 }}
+          transition={{ duration: 0.6, ease: [0.15, 1, 0.35, 1] }}
           className="absolute top-1 w-3.5 h-3.5 rounded-full"
-          style={{
-            background: isDark
-              ? 'linear-gradient(135deg, #b8a050, #e8d090)'
-              : 'linear-gradient(135deg, #e89010, #f8d050)',
-          }}
+          style={{ background: 'var(--tx-0)' }}
         />
       </div>
-      <span className="text-[11px] font-medium tracking-wide select-none"
-        style={{
-          color: isDark ? 'rgba(212,180,100,0.85)' : 'rgba(110,72,8,0.8)',
-          transition: 'color 0.35s ease',
-        }}>
+      <span className="text-[11px] tracking-wide select-none" style={{ color: 'var(--tx-2)' }}>
         {isDark ? '暗色' : '亮色'}
       </span>
     </motion.button>
@@ -199,52 +182,50 @@ const NI_TEACHINGS = [
 ];
 
 // ─── 主题色彩 helper ─────────────────────────────────────
-function useColors(theme: Theme) {
-  const d = theme === 'dark';
+// 设计系统（#57）：颜色全部来自 app/globals.css 的 token，日 / 夜由 data-theme 切换。
+// 金色只留给命盘含义；按钮、导航、标签一律单色。
+function useColors(_theme: Theme) {
   return {
-    bgBase:       d ? '#020810'                                : '#f5efe0',
-    // nav 用与 bgBase 完全相同的不透明色，避免半透明叠加产生色差带
-    navBg:        d ? '#020810'                                : '#f5efe0',
-    navBorder:    d ? 'rgba(255,255,255,0.05)'                : 'rgba(160,120,30,0.15)',
-    goldGrad:     d ? 'linear-gradient(160deg,#c8993a 0%,#f0d070 40%,#c8993a 70%,#f0c755 100%)'
-                    : 'linear-gradient(160deg,#6a4206 0%,#9a6a10 40%,#6a4206 70%,#885010 100%)',
-    goldSolid:    d ? '#d4a843'                               : '#8b6410',
-    goldLine:     d ? 'rgba(212,168,67,0.4)'                  : 'rgba(140,100,20,0.4)',
-    tagText:      d ? 'rgba(212,168,67,0.6)'                  : 'rgba(120,80,10,0.65)',
-    // 亮色文字用冷灰系（A 方案核心）：暖底 + 冷字 → 视觉不审美疲劳
-    textPrimary:  d ? '#e8eef6'                               : '#1a1d24',
-    textSecond:   d ? '#b8c6df'                               : '#3a3f4a',
-    textMuted:    d ? '#9db0d0'                               : '#5a6275',
-    textFaint:    d ? 'rgba(240,246,255,0.56)'                : '#9da4b3',
-    // 冷色 accent（B 方案核心）：呼应暗色 quan 蓝；用于装饰性 glow / 链接 / 高亮
-    accent:       d ? '#3a78d4'                               : '#3a5a82',
-    accentSoft:   d ? 'rgba(58,120,212,0.18)'                 : 'rgba(58,90,130,0.10)',
-    cardBg:       d ? 'rgba(255,255,255,0.05)'                : 'rgba(255,255,255,0.88)',
-    cardBorder:   d ? 'rgba(255,255,255,0.10)'                : 'rgba(200,160,60,0.25)',
-    cardShadow:   d ? '0 4px 32px rgba(0,0,0,0.5)'           : '0 4px 24px rgba(140,100,20,0.12)',
-    featureBg:    d ? 'rgba(255,255,255,0.04)'                : 'rgba(255,255,255,0.75)',
-    featureBord:  d ? 'rgba(255,255,255,0.08)'                : 'rgba(200,160,60,0.2)',
-    glowTint:     d ? 'rgba(212,168,67,0.07)'                 : 'rgba(180,140,40,0.06)',
-    // 亮色 glow 真用蓝/紫——给整体氛围加冷色点缀
-    glowBlue:     d ? 'rgba(40,80,160,0.12)'                  : 'rgba(58,90,130,0.06)',
-    glowPurple:   d ? 'rgba(120,50,180,0.08)'                 : 'rgba(96,80,140,0.04)',
-    niBg:         d ? 'rgba(255,255,255,0.04)'                : 'rgba(255,255,255,0.8)',
-    niBorder:     d ? 'rgba(212,168,67,0.2)'                  : 'rgba(180,130,40,0.25)',
-    niDivider:    d ? 'rgba(255,255,255,0.08)'                : 'rgba(180,130,40,0.12)',
-    niCardBg:     d ? 'rgba(255,255,255,0.04)'                : 'rgba(255,255,255,0.9)',
-    niCardBord:   d ? 'rgba(255,255,255,0.08)'                : 'rgba(200,160,60,0.2)',
-    niCardShadow: d ? '0 2px 20px rgba(0,0,0,0.4)'           : '0 2px 16px rgba(140,100,20,0.1)',
-    starBg:       d ? 'rgba(255,255,255,0.04)'                : 'rgba(255,255,255,0.7)',
-    starBorder:   d ? 'rgba(212,168,67,0.22)'                 : 'rgba(160,120,30,0.3)',
-    starText:     d ? 'rgba(212,168,67,0.7)'                  : 'rgba(120,80,10,0.7)',
-    ctaBg:        d ? 'linear-gradient(135deg,#b8892a,#f0d070,#b8892a)'
-                    : 'linear-gradient(135deg,#6a4206,#9a6810,#6a4206)',
-    ctaText:      d ? '#08080a'                               : '#f8f3e8',
-    footerText:   d ? 'rgba(255,255,255,0.08)'                : '#d0b878',
-    scrollLine:   d ? 'rgba(212,168,67,0.3)'                  : 'rgba(140,100,20,0.3)',
-    scrollText:   d ? 'rgba(255,255,255,0.12)'                : '#c0a870',
-    altSection:   d ? 'rgba(255,255,255,0.02)'                : 'rgba(255,255,255,0.4)',
-    quoteBg:      d ? 'rgba(212,168,67,0.04)'                 : 'rgba(255,255,255,0.9)',
+    bgBase:       'var(--bg-0)',
+    navBg:        'var(--bg-0)',
+    navBorder:    'var(--bdr)',
+    goldGrad:     'linear-gradient(var(--ac), var(--ac))',
+    goldSolid:    'var(--ac)',
+    goldLine:     'var(--ac-bdr)',
+    tagText:      'var(--tx-2)',
+    textPrimary:  'var(--tx-0)',
+    textSecond:   'var(--tx-1)',
+    textMuted:    'var(--tx-2)',
+    textFaint:    'var(--tx-3)',
+    accent:       'var(--ac)',
+    accentSoft:   'var(--ac-bg)',
+    cardBg:       'var(--bg-card)',
+    cardBorder:   'var(--bdr)',
+    cardShadow:   'var(--sh-sm)',
+    featureBg:    'var(--bg-card)',
+    featureBord:  'var(--bdr)',
+    // 夜空里只留一圈极淡的金色星辉；去掉原来的蓝 / 紫光晕，保持单色
+    glowTint:     'var(--ac-glow)',
+    glowBlue:     'transparent',
+    glowPurple:   'transparent',
+    niBg:         'var(--bg-card)',
+    niBorder:     'var(--bdr-med)',
+    niDivider:    'var(--bdr)',
+    niCardBg:     'var(--bg-card)',
+    niCardBord:   'var(--bdr)',
+    niCardShadow: 'none',
+    starBg:       'transparent',
+    starBorder:   'var(--bdr-med)',
+    starText:     'var(--tx-1)',
+    // 主按钮：反白实底（夜里是 Signal White，白天是 Graphite）
+    ctaBg:        'var(--tx-0)',
+    ctaText:      'var(--bg-0)',
+    footerText:   'var(--tx-3)',
+    scrollLine:   'var(--bdr-heavy)',
+    scrollText:   'var(--tx-3)',
+    // 段落之间不再换底色，夜空连续
+    altSection:   'transparent',
+    quoteBg:      'var(--ac-bg)',
   };
 }
 
@@ -491,17 +472,17 @@ export default function HomePage() {
         <div className="flex items-center gap-1.5 sm:gap-3 flex-shrink-0">
           <ThemeToggle />
           <motion.button
-            whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}
+            whileTap={{ opacity: 0.72 }}
             onClick={() => router.push('/heming')}
             className="text-[11px] sm:text-xs px-2.5 sm:px-4 py-1 sm:py-1.5 rounded-full transition-all duration-300"
             style={{ border: `1px solid ${c.navBorder}`, color: c.textMuted }}>
             合盘
           </motion.button>
           <motion.button
-            whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}
+            whileTap={{ opacity: 0.72 }}
             onClick={() => router.push('/chart')}
             className="text-[11px] sm:text-xs px-2.5 sm:px-4 py-1 sm:py-1.5 rounded-full transition-all duration-300"
-            style={{ border: `1px solid ${c.goldLine}`, color: c.goldSolid }}>
+            style={{ border: '1px solid var(--tx-0)', color: 'var(--tx-0)' }}>
             立即起盘
           </motion.button>
         </div>
@@ -559,9 +540,9 @@ export default function HomePage() {
             transition={{ duration: 0.6, delay: 0.85 }}
             className="flex flex-col items-center gap-4">
             <motion.button
-              whileHover={{ y: -2, filter: 'brightness(1.06)' }} whileTap={{ scale: 0.97 }}
+              whileHover={{ opacity: 0.86 }} whileTap={{ opacity: 0.72 }}
               onClick={() => router.push('/chart')}
-              className="px-12 py-4 font-semibold text-base tracking-widest rounded-full"
+              className="px-12 py-4 font-medium text-base tracking-widest rounded-full"
               style={{ background: c.ctaBg, color: c.ctaText }}>
               立即起盘
             </motion.button>
@@ -575,7 +556,7 @@ export default function HomePage() {
               <motion.div key={star.name}
                 initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 1.05 + i * 0.03, duration: 0.35 }}
-                className="flex items-center justify-center px-2 py-1 rounded-full"
+                className="flex items-center justify-center px-2 py-1 rounded-sm"
                 style={{ background: c.starBg, border: `1px solid ${c.starBorder}` }}>
                 <span className="text-[11px] tracking-wide" style={{ color: c.starText }}>{star.name}</span>
               </motion.div>
@@ -656,29 +637,23 @@ export default function HomePage() {
       </section>
 
       {/* ══ 哲学引言 ══════════════════════════════════════ */}
-      <section className="relative z-10 overflow-hidden min-h-[82svh] lg:min-h-[92vh] flex items-center" style={{ padding: '72px 24px' }}>
+      <section data-theme="dark" className="relative z-10 overflow-hidden min-h-[82svh] lg:min-h-[92vh] flex items-center" style={{ padding: '72px 24px' }}>
         <WeakBoundary line={c.navBorder} />
-        <div className="absolute inset-0"
-          style={{
-            background: theme === 'dark'
-              ? 'linear-gradient(to bottom, #020810 0%, #020810 6%, #030a18 22%, #0d0820 40%, #0a0618 68%, #030a18 86%, #020810 100%)'
-              : 'linear-gradient(to bottom, #f5efe0 0%, #f5efe0 6%, #c08055 18%, #6a2810 32%, #1e0a02 50%, #1e0a02 70%, #6a2810 84%, #f5efe0 100%)',
-            transition: 'background 0.4s ease',
-          }} />
+        <div className="absolute inset-0" style={{ background: 'var(--bg-0)' }} />
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none overflow-hidden">
           <span className="font-bold" style={{ fontSize: 'clamp(220px, 38vw, 460px)', color: 'rgba(212,168,67,0.012)', lineHeight: 1, fontFamily: 'serif' }}>命</span>
         </div>
         <FadeIn className="relative mx-auto text-center w-full" y={20}>
           <div className="flex items-center justify-center gap-4 mb-8">
-            <div className="h-px w-16" style={{ background: 'linear-gradient(to right, transparent, rgba(212,168,67,0.45))' }} />
-            <span className="text-[10px] tracking-[0.55em] uppercase" style={{ color: 'rgba(212,168,67,0.5)' }}>命 · 运 · 观</span>
-            <div className="h-px w-16" style={{ background: 'linear-gradient(to left, transparent, rgba(212,168,67,0.45))' }} />
+            <div className="h-px w-16" style={{ background: 'linear-gradient(to right, transparent, var(--ac-bdr))' }} />
+            <span className="text-[10px] tracking-[0.55em] uppercase" style={{ color: 'var(--tx-3)' }}>命 · 运 · 观</span>
+            <div className="h-px w-16" style={{ background: 'linear-gradient(to left, transparent, var(--ac-bdr))' }} />
           </div>
           <div className="space-y-3" style={{ maxWidth: '840px', margin: '0 auto' }}>
             {[
-              { text: '提前窥探命运的意义', size: 'clamp(17px, 2.2vw, 28px)', color: 'rgba(215,228,252,0.72)', delay: 0.1 },
-              { text: '不在于预知未来', size: 'clamp(21px, 2.6vw, 32px)', color: 'rgba(220,232,250,0.74)', delay: 0.25 },
-              { text: '而在于不断认识自己', size: 'clamp(24px, 3vw, 40px)', color: 'rgba(218,230,248,0.8)', delay: 0.34 },
+              { text: '提前窥探命运的意义', size: 'clamp(17px, 2.2vw, 28px)', color: 'var(--tx-2)', delay: 0.1 },
+              { text: '不在于预知未来', size: 'clamp(21px, 2.6vw, 32px)', color: 'var(--tx-2)', delay: 0.25 },
+              { text: '而在于不断认识自己', size: 'clamp(24px, 3vw, 40px)', color: 'var(--tx-1)', delay: 0.34 },
             ].map((line, i) => (
               <motion.p key={i}
                 initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }}
@@ -690,7 +665,7 @@ export default function HomePage() {
             <motion.p
               initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.45 }}
-              className={`grad-text ${theme === 'dark' ? 'grad-text-dark' : 'grad-text-light'} font-bold`}
+              className="grad-text grad-text-dark font-medium"
               style={{ fontSize: 'clamp(24px, 3.4vw, 48px)', letterSpacing: '0.05em', lineHeight: 1.35 }}>
               最终书写属于自己的人生剧本
             </motion.p>
@@ -1094,9 +1069,9 @@ export default function HomePage() {
             再由 AI 按倪海厦体系为你深度解读
           </p>
           <motion.button
-            whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
+            whileHover={{ opacity: 0.86 }} whileTap={{ opacity: 0.72 }}
             onClick={() => router.push('/chart')}
-            className="px-14 py-4 font-semibold text-base tracking-widest rounded-full"
+            className="px-14 py-4 font-medium text-base tracking-widest rounded-full"
             style={{ background: c.ctaBg, color: c.ctaText }}>
             免费起盘
           </motion.button>

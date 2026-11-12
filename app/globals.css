@@ -2,92 +2,124 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ─── 2.0 设计系统 Token ─────────────────────────────────── */
+/* ─── 设计系统（#57）────────────────────────────────────────
+   冷静 × 灵性：Polestar 式的克制（单色、直角、细线、少字重、慢动效），
+   底下是一片安静的夜空；唯一的强调色（金）只留给命盘里有意义的东西：
+   星曜、四化、命宫、AI 解读。中文排版参照 Apple 中国官网：苹方、字距正常、
+   行高约 1.5。改颜色先看 tests/unit/design/design-system.test.ts（对比度 ≥ 4.5:1）。
+   ─────────────────────────────────────────────────────────── */
 :root {
-  /* 字体 */
-  --font: -apple-system, 'PingFang SC', 'Helvetica Neue', 'Segoe UI', sans-serif;
-  --font-mono: 'SF Mono', 'Menlo', 'Noto Sans Mono', 'Consolas', monospace;
+  /* 字体：拉丁字母和数字用 Helvetica Neue（Polestar 的路数），
+     中文按平台落到苹方 / 冬青 / 雅黑 / 思源（Apple 中国官网的路数） */
+  --font: "Helvetica Neue", Helvetica, Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", "Noto Sans CJK SC", sans-serif;
+  --font-mono: "SF Mono", Menlo, "Noto Sans Mono", Consolas, monospace;
 
-  /* 背景层级 */
-  --bg-0: #FAFAF9;
-  --bg-1: #F4F3EF;
-  --bg-2: #ECEAE4;
-  --bg-inv: #0D0D0B;
-
-  /* 文字层级 */
-  --tx-0: #0D0D0B;
-  --tx-1: #1A1A18;
-  --tx-2: #4A4A45;
-  --tx-3: #8A8A82;
-  --tx-inv: #F0EDE8;
-  --tx-inv2: rgba(240,237,232,0.65);
-
-  /* 唯一强调色：墨金 */
-  --ac:     #B8922A;
-  --ac-dim: #7A5F1A;
-  --ac-bg:  rgba(184,146,42,0.07);
-  --ac-bdr: rgba(184,146,42,0.22);
-
-  /* 四化语义色（仅用于命盘数据，不用于UI装饰） */
-  --lu:   #2D7A4A;
-  --quan: #1A56A8;
-  --ke:   #8A7018;
-  --ji:   #A83228;
-
-  /* 边框 */
-  --bdr:      rgba(0,0,0,0.07);
-  --bdr-med:  rgba(0,0,0,0.11);
-  --bdr-heavy:rgba(0,0,0,0.18);
-
-  /* 阴影 */
-  --sh-xs: 0 1px 2px rgba(0,0,0,0.05);
-  --sh-sm: 0 2px 8px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04);
-  --sh-md: 0 4px 20px rgba(0,0,0,0.08), 0 2px 6px rgba(0,0,0,0.05);
-  --sh-lg: 0 12px 40px rgba(0,0,0,0.10), 0 4px 12px rgba(0,0,0,0.06);
-
-  /* 卡片/内容块背景 */
+  /* 背景层级（日：Polestar 白） */
+  --bg-0: #FFFFFF;
+  --bg-1: #F4F4F4;
+  --bg-2: #ECECE7;
+  --bg-inv: #101820;
   --bg-card: #FFFFFF;
-  --bg-page: #fbf6e8;
+  --bg-page: #FFFFFF;
 
-  /* 圆角 */
-  --r-xs:  4px;
-  --r-sm:  8px;
-  --r-md:  12px;
-  --r-lg:  16px;
-  --r-xl:  24px;
-  --r-pill:999px;
+  /* 文字：一种墨色，层级靠透明度（100 / 66 / 62），不靠加粗 */
+  --tx-0: #101820;
+  --tx-1: #101820;
+  --tx-2: rgba(16, 24, 32, 0.66);
+  --tx-3: rgba(16, 24, 32, 0.62);
+  --tx-inv: #ECECE7;
+  --tx-inv2: rgba(236, 236, 231, 0.66);
+
+  /* 唯一强调色：金。只用于命盘含义，不用于按钮、导航等界面装饰 */
+  --ac: #836425;
+  --ac-dim: #6B521E;
+  --ac-bg: rgba(131, 100, 37, 0.07);
+  --ac-bdr: rgba(131, 100, 37, 0.32);
+  --ac-glow: rgba(131, 100, 37, 0);
+
+  /* 四化语义色（命盘数据专用，并且总配汉字标签，不只靠颜色区分） */
+  --lu: #2D7A4A;
+  --quan: #1A56A8;
+  --ke: #7A6215;
+  --ji: #A83228;
+
+  /* 1px 细线 */
+  --bdr: rgba(16, 24, 32, 0.10);
+  --bdr-med: rgba(16, 24, 32, 0.16);
+  --bdr-heavy: rgba(16, 24, 32, 0.32);
+
+  /* 阴影：平面为主，只给浮层用 */
+  --sh-xs: none;
+  --sh-sm: none;
+  --sh-md: 0 12px 32px rgba(16, 24, 32, 0.08);
+  --sh-lg: 0 24px 64px rgba(16, 24, 32, 0.12);
+
+  /* 形状：统一 2px 直角；胶囊只留给圆形元素 */
+  --r-xs: 2px;
+  --r-sm: 2px;
+  --r-md: 2px;
+  --r-lg: 2px;
+  --r-xl: 2px;
+  --r-pill: 999px;
+
+  /* 卡片：日间是实底白卡；夜间半透明，透出星空 */
+  --glass-blur: 0px;
+
+  /* 动效：200ms 交互、600ms 进场、一条缓出曲线、6s 呼吸 */
+  --ease: cubic-bezier(0.15, 1, 0.35, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-1: 200ms;
+  --dur-2: 600ms;
+  --dur-breath: 6s;
+
+  /* 组件里在用的语义别名（之前从未定义，颜色全靠浏览器默认值兜底） */
+  --t-bg: var(--bg-0);
+  --t-surface: var(--bg-1);
+  --t-card: var(--bg-card);
+  --t-border: var(--bdr-med);
+  --t-border-acc: var(--ac-bdr);
+  --t-text: var(--tx-0);
+  --t-text1: var(--tx-1);
+  --t-text2: var(--tx-2);
+  --t-faint: var(--tx-3);
+  --t-gold: var(--ac);
 }
 
-/* ─── 暗色模式 Token 覆盖 ──────────────────────────────── */
+/* ─── 夜（默认主题）：Graphite 夜空 + Signal White 文字 ─────── */
 [data-theme="dark"] {
-  --bg-0: #020810;
-  --bg-1: #0a1020;
-  --bg-2: #141e30;
-  --bg-inv: #f0ede8;
+  --bg-0: #0B0F14;
+  --bg-1: #101820;
+  --bg-2: #1A222B;
+  --bg-inv: #ECECE7;
+  --bg-card: rgba(16, 24, 32, 0.72);
+  --bg-page: #0B0F14;
 
-  --tx-0: #e8eef6;
-  --tx-1: #dce4f0;
-  --tx-2: #9db0d0;
-  --tx-3: #6a7a96;
-  --tx-inv: #0d0d0b;
-  --tx-inv2: rgba(13,13,11,0.65);
+  --tx-0: #ECECE7;
+  --tx-1: #DCDCD5;
+  --tx-2: rgba(236, 236, 231, 0.66);
+  --tx-3: rgba(236, 236, 231, 0.52);
+  --tx-inv: #101820;
+  --tx-inv2: rgba(16, 24, 32, 0.66);
 
-  --ac:     #d4a843;
-  --ac-dim: #e8c060;
-  --ac-bg:  rgba(212,168,67,0.10);
-  --ac-bdr: rgba(212,168,67,0.25);
+  --ac: #C8A464;
+  --ac-dim: #DDBE82;
+  --ac-bg: rgba(200, 164, 100, 0.08);
+  --ac-bdr: rgba(200, 164, 100, 0.32);
+  --ac-glow: rgba(200, 164, 100, 0.22);
 
-  --bdr:      rgba(255,255,255,0.07);
-  --bdr-med:  rgba(255,255,255,0.12);
-  --bdr-heavy:rgba(255,255,255,0.20);
+  --lu: #6CC08E;
+  --quan: #86A8F0;
+  --ke: #D2BC6A;
+  --ji: #EC7A6E;
 
-  --sh-xs: 0 1px 2px rgba(0,0,0,0.3);
-  --sh-sm: 0 2px 8px rgba(0,0,0,0.4), 0 1px 3px rgba(0,0,0,0.3);
-  --sh-md: 0 4px 20px rgba(0,0,0,0.5), 0 2px 6px rgba(0,0,0,0.35);
-  --sh-lg: 0 12px 40px rgba(0,0,0,0.6), 0 4px 12px rgba(0,0,0,0.4);
+  --bdr: rgba(236, 236, 231, 0.08);
+  --bdr-med: rgba(236, 236, 231, 0.14);
+  --bdr-heavy: rgba(236, 236, 231, 0.28);
 
-  --bg-card: rgba(255,255,255,0.04);
-  --bg-page: #020810;
+  --sh-md: 0 12px 32px rgba(0, 0, 0, 0.36);
+  --sh-lg: 0 24px 64px rgba(0, 0, 0, 0.48);
+
+  --glass-blur: 10px;
 }
 
 /* ─── 全局基础 ───────────────────────────────────────────── */
@@ -102,20 +134,42 @@ body {
   background: var(--bg-0);
   color: var(--tx-1);
   font-family: var(--font);
+  font-size: 16px;
+  line-height: 1.5;
+  /* 中文按 W3C clreq 和 Apple 中国官网密排，不收紧字距 */
+  letter-spacing: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  line-height: 1.6;
+  text-rendering: optimizeLegibility;
+}
+
+/* 标题默认 500；全站最重 600（苹方 Semibold，和 Apple 中国官网一致，见 tailwind.config.ts） */
+h1, h2, h3, h4 { font-weight: 500; }
+
+/* 交互：所有可操作元素同一节奏（200ms），只过渡颜色、背景、边框、透明度 */
+a, button, [role="button"], input, select, textarea, summary {
+  transition-property: color, background-color, border-color, opacity, box-shadow;
+  transition-duration: var(--dur-1);
+  transition-timing-function: ease;
+}
+a { text-underline-offset: 0.2em; text-decoration-thickness: 1px; }
+button:disabled, [aria-disabled="true"] { cursor: not-allowed; opacity: 0.4; }
+
+/* 焦点：一条 1px 金线，键盘用户看得清，鼠标用户不打扰 */
+:focus-visible {
+  outline: 1px solid var(--ac);
+  outline-offset: 3px;
 }
 
 /* ─── 滚动条 ─────────────────────────────────────────────── */
 ::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: var(--bg-1); }
-::-webkit-scrollbar-thumb { background: var(--bdr-heavy); border-radius: 3px; }
+::-webkit-scrollbar-thumb { background: var(--bdr-heavy); border-radius: var(--r-xs); }
 
 /* ─── 选中文字 ───────────────────────────────────────────── */
 ::selection {
-  background: rgba(184,146,42,0.15);
-  color: var(--ac-dim);
+  background: var(--ac-bdr);
+  color: var(--tx-0);
 }
 
 /* ─── 工具类 ─────────────────────────────────────────────── */
@@ -130,7 +184,7 @@ body {
   .container-page { padding: 0 16px; }
 }
 
-/* 卡片 */
+/* 卡片：平面 + 1px 细线 */
 .card {
   background: var(--bg-card);
   border: 1px solid var(--bdr);
@@ -147,6 +201,14 @@ body {
   border: 1px solid var(--bdr);
   border-radius: var(--r-md);
 }
+/* 玻璃卡：夜间半透明，透出身后的星空；日间就是白卡 */
+.card-glass {
+  background: var(--t-card);
+  border: 1px solid var(--t-border);
+  border-radius: var(--r-md);
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  backdrop-filter: blur(var(--glass-blur));
+}
 
 /* 深色区块 */
 .section-dark {
@@ -154,95 +216,80 @@ body {
   color: var(--tx-inv);
 }
 
-/* 按钮 */
-.btn-primary {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 12px 24px;
-  border-radius: var(--r-pill);
-  background: var(--tx-0);
-  color: var(--bg-0);
-  font-size: 14px;
-  font-weight: 500;
-  letter-spacing: 0.02em;
-  border: none;
-  cursor: pointer;
-  transition: opacity 0.15s ease, transform 0.12s ease;
-  text-decoration: none;
-}
-.btn-primary:hover { opacity: 0.86; }
-.btn-primary:active { transform: scale(0.98); }
-
-.btn-accent {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 12px 28px;
-  border-radius: var(--r-pill);
-  background: var(--ac);
-  color: white;
-  font-size: 14px;
-  font-weight: 500;
-  letter-spacing: 0.02em;
-  border: none;
-  cursor: pointer;
-  transition: background 0.15s ease, transform 0.12s ease;
-  text-decoration: none;
-}
-.btn-accent:hover { background: var(--ac-dim); }
-.btn-accent:active { transform: scale(0.98); }
-
+/* 按钮：直角矩形，字重 400；按下只降透明度，不缩放 */
+.btn-primary,
+.btn-accent,
 .btn-ghost {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 11px 22px;
-  border-radius: var(--r-pill);
-  background: transparent;
-  color: var(--tx-1);
-  font-size: 14px;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 12px 24px;
+  border-radius: var(--r-xs);
+  font-size: 15px;
   font-weight: 400;
-  border: 1px solid var(--bdr-heavy);
+  letter-spacing: normal;
   cursor: pointer;
-  transition: background 0.15s ease;
   text-decoration: none;
 }
-.btn-ghost:hover { background: var(--bg-2); }
+.btn-primary:active:not(:disabled),
+.btn-accent:active:not(:disabled),
+.btn-ghost:active:not(:disabled) { opacity: 0.72; }
 
-/* Tab 容器 */
+/* 主按钮：反白实底 */
+.btn-primary {
+  background: var(--tx-0);
+  color: var(--bg-0);
+  border: 1px solid var(--tx-0);
+}
+.btn-primary:hover { opacity: 0.86; }
+
+/* 强调按钮：金色细框，不铺满金色 */
+.btn-accent {
+  background: transparent;
+  color: var(--ac);
+  border: 1px solid var(--ac);
+}
+.btn-accent:hover { background: var(--ac-bg); }
+
+/* 幽灵按钮 */
+.btn-ghost {
+  background: transparent;
+  color: var(--tx-1);
+  border: 1px solid var(--bdr-heavy);
+}
+.btn-ghost:hover { border-color: var(--tx-0); }
+
+/* Tab：文字 + 底部 1px 指示线 */
 .tab-container {
   display: inline-flex;
-  background: var(--bg-1);
-  border: 1px solid var(--bdr);
-  border-radius: var(--r-sm);
-  padding: 3px;
-  gap: 2px;
+  background: transparent;
+  border-bottom: 1px solid var(--bdr);
+  gap: 4px;
 }
 .tab-item {
-  padding: 7px 16px;
-  border-radius: 6px;
-  font-size: 13px;
+  padding: 8px 12px;
+  font-size: 14px;
   font-weight: 400;
-  color: var(--tx-3);
+  color: var(--tx-2);
   cursor: pointer;
   border: none;
   background: transparent;
-  transition: all 0.18s ease;
+  box-shadow: inset 0 -1px 0 transparent;
   white-space: nowrap;
 }
+.tab-item:hover { color: var(--tx-0); }
 .tab-item.active {
-  background: var(--bg-card);
   color: var(--tx-0);
-  font-weight: 500;
-  box-shadow: var(--sh-xs);
+  box-shadow: inset 0 -1px 0 var(--tx-0);
 }
 
-/* 四化 Badge */
-.badge-lu   { color: var(--lu);   background: rgba(45,122,74,0.08);   border: 1px solid rgba(45,122,74,0.20);   }
-.badge-quan { color: var(--quan); background: rgba(26,86,168,0.08);   border: 1px solid rgba(26,86,168,0.20);   }
-.badge-ke   { color: var(--ke);   background: rgba(138,112,24,0.08);  border: 1px solid rgba(138,112,24,0.20);  }
-.badge-ji   { color: var(--ji);   background: rgba(168,50,40,0.08);   border: 1px solid rgba(168,50,40,0.20);   }
+/* 四化 Badge：颜色来自主题里的四化色 */
+.badge-lu   { color: var(--lu);   background: color-mix(in srgb, var(--lu) 8%, transparent);   border: 1px solid color-mix(in srgb, var(--lu) 28%, transparent); }
+.badge-quan { color: var(--quan); background: color-mix(in srgb, var(--quan) 8%, transparent); border: 1px solid color-mix(in srgb, var(--quan) 28%, transparent); }
+.badge-ke   { color: var(--ke);   background: color-mix(in srgb, var(--ke) 8%, transparent);   border: 1px solid color-mix(in srgb, var(--ke) 28%, transparent); }
+.badge-ji   { color: var(--ji);   background: color-mix(in srgb, var(--ji) 8%, transparent);   border: 1px solid color-mix(in srgb, var(--ji) 28%, transparent); }
 
 .sihua-badge {
   display: inline-flex;
@@ -251,7 +298,7 @@ body {
   font-family: var(--font-mono);
   padding: 1px 5px;
   border-radius: var(--r-xs);
-  font-weight: 600;
+  font-weight: 500;
   letter-spacing: 0.02em;
   line-height: 1.4;
 }
@@ -261,14 +308,14 @@ body {
   width: 100%;
   background: var(--bg-card);
   border: 1px solid var(--bdr-med);
-  border-radius: var(--r-sm);
+  border-radius: var(--r-xs);
   padding: 10px 14px;
-  font-size: 14px;
+  font-size: 15px;
   color: var(--tx-1);
   font-family: var(--font);
   outline: none;
-  transition: border-color 0.15s ease;
 }
+.input-base:hover { border-color: var(--bdr-heavy); }
 .input-base:focus { border-color: var(--tx-0); }
 .input-base::placeholder { color: var(--tx-3); }
 
@@ -281,38 +328,53 @@ body {
 
 /* 标签 */
 .label-section {
-  font-size: 11px;
+  font-size: 12px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--tx-3);
-  font-weight: 500;
+  font-weight: 400;
 }
 
-/* 进场动画 */
+/* ─── 动效 ──────────────────────────────────────────────── */
+/* 进场：位移小、时间长、缓出，像星光慢慢显现 */
 @keyframes fade-up {
-  from { opacity: 0; transform: translateY(20px); }
+  from { opacity: 0; transform: translateY(12px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 @keyframes fade-in {
   from { opacity: 0; }
   to   { opacity: 1; }
 }
-.animate-fade-up { animation: fade-up 0.5s ease forwards; }
-.animate-fade-in { animation: fade-in 0.4s ease forwards; }
+/* 呼吸：只给“正在发生”的天象（流式解读、当前宫位），幅度很小 */
+@keyframes breathe {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.6; }
+}
+.animate-fade-up { animation: fade-up var(--dur-2) var(--ease) both; }
+.animate-fade-in { animation: fade-in var(--dur-2) var(--ease) both; }
+.animate-breathe { animation: breathe var(--dur-breath) var(--ease-in-out) infinite; }
 
-/* ─── 渐变文字（3.0 主标题用） ──────────────────────────── */
+/* 减少动态效果：关掉一切非必要的动画和过渡 */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ─── 标题字（原“渐变金字”）──────────────────────────────── */
+/* 改为单色：Signal White / 墨色，夜间带一圈极淡的金色星辉。类名保留，页面不用改 */
 .grad-text {
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
   display: inline-block;
 }
-.grad-text-dark {
-  background-image: linear-gradient(160deg, #c8993a 0%, #f0d070 40%, #c8993a 70%, #f0c755 100%);
-}
+.grad-text-dark,
 .grad-text-light {
-  background-image: linear-gradient(160deg, #6a4206 0%, #9a6a10 40%, #6a4206 70%, #885010 100%);
+  color: var(--tx-0);
+  -webkit-text-fill-color: var(--tx-0);
+  background: none;
+  text-shadow: 0 0 48px var(--ac-glow);
 }
 
 /* ─── 命盘工作台响应式 ─────────────────────────────────── */
@@ -434,3 +496,12 @@ body {
    select 本身是半透明底 + 浅色字，Windows 上原生下拉列表是白底，浅灰字配白底看不清（#14） */
 [data-theme="dark"] select { color-scheme: dark; }
 [data-theme="dark"] select option { background-color: var(--bg-2); color: var(--tx-1); }
+
+/* ─── 按钮和链接一律直角（#57）──────────────────────────────
+   组件里的 rounded-full 胶囊按钮跟着变成 2px 矩形；真正的圆（头像、圆点、
+   开关滑块）不是按钮，不受影响。 */
+button.rounded-full,
+a.rounded-full,
+[role="button"].rounded-full {
+  border-radius: var(--r-xs);
+}

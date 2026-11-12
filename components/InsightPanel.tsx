@@ -361,9 +361,9 @@ ${selectedSiHua.starName}化${selectedSiHua.siHua}落在【${palaceName}】，�
                 disabled={loading}
                 className="py-1.5 text-[10px] font-medium rounded-lg transition-all duration-150 disabled:opacity-40"
                 style={{
-                  background: isActive ? 'rgba(212,168,67,0.12)' : 'transparent',
-                  border: `1px solid ${isActive ? 'rgba(212,168,67,0.3)' : 'var(--t-border)'}`,
-                  color: isActive ? 'var(--t-gold)' : 'var(--t-faint)',
+                  background: isActive ? 'var(--bg-2)' : 'transparent',
+                  border: `1px solid ${isActive ? 'var(--tx-0)' : 'var(--t-border)'}`,
+                  color: isActive ? 'var(--t-text)' : 'var(--t-text2)',
                 }}
               >
                 {t.label}
@@ -399,9 +399,9 @@ ${selectedSiHua.starName}化${selectedSiHua.siHua}落在【${palaceName}】，�
                   <div
                     className="max-w-[85%] rounded-xl px-3 py-2 text-[11px]"
                     style={{
-                      background: 'rgba(212,168,67,0.08)',
-                      border: '1px solid rgba(212,168,67,0.18)',
-                      color: 'var(--t-gold)',
+                      background: 'var(--bg-2)',
+                      border: '1px solid var(--bdr)',
+                      color: 'var(--t-text)',
                     }}
                   >
                     {msg.content}
@@ -454,9 +454,9 @@ ${selectedSiHua.starName}化${selectedSiHua.siHua}落在【${palaceName}】，�
             disabled={loading || !input.trim()}
             className="px-3 py-2 rounded-lg text-[11px] font-medium transition-all disabled:opacity-30 disabled:cursor-not-allowed"
             style={{
-              background: 'rgba(212,168,67,0.15)',
-              border: '1px solid rgba(212,168,67,0.25)',
-              color: 'var(--t-gold)',
+              background: 'var(--tx-0)',
+              border: '1px solid var(--tx-0)',
+              color: 'var(--bg-0)',
             }}
           >
             {loading ? '…' : '追问'}

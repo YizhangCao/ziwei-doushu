@@ -73,21 +73,23 @@ export default function PalaceCell({
       className="relative flex flex-col p-1.5 cursor-pointer transition-all duration-200 h-full"
       style={{
         minHeight: '90px',
-        background: isCurrentDaXian
-          ? 'rgba(147,51,234,0.08)'
-          : isSelected
-          ? 'rgba(37,99,235,0.18)'
+        // 选中 = 实线描边（界面状态，单色）；当前大限 = 金色左边线（命盘含义）；
+        // 三方四正 = 细线；命宫 = 极淡的金底
+        background: isSelected
+          ? 'var(--bg-2)'
+          : isCurrentDaXian
+          ? 'var(--ac-bg)'
           : isSanFang
-          ? 'rgba(37,99,235,0.09)'
+          ? 'color-mix(in srgb, var(--tx-0) 4%, var(--t-bg))'
           : isMingGong
-          ? 'rgba(212,168,67,0.04)'
+          ? 'var(--ac-bg)'
           : 'var(--t-bg)',
-        boxShadow: isCurrentDaXian
-          ? 'inset 3px 0 0 rgba(147,51,234,0.5)'
-          : isSelected
-          ? 'inset 0 0 0 1.5px rgba(37,99,235,0.7)'
+        boxShadow: isSelected
+          ? `inset 0 0 0 1px var(--tx-0)${isCurrentDaXian ? ', inset 3px 0 0 var(--ac)' : ''}`
+          : isCurrentDaXian
+          ? 'inset 3px 0 0 var(--ac)'
           : isSanFang
-          ? 'inset 0 0 0 1px rgba(37,99,235,0.4)'
+          ? 'inset 0 0 0 1px var(--bdr-heavy)'
           : 'none',
       }}
     >

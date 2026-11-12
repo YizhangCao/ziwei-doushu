@@ -48,7 +48,7 @@ describe('app/globals.css design system', () => {
   });
 
   it('defines the card-glass class that AGENTS.md and the components use', () => {
-    expect(css).toMatch(/\.card-glass\s*\{[^}]*background:[^}]*border:[^}]*\}/s);
+    expect(css).toMatch(/\.card-glass\s*\{[^}]*background:[^}]*border:[^}]*\}/);
   });
 
   it('keeps every text token at 4.5:1 or more on every surface, in both themes', () => {
@@ -75,7 +75,7 @@ describe('app/globals.css design system', () => {
     expect(themes.light['--dur-1']).toBe('200ms');
     expect(themes.light['--dur-2']).toBe('600ms');
     expect(themes.light['--ease']).toBe('cubic-bezier(0.15, 1, 0.35, 1)');
-    expect(css).toMatch(/@media \(prefers-reduced-motion: reduce\)\s*\{[^}]*\{[^}]*animation-duration:[^}]*transition-duration:/s);
+    expect(css).toMatch(/@media \(prefers-reduced-motion: reduce\)\s*\{[^}]*\{[^}]*animation-duration:[^}]*transition-duration:/);
   });
 
   it('sets Chinese in PingFang SC with normal tracking, Latin in Helvetica Neue', () => {
@@ -83,6 +83,6 @@ describe('app/globals.css design system', () => {
     expect(font.indexOf('"Helvetica Neue"')).toBeGreaterThanOrEqual(0);
     expect(font.indexOf('"PingFang SC"')).toBeGreaterThan(font.indexOf('"Helvetica Neue"'));
     expect(font).toMatch(/"Microsoft YaHei".*"Noto Sans SC".*sans-serif$/);
-    expect(css).toMatch(/body\s*\{[^}]*letter-spacing:\s*normal/s);
+    expect(css).toMatch(/body\s*\{[^}]*letter-spacing:\s*normal/);
   });
 });

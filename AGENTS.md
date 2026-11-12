@@ -137,7 +137,13 @@ A user only ever sees their own charts and charts explicitly shared with them. C
 - **Chart board (`ChartBoard`, `PalaceCell`)**: 4×4 grid of the 12 palaces around a center summary. Clicking a palace selects it and updates the reading panel.
 - **Time navigation (`TimeNav`)**: switches between natal (本命), decade (大限), and annual (流年) views.
 - **Reading panel (`InsightPanel`)** and **chat (`ChatPanel`)**: stream an AI reading for the current chart, text appearing as it arrives, with a loading state and a readable error message.
-- **Visual style**: dark, gold-accented "glass card" look. Use the existing CSS variables (`var(--t-gold)`, `var(--t-border)`, `var(--t-faint)`) and the `card-glass` class. Do not add new colors or a new UI library.
+- **Visual style** (design system, #57): calm and precise, after Polestar's web design, over a quiet night sky. The default theme is night; day mode follows Polestar's white pages.
+  - **Calm:** monochrome surfaces, 2px square geometry, 1px hairlines, few type sizes, and hierarchy from size and opacity rather than weight.
+  - **Accent:** one gold, used only for chart meaning (stars, sihua, the life palace, the current decade, AI text), the way Polestar uses Swedish Gold on small details. Buttons, navigation and selected states stay monochrome.
+  - **Type:** Chinese follows Apple's China site (PingFang SC, normal tracking, line height about 1.5). Latin letters and digits use Helvetica Neue.
+  - **Motion:** 200 ms for interactions and 600 ms for reveals, on one easing curve. Pressing a button lowers its opacity, with no scaling or bouncing. `prefers-reduced-motion` turns motion off.
+  - **Tokens:** every color, radius, shadow and duration comes from the tokens in `app/globals.css`, which also defines the `--t-*` aliases and `card-glass`. Tailwind's color families map onto the five semantic tokens (`--ac`, `--lu`, `--quan`, `--ke`, `--ji`). Don't write hex or rgba values in components.
+  - **Tests:** `tests/unit/design/design-system.test.ts` checks that every token used is defined and that text keeps 4.5:1 contrast in both themes.
 
 ### 2.3 Fixed API contract (build the backend to this)
 
@@ -241,3 +247,4 @@ A task is done when: the acceptance criteria are all met, `npm run typecheck` an
   - Test snippet and "no `node:assert`" (both runs used `node:assert`).
   - Don't delete existing `.env.example` entries; no hardcoded dated model ID (both runs did this).
   - Required end-of-task summary with acceptance criteria, branch, commit, and `Closes #N`.
+- v3.5 (11/11/2026): new design system (#57). Section 2.2 now describes it: Polestar-style calm, gold only for chart meaning, Chinese type after Apple's China site. The old rule pointed at CSS variables and a `card-glass` class that were never defined, so most component colors fell back to browser defaults.

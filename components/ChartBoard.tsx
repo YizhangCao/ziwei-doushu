@@ -121,7 +121,7 @@ export default function ChartBoard({ chart, onStarSelect, onPalaceSelect, onSiHu
           gap: '1px',
           background: 'var(--t-border)',
           border: '1px solid var(--t-border)',
-          boxShadow: '0 4px 32px rgba(0,0,0,0.15)',
+          boxShadow: 'var(--sh-sm)',
         }}
       >
         {ANIMATION_ORDER.map((branch, i) => {
@@ -153,7 +153,7 @@ export default function ChartBoard({ chart, onStarSelect, onPalaceSelect, onSiHu
           className="flex flex-col items-center justify-center p-4 gap-3"
           style={{ gridRow: '2 / 4', gridColumn: '2 / 4', background: 'var(--t-bg)' }}
         >
-          <div className="text-5xl select-none leading-none" style={{ color: 'var(--t-gold)', opacity: 0.12, filter: 'drop-shadow(0 0 12px rgba(180,120,30,0.15))' }}>
+          <div className="text-5xl select-none leading-none" style={{ color: 'var(--t-gold)', opacity: 0.12, filter: 'drop-shadow(0 0 12px var(--ac-glow))' }}>
             ☯
           </div>
 
@@ -169,8 +169,8 @@ export default function ChartBoard({ chart, onStarSelect, onPalaceSelect, onSiHu
           {chart.currentDaXianIndex >= 0 && (() => {
             const dx = chart.daXians[chart.currentDaXianIndex];
             return (
-              <div className="border border-purple-500/30 rounded-lg px-3 py-1.5 text-center"
-                style={{ background: 'rgba(147,51,234,0.06)' }}>
+              <div className="border rounded-lg px-3 py-1.5 text-center"
+                style={{ background: 'var(--ac-bg)', borderColor: 'var(--ac-bdr)' }}>
                 <div className="text-[8px] text-purple-500/80 mb-0.5 tracking-wider">当前大限</div>
                 <div className="text-[12px] text-purple-400 font-medium tabular-nums">{dx.startAge}–{dx.endAge}岁</div>
                 <div className="text-[9px] text-purple-500/60">{dx.palaceName}</div>
@@ -213,7 +213,7 @@ export default function ChartBoard({ chart, onStarSelect, onPalaceSelect, onSiHu
                   const p2 = BRANCH_SVG_POS[sanFangBranches[2]]; // 三合1
                   const p3 = BRANCH_SVG_POS[sanFangBranches[3]]; // 三合2
                   const dash = "6,5";
-                  const stroke = "rgba(37,99,235,0.55)";
+                  const stroke = "var(--ac)";
                   const sw = "1.5";
                   return (
                     <>
@@ -221,26 +221,26 @@ export default function ChartBoard({ chart, onStarSelect, onPalaceSelect, onSiHu
                       <line
                         x1={`${p0[0]}%`} y1={`${p0[1]}%`}
                         x2={`${p1[0]}%`} y2={`${p1[1]}%`}
-                        stroke={stroke} strokeWidth={sw}
+                        style={{ stroke }} strokeWidth={sw} strokeOpacity={0.55}
                         strokeDasharray={dash} strokeLinecap="round"
                       />
                       {/* 三合三角形：本宫 → 三合1 → 三合2 → 本宫 */}
                       <line
                         x1={`${p0[0]}%`} y1={`${p0[1]}%`}
                         x2={`${p2[0]}%`} y2={`${p2[1]}%`}
-                        stroke={stroke} strokeWidth={sw}
+                        style={{ stroke }} strokeWidth={sw} strokeOpacity={0.55}
                         strokeDasharray={dash} strokeLinecap="round"
                       />
                       <line
                         x1={`${p2[0]}%`} y1={`${p2[1]}%`}
                         x2={`${p3[0]}%`} y2={`${p3[1]}%`}
-                        stroke={stroke} strokeWidth={sw}
+                        style={{ stroke }} strokeWidth={sw} strokeOpacity={0.55}
                         strokeDasharray={dash} strokeLinecap="round"
                       />
                       <line
                         x1={`${p3[0]}%`} y1={`${p3[1]}%`}
                         x2={`${p0[0]}%`} y2={`${p0[1]}%`}
-                        stroke={stroke} strokeWidth={sw}
+                        style={{ stroke }} strokeWidth={sw} strokeOpacity={0.55}
                         strokeDasharray={dash} strokeLinecap="round"
                       />
                       {/* 四个宫位中心标记点 */}
@@ -249,7 +249,7 @@ export default function ChartBoard({ chart, onStarSelect, onPalaceSelect, onSiHu
                           key={i}
                           cx={`${p[0]}%`} cy={`${p[1]}%`}
                           r="3"
-                          fill={i === 0 ? 'rgba(37,99,235,0.8)' : 'rgba(37,99,235,0.45)'}
+                          style={{ fill: 'var(--ac)' }} fillOpacity={i === 0 ? 0.9 : 0.5}
                         />
                       ))}
                     </>

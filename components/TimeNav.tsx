@@ -31,10 +31,10 @@ export function buildSiHuaOverlay(stemIndex: number): Record<string, string> {
 }
 
 const SIHUA_COLORS: Record<string, string> = {
-  '禄': '#4ade80',
-  '权': '#60a5fa',
-  '科': '#facc15',
-  '忌': '#f87171',
+  '禄': 'var(--lu)',
+  '权': 'var(--quan)',
+  '科': 'var(--ke)',
+  '忌': 'var(--ji)',
 };
 
 export default function TimeNav({
@@ -100,12 +100,8 @@ export default function TimeNav({
         <div
           className="relative flex-1 flex items-center justify-center rounded-lg py-1.5 gap-1 transition-all duration-200"
           style={{
-            background: view === 'liunian'
-              ? 'rgba(212,168,67,0.12)'
-              : 'transparent',
-            border: view === 'liunian'
-              ? '1px solid rgba(212,168,67,0.25)'
-              : '1px solid transparent',
+            background: view === 'liunian' ? 'var(--bg-2)' : 'transparent',
+            border: view === 'liunian' ? '1px solid var(--bdr-heavy)' : '1px solid transparent',
           }}
         >
           <button
@@ -182,9 +178,9 @@ function TabButton({
       onClick={onClick}
       className="flex-1 py-1.5 text-[10px] font-medium rounded-lg transition-all duration-200"
       style={{
-        background: active ? 'rgba(212,168,67,0.12)' : 'transparent',
-        color: active ? 'var(--t-gold)' : 'var(--t-faint)',
-        border: active ? '1px solid rgba(212,168,67,0.25)' : '1px solid transparent',
+        background: active ? 'var(--bg-2)' : 'transparent',
+        color: active ? 'var(--t-text)' : 'var(--t-text2)',
+        border: active ? '1px solid var(--bdr-heavy)' : '1px solid transparent',
       }}
     >
       {children}
