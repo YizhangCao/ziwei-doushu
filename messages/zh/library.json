@@ -1,0 +1,52 @@
+{
+  "meta": {
+    "title": "倪师方法论 · 古籍原典库 · 紫微斗数全集 / 全书 / 骨髓赋",
+    "description": "紫微斗数权威古籍全文检索：《紫微斗数全集》《紫微斗数全书》《骨髓赋》倪海厦《天纪》引证来源",
+    "bookTitle": "《{title}》· {dynasty} · 紫微斗数古籍原典库",
+    "chapterTitle": "{chapter} · 《{book}》· 紫微斗数古籍",
+    "chapterDescription": "《{book}》{chapter}原文",
+    "searchTitle": "搜索 · 古籍原典库"
+  },
+  "kicker": "倪海厦体系 · 引证来源",
+  "title": "古籍原典库",
+  "count": "紫微斗数权威古籍全文检索：收录 {books} 部古籍，共 {paragraphs} 段原文。",
+  "booksLabel": "收录古籍",
+  "bookTitle": "《{title}》",
+  "bookStats": "{chapters} 章 · {paragraphs} 段",
+  "open": "进入查阅",
+  "aboutTitle": "关于本库",
+  "about": "所收录古籍均为公版（明代刊本）。内容持续完善，未来将补全《紫微斗数全集》全本与倪海厦《天纪》引证目录。如发现任何错误请联系我们。",
+  "breadcrumb": "面包屑",
+  "home": "古籍库",
+  "chapters": "章节目录",
+  "paragraphCount": "{n} 段",
+  "byline": "《{title}》 · {dynasty}",
+  "modern": "白话",
+  "niNote": "倪师注",
+  "meaning": "{text}",
+  "chapterNav": "章节导航",
+  "prev": "上一章",
+  "next": "下一章",
+  "search": {
+    "aria": "搜索古籍原文",
+    "placeholder": "搜索古籍原文，如：七杀朝斗 / 双禄朝垣 / 化忌",
+    "button": "搜索",
+    "pending": "搜索中…",
+    "crumb": "搜索",
+    "heading": "搜索古籍原文",
+    "query": "「{q}」",
+    "found": "共找到 {n} 条古籍原文匹配",
+    "none": "暂未在已收录古籍中找到这个关键词。",
+    "empty": "输入要搜索的关键词。",
+    "try": "可以试试：",
+    "hitMeta": "《{book}》 · {chapter}"
+  },
+  "suggestions": {
+    "s1": "七杀朝斗",
+    "s2": "双禄朝垣",
+    "s3": "化忌",
+    "s4": "紫微",
+    "s5": "命宫",
+    "s6": "机月同梁"
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "title": "合盘",
+  "lead": "输入两个人的出生信息，AI 按倪海厦体系对照双方命盘：缘分、相处与感情走向。",
+  "personA": "甲方 — A",
+  "personB": "乙方 — B",
+  "analysisTitle": "合盘分析",
+  "emptyState": "填好双方出生信息后，点击下方按钮<br></br>AI 将基于倪海厦体系深度分析两人缘分匹配度",
+  "start": "开始合盘",
+  "loading": "正在对比双方命盘…",
+  "errors": {
+    "formIncomplete": "请先填写双方完整出生信息",
+    "apiMissing": "开源版不含合盘 AI 分析接口（/api/heming），需要你自己实现后才能用。两人的命盘可以分别到「排盘」页（/chart）查看。",
+    "failed": "分析暂时不可用，请重试。"
+  },
+  "followUpTitle": "针对此次合盘继续追问",
+  "inputPlaceholder": "继续追问，如：哪几年是两人感情关键期？",
+  "inputLabel": "继续追问",
+  "send": "继续追问",
+  "sending": "分析中…",
+  "quickQuestions": {
+    "q1": "感情匹配度如何？",
+    "q2": "适合合伙创业吗？",
+    "q3": "两人结婚是否合适？",
+    "q4": "哪方面最容易产生矛盾？",
+    "q5": "财运是否互补？"
+  }
+}

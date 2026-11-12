@@ -1,0 +1,27 @@
+{
+  "title": "Compatibility",
+  "lead": "Enter two people’s birth details. The AI compares the two natal charts the way Ni Haixia’s system does: your bond, how you get along, and where love is heading.",
+  "personA": "Person A",
+  "personB": "Person B",
+  "analysisTitle": "Compatibility reading",
+  "emptyState": "Fill in both people’s birth details, then press the button below.<br></br>The AI will read how well the two of you match, following Ni Haixia’s system.",
+  "start": "Compare charts",
+  "loading": "Comparing the two charts…",
+  "errors": {
+    "formIncomplete": "Fill in full birth details for both people first.",
+    "apiMissing": "The open-source version has no compatibility AI endpoint (/api/heming). You need to add one yourself. You can still see each chart on the Chart page (/chart).",
+    "failed": "The reading isn’t available right now. Please try again."
+  },
+  "followUpTitle": "Ask more about this match",
+  "inputPlaceholder": "Ask a follow-up, e.g. Which years matter most for us as a couple?",
+  "inputLabel": "Ask a follow-up",
+  "send": "Ask",
+  "sending": "Reading…",
+  "quickQuestions": {
+    "q1": "How well do we match in love?",
+    "q2": "Should we start a business together?",
+    "q3": "Are we right for marriage?",
+    "q4": "Where are we most likely to clash?",
+    "q5": "Do our finances complement each other?"
+  }
+}

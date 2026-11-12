@@ -7,40 +7,45 @@
 /**
  * @fileoverview The one site navigation (#57), after Polestar's header: 72px
  * tall, aligned to the page gutter, a monochrome wordmark with the pole-star
- * mark, 16px text links and the day / night switch. Mounted once in the layout.
+ * mark, 16px text links, the language switch (#59) and the day / night switch.
+ * Mounted once in the layout.
  */
 
 'use client';
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useLocale, useTranslations } from 'next-intl';
 import { useTheme } from '@/components/ThemeProvider';
+import LanguageToggle from '@/components/LanguageToggle';
 
 const LINKS = [
-  { href: '/chart', label: '起盘' },
-  { href: '/heming', label: '合盘' },
-];
+  { href: '/chart', key: 'chart' },
+  { href: '/heming', key: 'heming' },
+] as const;
 
 /**
  * The day / night switch. Its label and knob position come from CSS
  * ([data-theme]), so the server and the browser render the same HTML.
  */
-function ThemeToggle() {
+function ThemeToggle({ compact }: { compact: boolean }) {
   const { toggle } = useTheme();
+  const t = useTranslations('nav.theme');
   return (
     <button
       type="button"
       onClick={toggle}
-      aria-label="切换日间 / 夜间主题"
+      aria-label={t('toggle')}
       className="flex items-center gap-2"
       style={{ background: 'transparent', border: 'none', padding: 0, minHeight: 44 }}
     >
       <span className="relative w-10 h-5 rounded-full flex-shrink-0" style={{ background: 'var(--bg-2)' }}>
         <span className="theme-toggle-knob absolute top-1 left-0 w-3.5 h-3.5 rounded-full" style={{ background: 'var(--tx-0)' }} />
       </span>
-      <span className="select-none" style={{ fontSize: 'var(--fs-caption)', color: 'var(--tx-2)' }}>
-        <span className="theme-label-night">夜间</span>
-        <span className="theme-label-day">日间</span>
+      {/* On a phone the English nav is too wide for the word, so only the switch shows (#59) */}
+      <span className={compact ? 'select-none hidden sm:inline' : 'select-none'} style={{ fontSize: 'var(--fs-caption)', color: 'var(--tx-2)' }}>
+        <span className="theme-label-night">{t('night')}</span>
+        <span className="theme-label-day">{t('day')}</span>
       </span>
     </button>
   );
@@ -49,15 +54,18 @@ function ThemeToggle() {
 /** Renders the sticky site navigation. */
 export default function SiteNav() {
   const pathname = usePathname() ?? '/';
+  const t = useTranslations('nav');
+  // The English wordmark is twice as wide; on a phone it gives way to the links.
+  const compactBrand = useLocale() === 'en';
   return (
-    <nav aria-label="主导航" className="no-print sticky top-0 z-50" style={{ background: 'var(--bg-0)' }}>
+    <nav aria-label={t('label')} className="no-print sticky top-0 z-50" style={{ background: 'var(--bg-0)' }}>
       <div className="page flex items-center justify-between gap-4" style={{ height: 'var(--nav-h)' }}>
-        <Link href="/" className="flex items-center gap-3 flex-shrink-0" style={{ fontSize: '18px', color: 'var(--tx-0)' }}>
+        <Link href="/" aria-label={t('brand')} className="flex items-center gap-3 flex-shrink-0" style={{ fontSize: '18px', color: 'var(--tx-0)' }}>
           <span aria-hidden="true" className="pole-mark" />
-          紫微命盘
+          <span className={compactBrand ? 'hidden sm:inline' : undefined}>{t('brand')}</span>
         </Link>
-        <div className="flex items-center gap-5 sm:gap-8" style={{ fontSize: 'var(--fs-body)' }}>
-          {LINKS.map(({ href, label }) => {
+        <div className={`flex items-center ${compactBrand ? 'gap-3' : 'gap-4'} sm:gap-8`} style={{ fontSize: 'var(--fs-body)' }}>
+          {LINKS.map(({ href, key }) => {
             const current = pathname.startsWith(href);
             return (
               <Link
@@ -66,11 +74,12 @@ export default function SiteNav() {
                 aria-current={current ? 'page' : undefined}
                 style={{ color: 'var(--tx-0)', textDecoration: current ? 'underline' : 'none' }}
               >
-                {label}
+                {t(key)}
               </Link>
             );
           })}
-          <ThemeToggle />
+          <LanguageToggle />
+          <ThemeToggle compact={compactBrand} />
         </div>
       </div>
     </nav>
