@@ -195,7 +195,7 @@ When a feature changes one of these flows, update this section in the same PR.
 - Read the GitHub Issue and its acceptance criteria before writing code, and restate them in your plan.
 - Reuse existing types and helpers (`ZiweiChart`, `generateChart`, `formToBirthInfo`) before writing new ones.
 - Keep changes small and focused on the issue.
-- Validate every API request body before using it: `chart.palaces` must have 12 entries, at most **30 messages**, each at most **2,000 characters**, roles only `user` / `assistant` (limits from issue #5).
+- Validate every API request body before using it: `chart.palaces` must have 12 entries, at most **30 messages**, roles only `user` / `assistant`. A user message is at most **2,000 characters**, an assistant message (the model's own earlier reply, sent back as history) at most **20,000**, and all messages together at most **100,000** (limits from #5, by role since #105). They live in `lib/ai/interpret-limits.ts`, which the route and the reading panel share.
 - Stream responses; the UI is built for streaming.
 - Write the failing test first (TDD), and add a test for each new `lib/` function.
 - Put every user-visible string in `messages/zh` and `messages/en` (#59), never in components. English follows the product owner's rules:
@@ -256,5 +256,6 @@ A task is done when: the acceptance criteria are all met, `npm run typecheck` an
   - Test snippet and "no `node:assert`" (both runs used `node:assert`).
   - Don't delete existing `.env.example` entries; no hardcoded dated model ID (both runs did this).
   - Required end-of-task summary with acceptance criteria, branch, commit, and `Closes #N`.
+- v3.7 (11/12/2026): request limits by role (#105). One English reading is about 5,500 characters, and the old 2,000-character cap on every message made each follow-up fail with 400. A visitor still types at most 2,000; the model's replies may be 20,000, with 100,000 in all.
 - v3.6 (11/11/2026): English version (#59). next-intl is in the stack table, the language switch in 2.2 and 2.4, and the translation rules under "Do".
 - v3.5 (11/11/2026): new design system (#57). Section 2.2 now describes it: Polestar-style calm, gold only for chart meaning, Chinese type after Apple's China site. The old rule pointed at CSS variables and a `card-glass` class that were never defined, so most component colors fell back to browser defaults.

@@ -4,6 +4,7 @@ import type { ZiweiChart } from '@/lib/ziwei/types';
 import type { Locale } from '@/lib/i18n/locale';
 import { glossaryForPrompt } from '@/lib/i18n/glossary';
 import { isKnownChart } from './known-chart-values';
+import { MAX_MESSAGES, fitsInterpretLimits } from './interpret-limits';
 
 export interface InterpretMessage {
   role: 'user' | 'assistant';
@@ -58,22 +59,23 @@ export function validateInterpretRequest(value: unknown): InterpretRequest | nul
   const chart = value.chart;
   // 12 palaces, and every name/value the serializer reads must be one the engine produces.
   if (!isKnownChart(chart)) return null;
-  if (value.messages.length > 30) return null;
+  if (value.messages.length > MAX_MESSAGES) return null;
 
   const messages: InterpretMessage[] = [];
   for (const message of value.messages) {
     if (
       !isRecord(message) ||
       (message.role !== 'user' && message.role !== 'assistant') ||
-      typeof message.content !== 'string' ||
-      message.content.length > 2000
+      typeof message.content !== 'string'
     ) {
       return null;
     }
     messages.push({ role: message.role, content: message.content });
   }
 
-  return { chart, messages };
+  // Limits by role: a visitor types at most 2,000 characters, but the model's own earlier
+  // replies come back as history and are longer.
+  return fitsInterpretLimits(messages) ? { chart, messages } : null;
 }
 
 export function serializeChartForInterpretation(chart: ZiweiChart): string {

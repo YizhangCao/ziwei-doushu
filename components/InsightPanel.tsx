@@ -7,6 +7,8 @@ import AiContent from './AiContent';
 import { useLocale, useTranslations } from 'next-intl';
 import { termLabel } from '@/lib/i18n/glossary';
 import { formatList } from '@/lib/i18n/format';
+// The server's limits, checked here too so the panel can say why a question can't be sent.
+import { MAX_USER_CHARS, fitsInterpretLimits, toInterpretHistory } from '@/lib/ai/interpret-limits';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -16,14 +18,13 @@ interface Message {
   error?: ReadingError;
 }
 
-/** Each cause has its own message, so a used-up limit never reads like a bug (#63). */
-type ReadingError = 'network' | 'apiMissing' | 'rateLimited' | 'failed';
+/**
+ * Each cause has its own message, so a used-up limit never reads like a bug (#63). A refused
+ * request (400) is not retryable: sending the same request again gets the same answer.
+ */
+type ReadingError = 'network' | 'apiMissing' | 'rateLimited' | 'rejected' | 'failed';
 const RETRYABLE: ReadonlySet<ReadingError> = new Set(['network', 'failed']);
 
-// The limits the server enforces (lib/ai/interpret.ts, #5). Checking them here lets the
-// panel say why a question can't be sent instead of failing with a 400 (#63).
-const MAX_MESSAGES = 30;
-const MAX_CHARS = 2000;
 /** The character counter appears once a question gets this long. */
 const COUNTER_FROM = 1800;
 
@@ -155,6 +156,7 @@ export default function InsightPanel({ chart, selectedPalace, selectedSiHua }: I
       }
       if (res.status === 404) return fail('apiMissing');
       if (res.status === 429) return fail('rateLimited');
+      if (res.status === 400) return fail('rejected');
       if (!res.ok || !res.body) return fail('failed');
 
       const reader = res.body.getReader();
@@ -198,18 +200,15 @@ export default function InsightPanel({ chart, selectedPalace, selectedSiHua }: I
    */
   const sendMessage = (text: string, hidden: boolean, what: Reading): boolean => {
     if (!text.trim() || loadingRef.current) return false;
-    if (messagesRef.current.length >= MAX_MESSAGES || text.length > MAX_CHARS) return false;
+    const userMsg: Message = { role: 'user', content: text, hidden };
+    // Read the history through the ref (a closure could be stale). It leaves the panel's own
+    // failure messages out, and the whole request must fit the server's limits (#105).
+    const apiMessages = [...toInterpretHistory(messagesRef.current), { role: userMsg.role, content: text }];
+    if (text.length > MAX_USER_CHARS || !fitsInterpretLimits(apiMessages)) return false;
     loadingRef.current = true;
     setLoading(true);
     setReading(what);
     lastRequest.current = { text, hidden, what };
-
-    const userMsg: Message = { role: 'user', content: text, hidden };
-    // Capture current messages synchronously via ref (avoids stale closure)
-    const apiMessages = [...messagesRef.current, userMsg].map(m => ({
-      role: m.role,
-      content: m.content,
-    }));
 
     setMessages(prev => [...prev, userMsg]);
     setInput('');
@@ -254,8 +253,9 @@ export default function InsightPanel({ chart, selectedPalace, selectedSiHua }: I
   // Between sending and the first words of the reply, the panel says what it is reading (#63).
   const waiting = loading && !(last?.role === 'assistant' && last.content !== '');
   const anyShown = messages.some(m => (m.role === 'user' && !m.hidden) || (m.role === 'assistant' && m.content !== ''));
-  const tooLong = input.length > MAX_CHARS;
-  const tooMany = messages.length >= MAX_MESSAGES;
+  const tooLong = input.length > MAX_USER_CHARS;
+  // Full when one more question, the one being typed, would pass the server's limits.
+  const tooMany = !tooLong && !fitsInterpretLimits([...toInterpretHistory(messages), { role: 'user', content: input }]);
 
   return (
     <div className="flex flex-col h-full overflow-hidden card-glass" style={{ minHeight: 480 }}>
@@ -378,7 +378,7 @@ export default function InsightPanel({ chart, selectedPalace, selectedSiHua }: I
           </p>
         ) : input.length >= COUNTER_FROM && (
           <p id="insight-input-note" className="mt-2" style={{ fontSize: 'var(--fs-caption)', color: 'var(--t-text2)' }}>
-            {t('charsLeft', { n: MAX_CHARS - input.length })}
+            {t('charsLeft', { n: MAX_USER_CHARS - input.length })}
           </p>
         )}
       </div>
