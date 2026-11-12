@@ -27,6 +27,8 @@ interface PalaceCellProps {
   overlayLabel?: string;
   /** 点击叠加四化 badge 回调 */
   onSiHuaClick?: (starName: string, siHua: string) => void;
+  /** 当前叠加的时间层（如 liunian-2026）：换层时新的四化标记淡入 */
+  overlayKey?: string;
 }
 
 const SIHUA_COLOR: Record<string, string> = {
@@ -62,7 +64,7 @@ function SiHuaBadge({ siHua, overlay, label, onClick }: {
 
 export default function PalaceCell({
   palace, onClick, onStarClick, isSelected, isSanFang, delay = 0, edgeDelay = delay,
-  overlayStarSiHua, overlayLabel, onSiHuaClick,
+  overlayStarSiHua, overlayLabel, onSiHuaClick, overlayKey,
 }: PalaceCellProps) {
   const { branch, stem, name, stars, daXianAge, isCurrentDaXian, isMingGong, isShenGong } = palace;
   // Under reduced motion the cell and its edge are simply there (DESIGN.md).
@@ -79,6 +81,19 @@ export default function PalaceCell({
 
   const majorStars = stars.filter(s => s.type === 'major');
   const auxStars = stars.filter(s => s.type === 'lucky' || s.type === 'sha');
+
+  // 换时间层（本命/大限/流年、上一年/下一年）时，新的叠加四化在 200ms 内淡入，读者看得出哪里变了
+  const overlayBadge = (starName: string, siHua: string) => (
+    <motion.span
+      key={`${overlayKey}-${starName}-${siHua}`}
+      className="inline-flex"
+      initial={reduced ? false : { opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.2, ease: [0.15, 1, 0.35, 1] }}
+    >
+      <SiHuaBadge siHua={siHua} overlay label={overlayLabel} onClick={overlayClick(starName, siHua)} />
+    </motion.span>
+  );
 
   const overlayClick = (starName: string, siHua: string) =>
     onSiHuaClick ? (e: React.MouseEvent) => { e.stopPropagation(); onSiHuaClick(starName, siHua); } : undefined;
@@ -168,7 +183,7 @@ export default function PalaceCell({
               )}
               {star.siHua && <SiHuaBadge siHua={star.siHua} />}
               {overlaySiHua && (
-                <SiHuaBadge siHua={overlaySiHua} overlay label={overlayLabel} onClick={overlayClick(star.name, overlaySiHua)} />
+                overlayBadge(star.name, overlaySiHua)
               )}
             </div>
           );
@@ -185,7 +200,7 @@ export default function PalaceCell({
                 {term(s.name)}
                 {s.siHua && <SiHuaBadge siHua={s.siHua} />}
                 {overlaySiHua && (
-                  <SiHuaBadge siHua={overlaySiHua} overlay label={overlayLabel} onClick={overlayClick(s.name, overlaySiHua)} />
+                  overlayBadge(s.name, overlaySiHua)
                 )}
               </span>
             );

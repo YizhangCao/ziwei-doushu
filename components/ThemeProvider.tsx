@@ -1,5 +1,6 @@
 'use client';
 import { createContext, useContext, useEffect, useState } from 'react';
+import { flushSync } from 'react-dom';
 
 export type Theme = 'dark' | 'light';
 
@@ -35,8 +36,22 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   const toggle = () => {
     const root = document.documentElement;
+    const next: Theme = theme === 'dark' ? 'light' : 'dark';
+    // Night falls (or day breaks) as one crossfade of the whole page, star field included:
+    // the browser snapshots both themes and fades between them. Reduced motion switches at once.
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setTheme(next);
+      return;
+    }
+    if (typeof document.startViewTransition === 'function') {
+      document.startViewTransition(() => {
+        root.setAttribute('data-theme', next); // the new snapshot must already show the new theme
+        flushSync(() => setTheme(next));
+      });
+      return;
+    }
     root.classList.add('theme-transitioning');
-    setTheme(t => t === 'dark' ? 'light' : 'dark');
+    setTheme(next);
     setTimeout(() => root.classList.remove('theme-transitioning'), 420);
   };
 
