@@ -103,6 +103,9 @@ test('changing the time view does not replay the reveal', async ({ page }) => {
   await recordReveal(page);
   await page.getByRole('button', { name: '起盘', exact: true }).click();
   await revealDone(page);
+  // Let the reveal's ease-out tail finish, so a dip below 1 can only mean a replay.
+  await expect.poll(() => page.evaluate(() =>
+    Math.min(...[...document.querySelectorAll('[data-palace]')].map((el) => parseFloat(getComputedStyle(el).opacity))))).toBe(1);
 
   await page.getByRole('button', { name: '大限' }).click();
   const lowest = await page.evaluate(() => new Promise<number>((resolve) => {
