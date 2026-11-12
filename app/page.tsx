@@ -434,11 +434,6 @@ export default function HomePage() {
           background: 'linear-gradient(to bottom, transparent 0%, var(--bg-1) 50%, transparent 100%)',
         }}>
         <FadeIn className="text-center mb-14">
-          <div className="flex items-center justify-center gap-3 mb-3">
-            <div className="h-px w-12" style={{ background: `linear-gradient(to right, transparent, ${c.goldLine})` }} />
-            <span className="text-[12px] uppercase" style={{ color: c.goldSolid, opacity: 0.7 }}>{t('roadmap.eyebrow')}</span>
-            <div className="h-px w-12" style={{ background: `linear-gradient(to left, transparent, ${c.goldLine})` }} />
-          </div>
           <div className="text-2xl lg:text-3xl font-bold mb-2" style={{ color: c.textPrimary }}>
             {t('roadmap.title')}
           </div>
@@ -596,11 +591,6 @@ export default function HomePage() {
         <div className="mx-auto w-full" style={{ maxWidth: '1280px' }}>
           <FadeIn>
             <div className="text-center mb-10">
-              <div className="flex items-center justify-center gap-3 mb-6">
-                <div className="h-px w-12" style={{ background: `linear-gradient(to right, transparent, ${c.goldLine})` }} />
-                <span className="text-[12px] uppercase" style={{ color: c.tagText }}>{t('trinity.eyebrow')}</span>
-                <div className="h-px w-12" style={{ background: `linear-gradient(to left, transparent, ${c.goldLine})` }} />
-              </div>
               <h2 className={`grad-text grad-text-dark font-bold mb-5`}
                 style={{ fontSize: 'clamp(32px, 4vw, 48px)' }}>
                 {t('trinity.title')}
@@ -625,7 +615,6 @@ export default function HomePage() {
                     <div className={`${item.glyph.length > 1 ? 'text-4xl md:text-2xl lg:text-4xl xl:text-5xl' : 'text-5xl'} font-bold leading-none`} style={{ color: item.color }}>{item.glyph}</div>
                     <div className="text-right">
                       <div className="text-2xl font-bold" style={{ color: item.color }}>{item.pct}</div>
-                      <div className="text-[12px] mt-0.5" style={{ color: c.textMuted }}>{t('trinity.ofLife')}</div>
                     </div>
                   </div>
                   <div className="mb-3">
@@ -729,11 +718,6 @@ export default function HomePage() {
               boxShadow: c.cardShadow,
             }}>
             <FadeIn>
-              <div className="flex items-center justify-center gap-3 mb-6">
-                <div className="h-px w-8" style={{ background: c.goldLine }} />
-                <span className="text-[12px] uppercase" style={{ color: c.tagText }}>{t('heming.eyebrow')}</span>
-                <div className="h-px w-8" style={{ background: c.goldLine }} />
-              </div>
               <h2 className={`grad-text grad-text-dark font-bold mb-4`}
                 style={{ fontSize: 'clamp(26px, 3.5vw, 40px)' }}>
                 {t('heming.title')}
@@ -764,7 +748,6 @@ export default function HomePage() {
       {/* ══ 最终 CTA ══════════════════════════════════════ */}
       <section className="relative z-10 py-40 px-6 text-center" style={{ background: c.altSection }}>
         <FadeIn>
-          <p className="text-[12px] uppercase mb-6" style={{ color: c.tagText }}>{t('closing.eyebrow')}</p>
           <h2 className={`grad-text grad-text-dark font-bold mb-8 leading-tight`}
             style={{ fontSize: 'clamp(32px, 5vw, 60px)' }}>
             {t.rich('closing.title', { br })}

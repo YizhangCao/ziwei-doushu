@@ -14,8 +14,7 @@
     "hour": "{branch} double hour"
   },
   "name": {
-    "label": "Name (optional)",
-    "placeholder": "Your name"
+    "label": "Name (optional)"
   },
   "date": {
     "label": "Date of birth (Gregorian calendar)",
@@ -33,9 +32,9 @@
     "city": "City",
     "cityAria": "City of birth",
     "pickProvince": "Choose a province first",
-    "pickCity": "(choose a city)",
+    "pickCity": "City",
     "info": "{city} · longitude {longitude}°E · {offset} min from Beijing time",
-    "hint": "* Ni Haixia read charts by true solar time. Add your place of birth and the hour is corrected for you."
+    "hint": "Ni Haixia read charts by true solar time. Add your place of birth and the hour is corrected for you."
   },
   "time": {
     "label": "Time of birth (Beijing time)",

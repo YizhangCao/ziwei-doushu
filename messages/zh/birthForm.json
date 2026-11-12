@@ -14,8 +14,7 @@
     "hour": "{branch}时"
   },
   "name": {
-    "label": "姓名（可选）",
-    "placeholder": "请输入姓名"
+    "label": "姓名（可选）"
   },
   "date": {
     "label": "出生日期（公历）",
@@ -33,9 +32,9 @@
     "city": "城市",
     "cityAria": "出生城市",
     "pickProvince": "先选省份",
-    "pickCity": "（请选择城市）",
+    "pickCity": "城市",
     "info": "{city} · 经度 {longitude}°E · 时差 {offset} 分钟",
-    "hint": "* 倪海厦批命用真太阳时，建议填写出生地以自动校正时辰"
+    "hint": "倪海厦批命用真太阳时，填写出生地可以自动校正时辰"
   },
   "time": {
     "label": "出生时间（北京时间）",

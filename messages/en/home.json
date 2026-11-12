@@ -2,14 +2,14 @@
   "hero": {
     "eyebrow": "Ziwei Doushu (Purple Star Astrology) · Ni Haixia’s method",
     "title": "Ziwei Natal Chart",
-    "claim": "<phrase>Enter the date and hour of your birth</phrase> <phrase>to build your Ziwei natal chart.</phrase>",
-    "subclaim": "<phrase>Charted by Ni Haixia’s method,</phrase> <phrase>read by AI palace by palace.</phrase>",
+    "claim": "<phrase>Enter the date and hour of your birth</phrase> <phrase>to build your Ziwei natal chart</phrase>",
+    "subclaim": "<phrase>Charted by Ni Haixia’s method,</phrase> <phrase>read by AI palace by palace</phrase>",
     "cta": "Build your chart"
   },
   "walkthrough": {
     "title": "Four steps from a chart to your life",
     "lead": "In the order Ni Haixia read a chart: first the Life Palace, then its sanfang sizheng (the trine and opposition palaces), then the Four Transformations, and last, the part of life you are in now.",
-    "note": "Sample chart: a made-up birthday, worked out by the charting engine in your browser.",
+    "note": "Sample chart: a made-up birthday, worked out by the charting engine in your browser",
     "steps": {
       "ming": {
         "label": "Step 1 · Life Palace",
@@ -52,8 +52,7 @@
     "closing": "and, in the end, to write the story of your own life"
   },
   "roadmap": {
-    "eyebrow": "Curriculum",
-    "title": "Ni Haixia’s method, step by step",
+    "title": "Course roadmap: Ziwei, Tian Ji, Di Ji and Ren Ji",
     "subtitle": "Start with Ziwei, then the Tian Ji / Di Ji / Ren Ji study modules open one by one",
     "sections": [
       {
@@ -103,7 +102,7 @@
     },
     {
       "tag": "AI reading",
-      "title": "A deep reading,\nnot just a calculation",
+      "title": "AI reading,\nfrom the Life Palace out",
       "subtitle": "A knowledge base of Ni Haixia’s method × Claude AI",
       "points": [
         "Destiny analysis: starting from the Main Stars of your Life Palace and reading them with the sanfang sizheng (the trine and opposition palaces), it gives a full picture of your character and the shape of your life.",
@@ -115,7 +114,7 @@
     {
       "tag": "Geju detection",
       "title": "Finds the geju\nin your chart",
-      "subtitle": "Geju are fixed combinations of stars, as the old books name them.",
+      "subtitle": "Geju are fixed combinations of stars, as the old books name them",
       "points": [
         "Automatically detects 11 classic geju, such as Zifu tonggong (Ziwei and Tianfu sharing a palace), Shapolang, Jiyue tongliang, Lianzhen–Tianxiang and Wuqu–Qisha.",
         "Precisely spots special geju such as Zuofu and Youbi flanking the Life Palace, or Taiyang and Taiyin (the Sun and the Moon) flanking it, and gives the standard reading from Ni Haixia’s method.",
@@ -264,10 +263,8 @@
     }
   },
   "trinity": {
-    "eyebrow": "Ni Haixia · Philosophy",
     "title": "Heaven · Earth · Humanity",
     "intro": "Ni Haixia’s core view of fate: fate is never the whole of life.<br></br>He divided the forces that shape a life into three equally important parts.",
-    "ofLife": "of life",
     "cards": [
       {
         "glyph": "Heaven",
@@ -285,7 +282,7 @@
         "glyph": "Humanity",
         "label": "Heart and mind",
         "sub": "Will · Choice · Action",
-        "desc": "Your own will, attitude, choices and actions are the most active force for changing fate. Ni Haixia stressed that we learn our chart to become better people, not to sit and wait for fate to decide. Working to improve yourself is the strongest way to break free."
+        "desc": "Your own will, attitude, choices and actions are the most active force for changing fate. Ni Haixia stressed that we learn our chart to become better people, not to sit and wait for fate to decide. Only by improving yourself can you change what life brings you."
       }
     ],
     "quote": "Ni Haixia held that a natal chart is only one third of a life; the other two are where you live and your own choices.",
@@ -340,7 +337,6 @@
     ]
   },
   "heming": {
-    "eyebrow": "Compatibility · Analysis",
     "title": "Ziwei Compatibility",
     "desc": "Enter two people’s birth details. Following Ni Haixia’s method, AI reads their Marriage Palaces side by side and looks at how their Life Palaces and sanfang sizheng fit together, <br></br>to see how the two of you get along and where you complement each other.",
     "tags": [
@@ -352,9 +348,8 @@
     "cta": "Check compatibility"
   },
   "closing": {
-    "eyebrow": "Start your chart journey",
-    "title": "Your Ziwei natal chart<br></br>is waiting to be read",
-    "desc": "Enter the date and hour of your birth to build your own natal chart in seconds,<br></br>then let AI read it in depth by Ni Haixia’s method",
+    "title": "Enter your birth date and hour,<br></br>see which star sits in your Life Palace",
+    "desc": "Enter the date and hour of your birth to build your chart in seconds.<br></br>AI reads it from the Life Palace out: your character, career, love life and current Decade.",
     "cta": "Build your chart",
     "knowledge": "Ziwei Doushu knowledge base",
     "library": "Classics library"

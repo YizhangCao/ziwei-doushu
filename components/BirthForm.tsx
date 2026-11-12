@@ -223,7 +223,6 @@ export default function BirthForm({ onSubmit, loading, initialData, onFormSave, 
         <label htmlFor="bf-name" style={{ display: 'block', fontSize: '14px', color: labelClr, marginBottom: '8px' }}>{t('name.label')}</label>
         <input
           type="text"
-          placeholder={t('name.placeholder')}
           id="bf-name" value={form.name}
           onChange={e => setForm({ ...form, name: e.target.value })}
           style={inputStyle}

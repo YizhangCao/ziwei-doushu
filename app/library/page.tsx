@@ -11,6 +11,7 @@ import { getLocale, getTranslations } from 'next-intl/server';
 import { ALL_BOOKS, TOTAL_PARAGRAPHS } from '@/lib/classics';
 import { bookLabels } from '@/lib/classics/localize';
 import LibrarySearch from './LibrarySearch';
+import { CONTACT } from '@/lib/site';
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('library.meta');
@@ -67,7 +68,7 @@ export default async function LibraryHomePage() {
       <section className="mt-16 pt-6" style={{ maxWidth: 720, borderTop: '1px solid var(--bdr)' }}>
         <h2 style={{ fontSize: 'var(--fs-small)', fontWeight: 600, color: 'var(--tx-0)' }}>{t('aboutTitle')}</h2>
         <p className="mt-2" style={{ fontSize: 'var(--fs-small)', lineHeight: 1.8, color: 'var(--tx-2)' }}>
-          {t('about')}
+          {t('about', CONTACT)}
         </p>
       </section>
     </main>

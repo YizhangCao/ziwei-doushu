@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import { getTranslations } from 'next-intl/server';
+import { CONTACT } from '@/lib/site';
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('legal');
@@ -58,7 +59,7 @@ export default async function TermsPage() {
       <p>{t('terms.law.body')}</p>
 
       <h2 style={{ fontSize: 18, marginTop: 32, marginBottom: 12 }}>{t('terms.contact.heading')}</h2>
-      <p>{t('terms.contact.body')}</p>
+      <p>{t('terms.contact.body', CONTACT)}</p>
 
         <p style={{ marginTop: 48, fontSize: 12, color: 'var(--tx-3)' }}>
           <a href="/privacy" style={{ color: 'var(--ac)' }}>{t('terms.privacyLink')}</a> · <a href="/" style={{ color: 'var(--ac)' }}>{t('terms.backHome')}</a>
