@@ -85,10 +85,10 @@ export default async function KnowledgePage({ params }: { params: Promise<{ star
     '@type': 'Article',
     headline: `${star}入${data.palaceName}宫 · ${data.topicLabel}`,
     description: data.parsed.dingdiao,
-    author: { '@type': 'Organization', name: '紫微研究 · 倪海厦正宗' },
+    author: { '@type': 'Organization', name: '紫微命盘' },
     publisher: {
       '@type': 'Organization',
-      name: '紫微研究',
+      name: '紫微命盘',
       url: SITE_URL,
     },
     datePublished: '2026-04-28',
@@ -188,7 +188,7 @@ export default async function KnowledgePage({ params }: { params: Promise<{ star
         </p>
 
         <footer className="mt-16 pt-6" style={{ borderTop: '1px solid var(--bdr)', fontSize: 'var(--fs-caption)', lineHeight: 1.8, color: 'var(--tx-2)' }}>
-          <p>紫微研究 · 基于倪海厦正宗体系 · 仅供学习参考</p>
+          <p>紫微命盘 · 基于倪海厦正宗体系 · 仅供学习参考</p>
           <p>本平台不构成任何医疗、投资、法律或重大决策建议</p>
         </footer>
       </article>
