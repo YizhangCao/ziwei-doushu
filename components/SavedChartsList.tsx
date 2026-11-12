@@ -1,6 +1,7 @@
 'use client';
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 
 interface ChartSummary {
   id: string;
@@ -17,6 +18,7 @@ const button = {
 
 /** Lists the member's saved charts, with open, rename and delete (after a confirmation). */
 export default function SavedChartsList() {
+  const t = useTranslations('charts.list');
   const [charts, setCharts] = useState<ChartSummary[] | null>(null);
   const [modes, setModes] = useState<Record<string, RowMode>>({});
   const [message, setMessage] = useState('');
@@ -27,9 +29,9 @@ export default function SavedChartsList() {
       if (!res.ok) throw new Error(String(res.status));
       setCharts(((await res.json()) as { charts: ChartSummary[] }).charts);
     } catch {
-      setMessage('命盘列表加载失败，请刷新重试。');
+      setMessage(t('loadFailed'));
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => { void load(); }, [load]);
 
@@ -43,27 +45,27 @@ export default function SavedChartsList() {
     });
     if (!res.ok) {
       const body = (await res.json().catch(() => ({}))) as { error?: string };
-      return setMessage(res.status === 400 && body.error ? body.error : '重命名失败，请稍后重试。');
+      return setMessage(res.status === 400 && body.error ? body.error : t('renameFailed'));
     }
     setMode(id, { kind: 'view' });
-    setMessage('已重命名。');
+    setMessage(t('renamed'));
     await load();
   }
 
   async function remove(id: string) {
     const res = await fetch(`/api/charts/${id}`, { method: 'DELETE' });
-    if (!res.ok) return setMessage('删除失败，请稍后重试。');
-    setMessage('已删除。');
+    if (!res.ok) return setMessage(t('deleteFailed'));
+    setMessage(t('deleted'));
     await load();
   }
 
   return (
     <section>
       <p role="status" aria-live="polite" style={{ minHeight: 20, fontSize: 13, color: 'var(--t-faint)' }}>{message}</p>
-      {charts === null && !message && <p style={{ color: 'var(--t-faint)' }}>加载中…</p>}
+      {charts === null && !message && <p style={{ color: 'var(--t-faint)' }}>{t('loading')}</p>}
       {charts?.length === 0 && (
         <p style={{ color: 'var(--t-faint)' }}>
-          还没有保存的命盘。<Link href="/chart" style={{ color: 'var(--t-gold)' }}>去排一张</Link>
+          {t.rich('empty', { link: (chunks) => <Link href="/chart" style={{ color: 'var(--t-gold)' }}>{chunks}</Link> })}
         </p>
       )}
       {charts && charts.length > 0 && (
@@ -78,7 +80,7 @@ export default function SavedChartsList() {
                     onSubmit={(e) => { e.preventDefault(); void rename(c.id, mode.draft); }}
                     onKeyDown={(e) => { if (e.key === 'Escape') setMode(c.id, { kind: 'view' }); }}
                   >
-                    <label htmlFor={`rename-${c.id}`} style={{ fontSize: 13, color: 'var(--t-faint)' }}>新名称</label>
+                    <label htmlFor={`rename-${c.id}`} style={{ fontSize: 13, color: 'var(--t-faint)' }}>{t('newName')}</label>
                     <input
                       id={`rename-${c.id}`}
                       autoFocus
@@ -88,8 +90,8 @@ export default function SavedChartsList() {
                       onChange={(e) => setMode(c.id, { kind: 'rename', draft: e.target.value })}
                       style={{ padding: '4px 8px', borderRadius: 8, border: '1px solid var(--t-border)', background: 'transparent', color: 'inherit' }}
                     />
-                    <button type="submit" style={button}>保存名称</button>
-                    <button type="button" style={button} onClick={() => setMode(c.id, { kind: 'view' })}>取消</button>
+                    <button type="submit" style={button}>{t('saveName')}</button>
+                    <button type="button" style={button} onClick={() => setMode(c.id, { kind: 'view' })}>{t('cancel')}</button>
                   </form>
                 ) : (
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center' }}>
@@ -98,14 +100,14 @@ export default function SavedChartsList() {
                     </Link>
                     {mode.kind === 'confirm-delete' ? (
                       <>
-                        <span style={{ fontSize: 13 }}>确定删除这个命盘？</span>
-                        <button type="button" style={button} onClick={() => void remove(c.id)}>确认删除</button>
-                        <button type="button" style={button} onClick={() => setMode(c.id, { kind: 'view' })}>取消</button>
+                        <span style={{ fontSize: 13 }}>{t('confirmQuestion')}</span>
+                        <button type="button" style={button} onClick={() => void remove(c.id)}>{t('confirm')}</button>
+                        <button type="button" style={button} onClick={() => setMode(c.id, { kind: 'view' })}>{t('cancel')}</button>
                       </>
                     ) : (
                       <>
-                        <button type="button" style={button} onClick={() => setMode(c.id, { kind: 'rename', draft: c.name })}>重命名</button>
-                        <button type="button" style={button} onClick={() => setMode(c.id, { kind: 'confirm-delete' })}>删除</button>
+                        <button type="button" style={button} onClick={() => setMode(c.id, { kind: 'rename', draft: c.name })}>{t('rename')}</button>
+                        <button type="button" style={button} onClick={() => setMode(c.id, { kind: 'confirm-delete' })}>{t('delete')}</button>
                       </>
                     )}
                   </div>

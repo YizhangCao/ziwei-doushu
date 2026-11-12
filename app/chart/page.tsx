@@ -43,7 +43,7 @@ export default function ChartPage() {
         const { chart: saved } = (await res.json()) as { chart: { name: string; birthInfo: BirthInfo } };
         if (!cancelled) show(saved.birthInfo, saved.name);
       } catch {
-        if (!cancelled) setLoadError('没有找到这个命盘，或者你需要先登录。');
+        if (!cancelled) setLoadError(t('loadError'));
       }
     })();
     return () => { cancelled = true; };
