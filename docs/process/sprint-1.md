@@ -51,7 +51,7 @@
 - What we learned: the agent should stop when a tool's safety guard fires (Prisma migrate reset) or a permission is denied (a production read), and ask instead of working around it.
 
 **Partner feedback**
-- Yizhang → Yikang:
+- **Yizhang → Yikang:** Your reviews were thorough and caught real issues (preview migrations on production, the encryption-key sharing, the session check on /api/interpret). The two days without updates (11/08–11/10) blocked #14 and forced self-merges; in Sprint 2, please post a daily standup and say early when you're blocked.
 - Yikang → Yizhang:
 
 **Action items for next sprint**
