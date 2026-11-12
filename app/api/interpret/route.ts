@@ -12,6 +12,7 @@ import type { SessionUser } from '@/lib/auth/types';
 import { limitAiRequest, tooManyRequests } from '@/lib/rate-limit/ai-limit';
 import { clientIp } from '@/lib/rate-limit/client-ip';
 import { getRateLimitStore } from '@/lib/rate-limit/store';
+import { localeFromRequest } from '@/lib/i18n/locale';
 
 export const runtime = 'nodejs';
 
@@ -52,7 +53,9 @@ export const POST = auth(async function POST(request) {
 
   try {
     const anthropic = new Anthropic({ apiKey });
-    const stream = await createAnthropicStream(anthropic, input, model);
+    // The reading's language comes from the visitor's saved choice or browser (#59),
+    // never from the body, so the 2.3 request contract stays { chart, messages }.
+    const stream = await createAnthropicStream(anthropic, input, model, localeFromRequest(request));
     return new Response(encodeInterpretationStream(stream), {
       headers: {
         'Cache-Control': 'no-cache, no-transform',

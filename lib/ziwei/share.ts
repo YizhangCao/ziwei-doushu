@@ -10,6 +10,12 @@ export function calcTrueSolarBranch(clockHour: number, clockMinute: number, long
   return Math.floor((solar - 60) / 120) + 1;
 }
 
+/** Callers check the form is complete first; a missing gender is a programming error, never a default (#63). */
+function requireGender(gender: BirthFormState['gender']): 'male' | 'female' {
+  if (!gender) throw new Error('gender is required');
+  return gender;
+}
+
 /** BirthFormState → BirthInfo
  *
  * 子时规则（倪海厦体系/三合派标准）：
@@ -39,7 +45,7 @@ export function formToBirthInfo(form: BirthFormState): BirthInfo {
   return {
     year: y, month: m, day: d,
     hour,
-    gender: form.gender,
+    gender: requireGender(form.gender),
     name: form.name || undefined,
     province: form.province || undefined,
     city: form.city || undefined,
