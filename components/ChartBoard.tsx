@@ -1,6 +1,6 @@
 'use client';
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useRef, useState } from 'react';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { useLocale, useTranslations } from 'next-intl';
 import { termLabel } from '@/lib/i18n/glossary';
 import { formatList } from '@/lib/i18n/format';
@@ -8,7 +8,8 @@ import type { ZiweiChart, Palace, Star } from '@/lib/ziwei/types';
 import { BRANCHES } from '@/lib/ziwei/constants';
 import PalaceCell from './PalaceCell';
 import SanFangLines from './SanFangLines';
-import { BRANCH_GRID_POS, getSanFangSiZheng } from '@/lib/ziwei/board-layout';
+import { BRANCH_GRID_POS, getSanFangSiZheng, placementOrder } from '@/lib/ziwei/board-layout';
+import { chartReveal } from '@/lib/design/chart-reveal';
 import TimeNav, { type TimeView, getYearStemIndex, buildSiHuaOverlay } from './TimeNav';
 
 interface ChartBoardProps {
@@ -18,20 +19,6 @@ interface ChartBoardProps {
   onSiHuaClick?: (starName: string, siHua: string, view: TimeView) => void;
 }
 
-// 绕盘面顺时针排列（用于三方四正四边形排序）
-const CLOCKWISE_INDEX: Record<number, number> = {
-  5: 0, 6: 1, 7: 2, 8: 3,
-  9: 4, 10: 5,
-  11: 6, 0: 7, 1: 8, 2: 9,
-  3: 10, 4: 11,
-};
-
-function sortClockwise(branches: number[]): number[] {
-  return [...branches].sort((a, b) => CLOCKWISE_INDEX[a] - CLOCKWISE_INDEX[b]);
-}
-
-const ANIMATION_ORDER = [5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4];
-
 export default function ChartBoard({ chart, onStarSelect, onPalaceSelect, onSiHuaClick }: ChartBoardProps) {
   const t = useTranslations('board');
   const locale = useLocale();
@@ -39,6 +26,10 @@ export default function ChartBoard({ chart, onStarSelect, onPalaceSelect, onSiHu
   const [selectedBranch, setSelectedBranch] = useState<number | null>(chart.mingGongBranch);
   const [timeView, setTimeView] = useState<TimeView>('mingpan');
   const [liunianYear, setLiunianYear] = useState<number>(new Date().getFullYear());
+  // 起盘揭示（#86）：命宫先出，其余十一宫按排盘顺序逆时针依次出现，再画命宫的三方四正，
+  // 最后落下当前大限的金边。只在起盘时一次；读者一点宫位，线就立即画。
+  const reveal = chartReveal(!!useReducedMotion());
+  const revealing = useRef(true);
 
   const palaceMap: Record<number, Palace> = {};
   chart.palaces.forEach(p => { palaceMap[p.branch] = p; });
@@ -58,6 +49,7 @@ export default function ChartBoard({ chart, onStarSelect, onPalaceSelect, onSiHu
   const overlayLabel = timeView === 'daxian' ? t('overlay.daxian') : timeView === 'liunian' ? t('overlay.liunian') : undefined;
 
   const handlePalaceClick = (branch: number) => {
+    revealing.current = false;
     const isDeselecting = selectedBranch === branch;
     setSelectedBranch(prev => prev === branch ? null : branch);
     if (!isDeselecting) {
@@ -79,8 +71,6 @@ export default function ChartBoard({ chart, onStarSelect, onPalaceSelect, onSiHu
     ? t('withStars', { stars: formatList(mingStars, locale) })
     : borrowed.length ? t('emptyBorrowed', { stars: formatList(borrowed, locale) }) : t('empty');
   const title = chart.birthInfo.name ? t('titleNamed', { name: chart.birthInfo.name }) : t('title');
-
-  // 600ms 由起点画向终点，缓出（与全站进场一致）
 
   return (
     <div className="w-full">
@@ -114,7 +104,7 @@ export default function ChartBoard({ chart, onStarSelect, onPalaceSelect, onSiHu
           border: '1px solid var(--t-border)',
         }}
       >
-        {ANIMATION_ORDER.map((branch, i) => {
+        {placementOrder(chart.mingGongBranch).map((branch, k) => {
           const [row, col] = BRANCH_GRID_POS[branch];
           const palace = palaceMap[branch];
           if (!palace) return null;
@@ -126,7 +116,8 @@ export default function ChartBoard({ chart, onStarSelect, onPalaceSelect, onSiHu
                 onStarClick={onStarSelect ? (star) => onStarSelect(star, palace) : undefined}
                 isSelected={selectedBranch === branch}
                 isSanFang={!!(sanFangSet?.has(branch) && selectedBranch !== branch)}
-                delay={i * 0.04}
+                delay={reveal.palace(k)}
+                edgeDelay={reveal.decade}
                 overlayStarSiHua={Object.keys(overlayData).length > 0 ? overlayData : undefined}
                 overlayLabel={overlayLabel}
                 onSiHuaClick={onSiHuaClick ? (starName, siHua) => onSiHuaClick(starName, siHua, timeView) : undefined}
@@ -137,9 +128,9 @@ export default function ChartBoard({ chart, onStarSelect, onPalaceSelect, onSiHu
 
         {/* 中央：北辰记号 + 命盘要素 */}
         <motion.div
-          initial={{ opacity: 0 }}
+          initial={reveal.duration ? { opacity: 0 } : false}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.5, duration: 0.6, ease: [0.15, 1, 0.35, 1] }}
+          transition={{ delay: reveal.lines, duration: reveal.duration, ease: [0.15, 1, 0.35, 1] }}
           className="flex flex-col items-center justify-center p-4 gap-4 text-center"
           style={{ gridRow: '2 / 4', gridColumn: '2 / 4', background: 'var(--t-bg)' }}
         >
@@ -180,14 +171,14 @@ export default function ChartBoard({ chart, onStarSelect, onPalaceSelect, onSiHu
           {sanFangBranches !== null && (
             <motion.div
               key={`sf-${selectedBranch}`}
-              initial={{ opacity: 0 }}
+              initial={reveal.duration ? { opacity: 0 } : false}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
+              transition={{ duration: reveal.duration ? 0.2 : 0 }}
               className="pointer-events-none"
               style={{ position: 'absolute', inset: 0, zIndex: 20 }}
             >
-              <SanFangLines branch={sanFangBranches[0]} />
+              <SanFangLines branch={sanFangBranches[0]} delay={revealing.current ? reveal.lines : 0} />
             </motion.div>
           )}
         </AnimatePresence>

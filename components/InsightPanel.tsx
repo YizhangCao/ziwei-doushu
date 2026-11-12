@@ -47,7 +47,7 @@ type Topic = (typeof TOPICS)[number];
 type Reading =
   | { kind: 'overview' }
   | { kind: 'topic'; topic: Exclude<Topic, 'overview'> }
-  | { kind: 'palace'; palace: string }
+  | { kind: 'palace'; palace: string; branch: number }
   | { kind: 'sihua'; star: string; sihua: string }
   | { kind: 'answer' };
 
@@ -109,7 +109,7 @@ export default function InsightPanel({ chart, selectedPalace, selectedSiHua }: I
 
     const prompt = t('prompts.palace', { palace: term(selectedPalace.name), role, stars: starDesc });
 
-    if (sendMessage(prompt, true, { kind: 'palace', palace: selectedPalace.name })) lastPalaceBranch.current = selectedPalace.branch;
+    if (sendMessage(prompt, true, { kind: 'palace', palace: selectedPalace.name, branch: selectedPalace.branch })) lastPalaceBranch.current = selectedPalace.branch;
   }, [selectedPalace]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // 注入四化飞化分析
@@ -237,14 +237,31 @@ export default function InsightPanel({ chart, selectedPalace, selectedSiHua }: I
     sendMessage(input, false, { kind: 'answer' });
   };
 
+  /**
+   * The major stars of the palace on a branch, with their sihua ("太阳化禄、太阴化科"), or ''
+   * for an empty palace. The waiting line names them so the reader sees what the reading
+   * rests on (#86); they come from the chart already on screen, nothing new goes to the AI.
+   */
+  const starsOn = (branch: number): string => {
+    const majors = chart.palaces.find(p => p.branch === branch)?.stars.filter(s => s.type === 'major') ?? [];
+    return formatList(majors.map(s => s.siHua
+      ? t('reading.star', { star: term(s.name), sihua: term(`化${s.siHua}`) })
+      : term(s.name)), locale);
+  };
+
   const readingLine = (what: Reading): string => {
     switch (what.kind) {
-      case 'overview': return t('reading.overview');
+      case 'overview': {
+        const stars = starsOn(chart.mingGongBranch);
+        return stars ? t('reading.overviewStars', { stars }) : t('reading.overview');
+      }
       case 'topic': return t('reading.topic', { topic: what.topic });
       // 命宫 already ends in 宫, the other eleven names don't; English adds "Palace" in the message
-      case 'palace': return t('reading.palace', {
-        palace: locale === 'en' ? term(what.palace) : what.palace.endsWith('宫') ? what.palace : `${what.palace}宫`,
-      });
+      case 'palace': {
+        const palace = locale === 'en' ? term(what.palace) : what.palace.endsWith('宫') ? what.palace : `${what.palace}宫`;
+        const stars = starsOn(what.branch);
+        return stars ? t('reading.palaceStars', { palace, stars }) : t('reading.palace', { palace });
+      }
       case 'sihua': return t('reading.sihua', { star: term(what.star), sihua: term(`化${what.sihua}`) });
       case 'answer': return t('reading.answer');
     }
@@ -341,7 +358,8 @@ export default function InsightPanel({ chart, selectedPalace, selectedSiHua }: I
         {(waiting || messages.length === 0) && (
           <div className={anyShown ? 'flex items-center gap-3' : 'flex flex-col items-center justify-center h-full gap-3 text-center'}>
             <span aria-hidden="true" className="pole-mark animate-breathe" />
-            <p style={{ fontSize: 'var(--fs-small)', color: 'var(--t-text2)' }}>{readingLine(reading)}</p>
+            {/* Naming the stars makes the line long enough to wrap; balance it so no word is left alone (#86) */}
+            <p style={{ fontSize: 'var(--fs-small)', color: 'var(--t-text2)', textWrap: 'balance' }}>{readingLine(reading)}</p>
           </div>
         )}
       </div>

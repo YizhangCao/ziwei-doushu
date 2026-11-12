@@ -41,7 +41,8 @@ test('the reading panel says what it is reading while it waits', async ({ page }
   await page.route('**/api/interpret', () => { /* never answers: the panel stays in its loading state */ });
   await fillBirth(page);
   await page.getByRole('button', { name: '起盘', exact: true }).click();
-  await expect(page.getByText('正在读命宫与三方四正…')).toBeVisible();
+  // Names the Life Palace's stars (#86): this birthday puts Taiyang Hualu and Taiyin Huake there.
+  await expect(page.getByText('正在读命宫：太阳化禄、太阴化科…')).toBeVisible();
 });
 
 for (const { name, respond, message } of [
