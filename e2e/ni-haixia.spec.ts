@@ -17,7 +17,7 @@ test('the home section introduces Ni Haixia briefly and cites its source', async
   await expect(page.getByText('倪海厦（1954–2012）')).toBeVisible();
   await expect(page.getByRole('link', { name: /《天纪》3上/ })).toHaveAttribute('href', /bilibili\.com\/video\/BV1KJsLekEfA\?p=5&t=77/);
   await expect(page.getByText(/享年/)).toHaveCount(0);
-  await expect(page.getByText(/最具影响力/)).toHaveCount(0);
+  await expect(page.getByText(/当代华人圈最具影响力的中医与术数大家之一/)).toBeVisible();
 });
 
 test('the about page holds his life, teaching and approach, without the cause of death', async ({ page }) => {

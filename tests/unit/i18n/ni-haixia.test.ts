@@ -6,7 +6,8 @@
 
 /**
  * @fileoverview The Ni Haixia section of the home page, rewritten per the copy review
- * (H80 to H92, #69). It states what he was and taught without superlatives, cites the
+ * (H80 to H92, #69). It keeps its original opening line, as the product owner decided
+ * on 11/12, adds no other superlatives, cites the
  * lecture for his stance, and leaves the details of his life to an "About Ni Haixia"
  * page, without the cause of death. The four teachings below the section are out of
  * scope and stay as they are.
@@ -40,9 +41,16 @@ describe('Ni Haixia section (#69)', () => {
     expect(MESSAGES.en.home.ni.title).toBe('Ni Haixia (1954–2012)');
   });
 
-  it('makes no claims that cannot be checked, here or on the about page', () => {
-    expect(found(both('zh'), ['最具影响力', '大家之一', '传世', '公认', '必修', '关键人物', '最完整'])).toEqual([]);
-    expect(found(both('en'), ['most influential', 'live on', 'required viewing', 'key figures', 'most complete'])).toEqual([]);
+  it('keeps the original opening line, as the product owner decided on 11/12', () => {
+    expect(MESSAGES.zh.home.ni.intro.startsWith('当代华人圈最具影响力的中医与术数大家之一<br></br>')).toBe(true);
+    expect(MESSAGES.en.home.ni.intro.startsWith(
+      'One of the most influential masters of Chinese medicine and the divination arts in the modern Chinese-speaking world<br></br>',
+    )).toBe(true);
+  });
+
+  it('adds no other claims that cannot be checked, here or on the about page', () => {
+    expect(found(both('zh'), ['传世', '公认', '必修', '关键人物', '最完整'])).toEqual([]);
+    expect(found(both('en'), ['live on', 'required viewing', 'key figures', 'most complete'])).toEqual([]);
   });
 
   it('leaves the stats and the influence paragraph off the home page', () => {
@@ -84,6 +92,7 @@ describe('Ni Haixia section (#69)', () => {
 
   it('calls him Ni Haixia, without honorifics', () => {
     expect(found(both('zh'), ['倪师', '倪海厦老师', '倪海厦先生'])).toEqual([]);
-    expect(found(both('en'), ['Master'])).toEqual([]);
+    // "Master" as a title (the old "Master · 1954 – 2012"), not the word in "influential masters".
+    expect(found(both('en'), ['Master ·', 'Master Ni'])).toEqual([]);
   });
 });
