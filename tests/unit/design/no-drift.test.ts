@@ -30,6 +30,8 @@ const CORE = [
   'components/TimeNav.tsx',
   'components/InsightPanel.tsx',
   'components/AiContent.tsx',
+  'components/ChartWalkthrough.tsx',
+  'components/SanFangLines.tsx',
   // Library and knowledge (reading pages one click from home)
   'app/library/page.tsx',
   'app/library/LibrarySearch.tsx',
@@ -42,7 +44,7 @@ const CORE = [
 ];
 
 /** Gold (the accent) is for chart meaning: stars, sihua, the life palace, the current decade, AI headers. */
-const GOLD_ALLOWED = new Set(['components/ChartBoard.tsx', 'components/PalaceCell.tsx', 'components/InsightPanel.tsx', 'components/AiContent.tsx']);
+const GOLD_ALLOWED = new Set(['components/ChartBoard.tsx', 'components/PalaceCell.tsx', 'components/SanFangLines.tsx', 'components/InsightPanel.tsx', 'components/AiContent.tsx']);
 
 /** Source without comments, so issue numbers like #57 in comments don't count as colors. */
 function code(path: string): string {
