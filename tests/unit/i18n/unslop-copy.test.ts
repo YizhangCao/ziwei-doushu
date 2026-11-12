@@ -72,6 +72,23 @@ describe('B: specific instead of generic copy', () => {
     expect(at(en, 'home.trinity.cards.2.desc')).toMatch(/The chart sets the base\. What you make of it is yours\.$/);
   });
 
+  it('the walkthrough step titles use the approved drafts', () => {
+    const titles = (tree: Record<string, Tree>) =>
+      Object.fromEntries(['ming', 'sanfang', 'sihua', 'daxian'].map((step) => [step, at(tree, `home.walkthrough.steps.${step}.title`)]));
+    expect(titles(zh)).toEqual({ ming: '性格底色，一眼看出', sanfang: '劲往哪使，心里有数', sihua: '顺在哪，卡在哪', daxian: '十年一段，看你在哪段' });
+    expect(titles(en)).toEqual({
+      ming: 'Your character, at a glance',
+      sanfang: 'Know where your effort goes',
+      sihua: 'What flows, what sticks',
+      daxian: 'Ten years at a time: which one is yours',
+    });
+  });
+
+  it('the AI feature subtitle names Claude, without "AI" after it', () => {
+    expect(at(zh, 'home.features.2.subtitle')).toMatch(/× Claude$/);
+    expect(at(en, 'home.features.2.subtitle')).toMatch(/× Claude$/);
+  });
+
   it('drops the hype words from the closing, the AI feature title and the trinity card', () => {
     for (const path of ['home.closing.desc', 'home.features.2.title', 'home.trinity.cards.2.desc']) {
       expect(at(zh, path), path).not.toMatch(/深度|专属|最强/);
