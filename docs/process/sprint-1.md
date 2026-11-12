@@ -52,7 +52,7 @@
 
 **Partner feedback**
 - **Yizhang → Yikang:** Your reviews were thorough and caught real issues (preview migrations on production, the encryption-key sharing, the session check on /api/interpret). The two days without updates (11/08–11/10) blocked #14 and forced self-merges; in Sprint 2, please post a daily standup and say early when you're blocked.
-- Yikang → Yizhang:
+- **Yikang → Yizhang:** You kept the sprint moving while I was away: you took over #14, got CI fully green and fixed the CodeQL alert properly. For Sprint 2, keep PRs small enough to review before merge, and make sure each PR's "Closes" list matches what it delivers.
 
 **Action items for next sprint**
 - Land #20 (per-preview Neon branches) before any PR with a migration, starting with #18; until then, don't open migration PRs. (Yikang)
