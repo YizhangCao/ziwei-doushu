@@ -58,13 +58,13 @@ const config: Config = {
       pill: "var(--r-pill)",
       full: "9999px",
     },
-    // 字重：最重到 600（苹方 Semibold）。层级靠字号和透明度，不靠加粗
+    // 字重只有 400 / 600（Polestar 全站 400；Apple 中国官网 400 / 600）。medium 也是 400
     fontWeight: {
       thin: "300",
       extralight: "300",
       light: "300",
       normal: "400",
-      medium: "500",
+      medium: "400",
       semibold: "600",
       bold: "600",
       extrabold: "600",

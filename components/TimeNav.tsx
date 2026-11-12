@@ -77,8 +77,8 @@ export default function TimeNav({
     <div className="mb-3">
       {/* Tab 行 */}
       <div
-        className="flex items-center rounded-xl p-1 gap-1"
-        style={{ background: 'var(--t-surface)', border: '1px solid var(--t-border)' }}
+        className="flex items-stretch gap-1"
+        style={{ borderBottom: '1px solid var(--t-border)' }}
       >
         {/* 本命 */}
         <TabButton
@@ -98,39 +98,42 @@ export default function TimeNav({
 
         {/* 流年 — 含年份切换 */}
         <div
-          className="relative flex-1 flex items-center justify-center rounded-lg py-1.5 gap-1 transition-all duration-200"
-          style={{
-            background: view === 'liunian' ? 'var(--bg-2)' : 'transparent',
-            border: view === 'liunian' ? '1px solid var(--bdr-heavy)' : '1px solid transparent',
-          }}
+          className="relative flex-1 flex items-center justify-center gap-1"
+          style={{ boxShadow: view === 'liunian' ? 'inset 0 -1px 0 var(--tx-0)' : 'none' }}
         >
           <button
+            type="button"
             onClick={() => onViewChange('liunian')}
-            className="text-[10px] font-medium flex-1 text-center"
-            style={{ color: view === 'liunian' ? 'var(--t-gold)' : 'var(--t-faint)' }}
+            aria-pressed={view === 'liunian'}
+            className="flex-1 text-center whitespace-nowrap"
+            style={{ minHeight: 44, fontSize: 'var(--fs-small)', color: view === 'liunian' ? 'var(--t-text)' : 'var(--t-text2)', background: 'none', border: 'none' }}
           >
             流年
           </button>
           {/* 年份 +/- */}
           <div className="flex items-center gap-0.5">
             <button
+              type="button"
+              aria-label="上一年"
               onClick={e => { e.stopPropagation(); onYearChange(liunianYear - 1); if (view !== 'liunian') onViewChange('liunian'); }}
-              className="text-[9px] w-4 h-4 flex items-center justify-center rounded"
-              style={{ color: 'var(--t-faint)' }}
+              className="flex items-center justify-center"
+              style={{ minWidth: 24, minHeight: 44, fontSize: 'var(--fs-body)', color: 'var(--t-text2)', background: 'none', border: 'none' }}
             >
               ‹
             </button>
             <span
-              className="text-[10px] font-mono min-w-[28px] text-center cursor-pointer"
-              style={{ color: view === 'liunian' ? 'var(--t-gold)' : 'var(--t-faint)' }}
+              className="tabular-nums min-w-[36px] text-center cursor-pointer"
+              style={{ fontSize: 'var(--fs-small)', color: view === 'liunian' ? 'var(--t-text)' : 'var(--t-text2)' }}
               onClick={() => onViewChange('liunian')}
             >
               {liunianYear}
             </span>
             <button
+              type="button"
+              aria-label="下一年"
               onClick={e => { e.stopPropagation(); onYearChange(liunianYear + 1); if (view !== 'liunian') onViewChange('liunian'); }}
-              className="text-[9px] w-4 h-4 flex items-center justify-center rounded"
-              style={{ color: 'var(--t-faint)' }}
+              className="flex items-center justify-center"
+              style={{ minWidth: 24, minHeight: 44, fontSize: 'var(--fs-body)', color: 'var(--t-text2)', background: 'none', border: 'none' }}
             >
               ›
             </button>
@@ -146,14 +149,14 @@ export default function TimeNav({
           transition={{ duration: 0.2 }}
           className="flex items-center gap-2 mt-1.5 px-1 flex-wrap"
         >
-          <span className="text-[9px]" style={{ color: 'var(--t-faint)' }}>
+          <span style={{ fontSize: 'var(--fs-caption)', color: 'var(--t-faint)' }}>
             {view === 'daxian' ? '大限' : `${liunianYear}`}·{overlayInfo.stemName}年四化：
           </span>
           {(['禄', '权', '科', '忌'] as const).map(sh => {
             const starName = Object.keys(overlayInfo.overlay).find(k => overlayInfo.overlay[k] === sh);
             if (!starName) return null;
             return (
-              <span key={sh} className="text-[9px] font-medium" style={{ color: SIHUA_COLORS[sh] }}>
+              <span key={sh} style={{ fontSize: 'var(--fs-caption)', color: SIHUA_COLORS[sh] }}>
                 {starName}化{sh}
               </span>
             );
@@ -175,12 +178,18 @@ function TabButton({
 }) {
   return (
     <button
+      type="button"
       onClick={onClick}
-      className="flex-1 py-1.5 text-[10px] font-medium rounded-lg transition-all duration-200"
+      aria-pressed={active}
+      className="flex-1 whitespace-nowrap"
       style={{
-        background: active ? 'var(--bg-2)' : 'transparent',
+        minHeight: 44,
+        fontSize: 'var(--fs-small)',
+        background: 'none',
+        border: 'none',
+        // 选中 = 正文色 + 底部 1px 线（Polestar 的 tab），不用金色
         color: active ? 'var(--t-text)' : 'var(--t-text2)',
-        border: active ? '1px solid var(--bdr-heavy)' : '1px solid transparent',
+        boxShadow: active ? 'inset 0 -1px 0 var(--tx-0)' : 'none',
       }}
     >
       {children}

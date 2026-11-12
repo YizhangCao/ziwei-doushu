@@ -16,7 +16,8 @@ test('a first-time visitor sees the product and one clear action, with no letter
   await page.goto('/');
 
   await expect(page.getByText('紫微命盘', { exact: true }).first()).toBeVisible();
-  await expect(page.getByRole('button', { name: '立即起盘' }).first()).toBeVisible();
+  // The first screen offers exactly one primary action.
+  await expect(page.getByRole('button', { name: '起盘', exact: true }).first()).toBeInViewport();
   await page.waitForTimeout(1500); // the old letter and promo appeared after a short delay
   await expect(page.getByText('致正在使用这个平台的你')).toHaveCount(0);
   await expect(page.getByText('限时回馈')).toHaveCount(0);
