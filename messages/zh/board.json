@@ -5,7 +5,7 @@
   "withStars": "坐{stars}",
   "empty": "空宫（借对宫）",
   "emptyBorrowed": "空宫（借对宫 {stars}）",
-  "hint": "点击任一宫位，查看它的三方四正。",
+  "hint": "点任一宫位，看它的三方四正。",
   "region": "命盘",
   "summary": {
     "life": "命宫",

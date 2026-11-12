@@ -7,9 +7,9 @@
     "chapterDescription": "A modern summary of {chapter}, from {book}",
     "searchTitle": "Search · Classics Library"
   },
-  "kicker": "Ni Haixia’s system · The sources it cites",
+  "kicker": "Three classics of Ziwei Doushu",
   "title": "Classics Library",
-  "count": "Search modern summaries of the core Ziwei Doushu classics: {books, plural, one {# book} other {# books}} and {paragraphs, plural, one {# passage} other {# passages}}.",
+  "count": "{books, plural, one {# classic} other {# classics}}, {paragraphs, plural, one {# passage} other {# passages}}, each one searchable. The passages are modern summaries.",
   "booksLabel": "Books in the library",
   "bookTitle": "{title}",
   "bookStats": "{chapters, plural, one {# chapter} other {# chapters}} · {paragraphs, plural, one {# passage} other {# passages}}",
@@ -36,9 +36,10 @@
     "heading": "Search the classics",
     "query": "“{q}”",
     "found": "{n, plural, one {# passage matches} other {# passages match}}",
-    "none": "No passage in the library matches this search yet.",
-    "empty": "Type a word to search for.",
+    "none": "No passages match.",
+    "empty": "Type a word to search",
     "try": "Try:",
+    "tryAgain": "Try one of these:",
     "hitMeta": "{book} · {chapter}"
   },
   "suggestions": {

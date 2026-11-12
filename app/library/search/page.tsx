@@ -58,7 +58,8 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
             <p style={{ color: 'var(--tx-0)' }}>
               {q ? t('search.none') : t('search.empty')}
             </p>
-            <p className="mt-4" style={{ fontSize: 'var(--fs-small)', color: 'var(--tx-2)' }}>{t('search.try')}</p>
+            {/* After a search that found nothing, the suggestions invite another word; an empty search gets the plain "try" (#94) */}
+            <p className="mt-4" style={{ fontSize: 'var(--fs-small)', color: 'var(--tx-2)' }}>{q ? t('search.tryAgain') : t('search.try')}</p>
             <ul className="mt-2 flex flex-wrap gap-x-6 gap-y-2">
               {SUGGESTIONS.map(key => t(`suggestions.${key}`)).map(s => (
                 <li key={s}>

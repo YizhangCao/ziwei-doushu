@@ -61,7 +61,7 @@ test.describe('on a wide screen', () => {
 
   test('each walkthrough step lights its own palaces, marks itself, and the chart stays pinned', async ({ page }) => {
     await page.goto('/');
-    await expect(page.getByRole('heading', { level: 2, name: '一张命盘，四步读出你的人生' })).toBeAttached();
+    await expect(page.getByRole('heading', { level: 2, name: '一张命盘，四步读懂' })).toBeAttached();
     const board = page.locator('[data-walkthrough-board]');
     const expected: Record<string, number> = { ming: 1, sanfang: 4, sihua: 3, daxian: 2 };
     for (const [step, lit] of Object.entries(expected)) {
