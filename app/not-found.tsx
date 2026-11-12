@@ -7,22 +7,25 @@
 /** @fileoverview The 404 page (#57), on the design system instead of Next's default white page. */
 
 import Link from 'next/link';
+import type { Metadata } from 'next';
+import { getTranslations } from 'next-intl/server';
 
-export const metadata = {
-  title: '页面不存在 · 紫微命盘',
-  robots: { index: false },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('notFound');
+  return { title: t('metaTitle'), robots: { index: false } };
+}
 
 /** Says the page is missing and offers the two ways back. */
-export default function NotFound() {
+export default async function NotFound() {
+  const t = await getTranslations('notFound');
   return (
     <main className="page" style={{ paddingTop: 96, paddingBottom: 96 }}>
       <p className="tabular-nums" style={{ fontSize: 'var(--fs-caption)', color: 'var(--tx-2)' }}>404</p>
-      <h1 className="mt-2" style={{ fontSize: 'var(--fs-headline)', lineHeight: 1.25, color: 'var(--tx-0)' }}>这个页面不存在</h1>
-      <p className="mt-2" style={{ color: 'var(--tx-2)' }}>链接可能已失效，或内容还在整理中。</p>
+      <h1 className="mt-2" style={{ fontSize: 'var(--fs-headline)', lineHeight: 1.25, color: 'var(--tx-0)' }}>{t('title')}</h1>
+      <p className="mt-2" style={{ color: 'var(--tx-2)' }}>{t('body')}</p>
       <div className="mt-8 flex flex-wrap gap-4">
-        <Link href="/chart" className="btn-primary">起盘 <span aria-hidden="true">→</span></Link>
-        <Link href="/" className="btn-ghost">回到首页</Link>
+        <Link href="/chart" className="btn-primary">{t('chart')} <span aria-hidden="true">→</span></Link>
+        <Link href="/" className="btn-ghost">{t('home')}</Link>
       </div>
     </main>
   );
