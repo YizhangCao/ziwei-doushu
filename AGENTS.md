@@ -231,7 +231,7 @@ A task is done when: the acceptance criteria are all met, `npm run typecheck` an
 ## Changelog
 <!-- Record each change to this file and why. This is the evidence of iteration for HW3. -->
 - v1 (10/30/2026): first version.
-- v3.2 (11/10/2026): GitHub login (#15). `/api/interpret` now returns 401 for guests (2.3, 2.4). Login is not available on Vercel preview deployments: Auth.js's preview proxy (`AUTH_REDIRECT_PROXY_URL`) needs the same `AUTH_SECRET` in preview and production, which the Security rule above forbids. Previews cover guest flows; login is tested locally and in CI.
+- v3.2 (11/10/2026): GitHub login (#15). `/api/interpret` now returns 401 for guests (2.3, 2.4). Previews sign in through the production URL (`AUTH_REDIRECT_PROXY_URL`), which works because production and preview share one `AUTH_SECRET` (#31).
 - v3.1 (11/08/2026): re-planned for the Nov 12 deadline: GitHub OAuth only; Vercel and Neon integrations handle previews, production, and per-preview databases.
 - v3 (11/01/2026): P2 approved as ZiweiHub. Added database, auth, roles, public API, and hosting to the stack; added the roles table and auth rules; replaced the tsx-only test rule with a layered strategy (engine tests stay on tsx, new code uses Vitest and Playwright) because P2 requires unit, integration, and E2E tests; added TDD commit order. PRD now points to docs/PRD.md.
 - v2 (10/31/2026): after the first with-rules test run on issue #4. The agent ignored several rules, so v2 makes them concrete and checkable:
