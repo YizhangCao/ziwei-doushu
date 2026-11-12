@@ -1,0 +1,66 @@
+{
+  "topics": {
+    "overview": "Overview",
+    "love": "Love",
+    "career": "Career",
+    "wealth": "Wealth",
+    "health": "Health",
+    "personality": "Personality"
+  },
+  "prompts": {
+    "overview": "Give me an overview of this chart, in this structure:\n\n**【The chart in one line】**\nSum up the chart’s core pattern and the person’s temperament in one sentence.\n\n**【Main stars】**\nThe core traits of the main stars in the Life Palace, citing Ni Haixia’s words or views.\n\n**【Sanfang sizheng】**\nHow the Wealth, Office and Travel palaces work together, and the overall pattern they make.\n\n**【Current Decade】**\nWhere the current Decade is heading and what deserves the most attention.\n\n**【Strengths and cautions】**\nThe chart’s natural strengths, and the risks or lessons to watch.",
+    "love": "Give me an in-depth reading of love and marriage, in this structure:\n\n**【Love pattern】**\nSum up the chart’s love pattern in one sentence.\n\n**【Marriage Palace】**\nThe main stars and Four Transformations in the Marriage Palace, read the way Ni Haixia’s system reads them.\n\n**【Related palaces】**\nHow the related palaces affect love.\n\n**【Love in the current Decade】**\nWhere love is heading over these ten years, and the key turning points.\n\n**【Practical advice】**\nConcrete advice for love that can actually be followed.",
+    "career": "Give me an in-depth reading of career, in this structure:\n\n**【Career pattern】**\nSum up the career pattern in one sentence: better suited to a job, or to starting a business.\n\n**【Office Palace】**\nThe main stars and Four Transformations in the Office Palace, and how Ni Haixia judges this setup.\n\n**【Wealth Palace】**\nHow money and career connect, and where income comes from.\n\n**【Career in the current Decade】**\nWhere work is heading over these ten years.\n\n**【Practical advice】**\nSuitable directions, industries and strategies.",
+    "wealth": "Give me an in-depth reading of wealth, in this structure:\n\n**【Wealth pattern】**\nSum up how money comes to this person in one sentence: earned by their own effort, or arriving through others.\n\n**【Wealth Palace】**\nThe main stars and Four Transformations in the Wealth Palace, where wealth comes from and how it flows.\n\n**【Estate Palace (the money vault)】**\nThe ability to save, and the outlook for property.\n\n**【Wealth in the current Decade】**\nWhere money is heading now and what to watch for.\n\n**【Money advice】**\nConcrete financial advice.",
+    "health": "Give me a reading of health, in this structure:\n\n**【Illness Palace stars】**\nThe stars in the Illness Palace and what they mean for health.\n\n**【Main risks】**\nUsing Ni Haixia’s ziwu liuzhu (midnight–noon ebb and flow) theory, the main health risks and the parts of the body to watch.\n\n**【Health over the Decade】**\nThe current health trend and the key periods.\n\n**【Prevention】**\nSpecific things to watch, and ways to stay well.",
+    "personality": "Give me an in-depth reading of personality, in this structure:\n\n**【Life Palace stars】**\nThe core personality traits of the main stars in the Life Palace, quoting Ni Haixia.\n\n**【The whole picture】**\nHow the Wealth, Office and Travel palaces shape the personality, drawn as one full picture.\n\n**【With other people】**\nHow this person deals with others and moves through the world.\n\n**【Strengths and life lessons】**\nNatural strengths, and the lessons this life asks them to face.",
+    "palace": "Focus on the 【{palace}】 Palace (it governs: {role}). Its main stars are {stars}. Use this structure:\n\n**【What this palace means】**\nWhat the {palace} Palace means in this chart, and an overall judgment of its stars.\n\n**【Main stars】**\nHow Ni Haixia’s system reads the main stars in this palace, with specific views.\n\n**【Sanfang sizheng】**\nHow the palaces in its sanfang sizheng (the trine and opposition palaces) affect it.\n\n**【Practical advice】**\nConcrete advice based on this palace.",
+    "sihua": "Analyze the feihua of 【{view} {star} {sihua}】, in this structure:\n\n**【What {sihua} means】**\nThe core meaning of {sihua} in Ni Haixia’s system, and what {star} {sihua} means in particular.\n\n**【The palace it lands in】**\n{star} {sihua} lands in 【{palace}】: how the matters that palace governs are affected, and how Ni Haixia reads it.\n\n**【Its path through the sanfang sizheng】**\nAfter {sihua} enters {palace}, its effect on that palace’s sanfang sizheng (the opposite palace and the two trine palaces).\n\n**【Effect on the near future】**\nIn the {view} time frame, the specific effect of this {sihua} on the person’s near-term fortunes.\n\n**【Practical advice】**\nConcrete, doable advice based on this transformation."
+  },
+  "roles": {
+    "life": "self, personality, inborn pattern",
+    "brothers": "brothers and sisters, business partners",
+    "marriage": "love and marriage",
+    "children": "children, people who work under you",
+    "wealth": "where money comes from, how you earn",
+    "illness": "physical health, accidents",
+    "travel": "chances away from home, how others see you",
+    "companions": "friends, helpers and troublemakers",
+    "office": "career success, social standing",
+    "estate": "property, home life",
+    "fortune": "inner contentment and peace of mind",
+    "parents": "parents, documents and contracts"
+  },
+  "starWithSihua": "{star} {sihua}",
+  "emptyPalace": "an empty palace that borrows from the opposite palace",
+  "unknownPalace": "an unknown palace",
+  "view": {
+    "daxian": "Decade",
+    "liunian": "Year"
+  },
+  "replyLabel": "Chart reading",
+  "retry": "Try again",
+  "inputPlaceholder": "Ask a follow-up, e.g. My Life Palace has no main star. How do I read it?",
+  "inputLabel": "Ask a follow-up",
+  "send": "Ask",
+  "errors": {
+    "failed": "The reading didn’t finish. Please try again in a moment.",
+    "rateLimited": "You’ve used today’s readings. You can continue tomorrow.",
+    "network": "The connection dropped, so the reading didn’t finish.",
+    "tooLong": "Keep your question under 2,000 characters.",
+    "tooMany": "This conversation is already long. Build the chart again to start over.",
+    "apiMissing": "Readings aren’t available yet. Your chart still works.",
+    "apiMissingDev": "(Developer note: the open-source version has no AI reading endpoint at /api/interpret; add your own, see “Quick start” in the README. Building a chart needs no API key.)",
+    "loginRequired": "AI readings need you to sign in. Click Sign in at the top right, or open /login to sign in with GitHub.",
+    "rateLimitedMinutes": "Too many AI reading requests. Please try again in about {minutes, plural, one {# minute} other {# minutes}}.",
+    "rateLimitedHours": "Too many AI reading requests. Please try again in about {hours, plural, one {# hour} other {# hours}}."
+  },
+  "reading": {
+    "overview": "Reading the Life Palace and its sanfang sizheng…",
+    "topic": "{topic, select, love {Reading your love life…} career {Reading your career…} wealth {Reading your wealth…} health {Reading your health…} personality {Reading your personality…} other {Reading your chart…}}",
+    "palace": "Reading the {palace} Palace…",
+    "sihua": "Reading {star} {sihua}…",
+    "answer": "Answering…"
+  },
+  "charsLeft": "{n, plural, one {# character} other {# characters}} left"
+}

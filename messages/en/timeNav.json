@@ -1,0 +1,11 @@
+{
+  "natal": "Natal",
+  "decade": "Decade",
+  "decadeAges": "Decade {start}–{end}",
+  "year": "Year",
+  "prevYear": "Previous year",
+  "nextYear": "Next year",
+  "overlayDecade": "Decade · Four Transformations of a {stem} year:",
+  "overlayYear": "{year} · Four Transformations of a {stem} year:",
+  "transform": "{star} {sihua}"
+}

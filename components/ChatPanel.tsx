@@ -1,7 +1,8 @@
 'use client';
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { rateLimitMessage } from '@/lib/rate-limit/message';
+import { useTranslations } from 'next-intl';
+import { rateLimitWait } from '@/lib/rate-limit/message';
 import type { ZiweiChart } from '@/lib/ziwei/types';
 
 // Shown when /api/interpret returns 401: AI readings require login.
@@ -28,6 +29,7 @@ const PRESET_QUESTIONS = [
 ];
 
 export default function ChatPanel({ chart }: ChatPanelProps) {
+  const t = useTranslations('insight');
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -90,9 +92,11 @@ export default function ChatPanel({ chart }: ChatPanelProps) {
     } catch (e) {
       const missing = e instanceof Error && e.message === 'api-missing';
       const loginRequired = e instanceof Error && e.message === 'login-required';
-      const limited = e instanceof Error && e.message.startsWith(RATE_LIMITED)
-        ? rateLimitMessage(Number(e.message.slice(RATE_LIMITED.length)))
+      const wait = e instanceof Error && e.message.startsWith(RATE_LIMITED)
+        ? rateLimitWait(Number(e.message.slice(RATE_LIMITED.length)))
         : null;
+      // The words come from messages (#9 after #59)
+      const limited = wait ? ('minutes' in wait ? t('errors.rateLimitedMinutes', wait) : t('errors.rateLimitedHours', wait)) : null;
       setMessages(prev => [...prev, {
         role: 'assistant',
         content: limited ?? (loginRequired ? LOGIN_REQUIRED_MESSAGE : missing ? '开源版不含 AI 解读接口（/api/interpret），需要你自己实现后才能用，详见 README「快速开始」。排盘本身不需要任何 API Key。' : '解读失败，请检查API配置或稍后重试。'),
@@ -133,9 +137,9 @@ export default function ChatPanel({ chart }: ChatPanelProps) {
               <div
                 className="max-w-[85%] rounded-xl px-3.5 py-2.5 text-sm leading-relaxed"
                 style={msg.role === 'user' ? {
-                  background: 'rgba(212,168,67,0.1)',
-                  border: '1px solid rgba(212,168,67,0.2)',
-                  color: 'var(--t-gold)',
+                  background: 'var(--bg-2)',
+                  border: '1px solid var(--bdr)',
+                  color: 'var(--t-text)',
                 } : {
                   background: 'var(--t-card)',
                   border: '1px solid var(--t-border)',
@@ -173,8 +177,8 @@ export default function ChatPanel({ chart }: ChatPanelProps) {
                   background: 'transparent',
                 }}
                 onMouseEnter={e => {
-                  e.currentTarget.style.borderColor = 'rgba(212,168,67,0.3)';
-                  e.currentTarget.style.color = 'var(--t-gold)';
+                  e.currentTarget.style.borderColor = 'var(--tx-0)';
+                  e.currentTarget.style.color = 'var(--t-text)';
                 }}
                 onMouseLeave={e => {
                   e.currentTarget.style.borderColor = 'var(--t-border)';
@@ -210,9 +214,9 @@ export default function ChatPanel({ chart }: ChatPanelProps) {
             disabled={loading || !input.trim()}
             className="px-3 py-2 rounded-lg text-xs font-medium transition-all disabled:opacity-30 disabled:cursor-not-allowed"
             style={{
-              background: 'rgba(212,168,67,0.15)',
-              border: '1px solid rgba(212,168,67,0.25)',
-              color: 'var(--t-gold)',
+              background: 'var(--tx-0)',
+              border: '1px solid var(--tx-0)',
+              color: 'var(--bg-0)',
             }}
           >
             解读

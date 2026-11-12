@@ -1,0 +1,53 @@
+{
+  "meta": {
+    "title": "Ni Haixia’s method · Classics Library · Ziwei doushu quanji, quanshu and Gusui fu",
+    "description": "Search modern summaries of the core Ziwei Doushu classics: the Ziwei doushu quanji, the Ziwei doushu quanshu and the Gusui fu.",
+    "bookTitle": "{title} · {dynasty} · Ziwei Doushu Classics Library",
+    "chapterTitle": "{chapter} · {book} · Ziwei Doushu classics",
+    "chapterDescription": "A modern summary of {chapter}, from {book}",
+    "searchTitle": "Search · Classics Library"
+  },
+  "kicker": "Ni Haixia’s system · The sources it cites",
+  "title": "Classics Library",
+  "count": "Search modern summaries of the core Ziwei Doushu classics: {books, plural, one {# book} other {# books}} and {paragraphs, plural, one {# passage} other {# passages}}.",
+  "booksLabel": "Books in the library",
+  "bookTitle": "{title}",
+  "bookStats": "{chapters, plural, one {# chapter} other {# chapters}} · {paragraphs, plural, one {# passage} other {# passages}}",
+  "open": "Read",
+  "aboutTitle": "About this library",
+  "about": "Each passage is a modern summary based on public-domain Ming dynasty editions, not the word-for-word original text. The library keeps growing: the complete Ziwei doushu quanji and an index of the passages Ni Haixia cites in Tian Ji are on the way. If you find a mistake, please let us know.",
+  "breadcrumb": "Breadcrumb",
+  "home": "Classics",
+  "chapters": "Chapters",
+  "paragraphCount": "{n, plural, one {# passage} other {# passages}}",
+  "byline": "{title} · {dynasty}",
+  "modern": "Modern Chinese",
+  "niNote": "Ni Haixia’s note",
+  "meaning": "which means: “{text}”",
+  "chapterNav": "Chapter navigation",
+  "prev": "Previous chapter",
+  "next": "Next chapter",
+  "search": {
+    "aria": "Search the classics",
+    "placeholder": "Search the classics, e.g. minggong, Qisha, wealth",
+    "button": "Search",
+    "pending": "Searching…",
+    "crumb": "Search",
+    "heading": "Search the classics",
+    "query": "“{q}”",
+    "found": "{n, plural, one {# passage matches} other {# passages match}}",
+    "none": "No passage in the library matches this search yet.",
+    "empty": "Type a word to search for.",
+    "try": "Try:",
+    "hitMeta": "{book} · {chapter}"
+  },
+  "suggestions": {
+    "s1": "minggong",
+    "s2": "Qisha",
+    "s3": "Tanlang",
+    "s4": "huaji",
+    "s5": "wealth",
+    "s6": "sanfang"
+  },
+  "summaryNotice": "These passages are modern summaries of the classic, not its word-for-word original text."
+}
