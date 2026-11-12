@@ -22,3 +22,18 @@ test('a first-time visitor sees the product and one clear action, with no letter
   await expect(page.getByText('致正在使用这个平台的你')).toHaveCount(0);
   await expect(page.getByText('限时回馈')).toHaveCount(0);
 });
+
+test('the roadmap runs from Ziwei in November to Renji in February', async ({ page }) => {
+  await page.goto('/');
+
+  // Timeline labels: Ziwei (live) in November, then one module a month.
+  for (const month of ['11 月', '12 月', '1 月', '2 月']) {
+    await expect(page.getByText(month, { exact: true }).first()).toBeAttached();
+  }
+  // The bottom nav says when each module that is not open yet opens.
+  const navCard = (name: string, opens: string) => page.locator('a', { hasText: name }).filter({ hasText: opens });
+  await expect(navCard('天纪', '12 月 开放')).toHaveCount(1);
+  await expect(navCard('地纪', '1 月 开放')).toHaveCount(1);
+  await expect(navCard('人纪', '2 月 开放')).toHaveCount(1);
+  await expect(page.getByText('筹备中')).toHaveCount(0);
+});
