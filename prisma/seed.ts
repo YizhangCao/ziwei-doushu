@@ -19,21 +19,34 @@ export interface SeedOptions {
 }
 
 // Same shape generateApiKey() produces: zwk_ + 32 bytes in base64url (43 characters).
-const e2eKeySchema = z.string().regex(/^zwk_[A-Za-z0-9_-]{43,}$/);
+const e2eKeySchema = z.string().regex(/^zwk_[A-Za-z0-9_-]{43}$/);
+
+const LOCAL_HOSTS = new Set(['localhost', '127.0.0.1', '[::1]']);
+
+function isLocalDatabase(databaseUrl: string | undefined): boolean {
+  if (!databaseUrl) return false;
+  try {
+    return LOCAL_HOSTS.has(new URL(databaseUrl).hostname);
+  } catch {
+    return false;
+  }
+}
 
 /**
- * Reads E2E_API_KEY from the environment. Unset → no key is seeded. The E2E key is public (it's
- * in ci.yml), so it must never reach production.
+ * Reads E2E_API_KEY from the environment. Unset → no key is seeded. The key is public (it's in
+ * ci.yml, and the repo is public), so seeding it into a real database would create a working key
+ * there. It is seeded only in CI (its own Postgres) or into a database on this machine. The seed
+ * never runs on Vercel, so the risk is a local DATABASE_URL pointing at a remote database.
  */
 export function e2eApiKeyFromEnv(env: Record<string, string | undefined>): string | undefined {
   const value = env.E2E_API_KEY;
   if (!value) return undefined;
-  if (env.VERCEL_ENV === 'production') {
-    throw new Error('Refusing to seed E2E_API_KEY into production');
-  }
-  // The message never repeats the value.
+  // Neither message repeats the key or the database URL.
   if (!e2eKeySchema.safeParse(value).success) {
     throw new Error('E2E_API_KEY must look like a ZiweiHub API key: "zwk_" followed by 43 base64url characters');
+  }
+  if (!env.CI && !isLocalDatabase(env.DATABASE_URL)) {
+    throw new Error('Refusing to seed E2E_API_KEY: only in CI or into a localhost database');
   }
   return value;
 }
