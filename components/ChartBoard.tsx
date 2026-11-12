@@ -19,18 +19,6 @@ interface ChartBoardProps {
   onSiHuaClick?: (starName: string, siHua: string, view: TimeView) => void;
 }
 
-// 绕盘面顺时针排列（用于三方四正四边形排序）
-const CLOCKWISE_INDEX: Record<number, number> = {
-  5: 0, 6: 1, 7: 2, 8: 3,
-  9: 4, 10: 5,
-  11: 6, 0: 7, 1: 8, 2: 9,
-  3: 10, 4: 11,
-};
-
-function sortClockwise(branches: number[]): number[] {
-  return [...branches].sort((a, b) => CLOCKWISE_INDEX[a] - CLOCKWISE_INDEX[b]);
-}
-
 export default function ChartBoard({ chart, onStarSelect, onPalaceSelect, onSiHuaClick }: ChartBoardProps) {
   const t = useTranslations('board');
   const locale = useLocale();
@@ -83,8 +71,6 @@ export default function ChartBoard({ chart, onStarSelect, onPalaceSelect, onSiHu
     ? t('withStars', { stars: formatList(mingStars, locale) })
     : borrowed.length ? t('emptyBorrowed', { stars: formatList(borrowed, locale) }) : t('empty');
   const title = chart.birthInfo.name ? t('titleNamed', { name: chart.birthInfo.name }) : t('title');
-
-  // 600ms 由起点画向终点，缓出（与全站进场一致）
 
   return (
     <div className="w-full">
