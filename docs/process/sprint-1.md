@@ -32,7 +32,7 @@
 - TDD history is visible in git: every behavior change has a `test(...)` commit before its `feat(...)`/`fix(...)` (#16, #17, #14, #4 CodeQL fix, #2), and we only merged with `--merge` so it stays visible.
 - CI went from red on every PR to green across all jobs (typecheck, engine, unit, integration on Postgres, E2E, security scan, CodeQL), after patching a critical Next.js RCE advisory (#32).
 - The CodeQL "system prompt injection" alert on #27 was fixed properly: chart values are allowlisted against what the engine can produce, and chart text moved out of the system prompt.
-- Secrets were handled carefully: production/preview have their own AUTH_SECRET and DATA_ENCRYPTION_KEY (#31), and no secret was printed or committed.
+- Secrets were handled carefully: production and preview share AUTH_SECRET (needed for preview login through the production URL), separate from development (#31); each environment has its own DATA_ENCRYPTION_KEY (Preview got its own on 11/12, once preview databases became copies of production). No secret was printed or committed.
 - Yikang's post-merge reviews caught real follow-ups (session check on /api/interpret, 429 passthrough, stream errors, ConsultMessage cascade, crypto before #18).
 
 **What didn't go well**
@@ -45,7 +45,7 @@
 - Sprint scope was too big for 3 days with one partner unavailable: 9 of 28 committed points done.
 
 **AI harness: what worked, and what we changed in AGENTS.md**
-- v3.1 → v3.2 (PR #37): the integration-test rule now says `prisma migrate deploy` once plus truncation per test on DATABASE_URL_TEST, because Prisma blocks `migrate reset --force` when an AI agent runs it; added "local development uses the Neon dev branch; never point .env.local at production"; added "preview deployments must never run migrations against the production database (see #20)".
+- v3.1 → v3.2 (PR #37): the integration-test rule now says `prisma migrate deploy` once plus truncation per test on DATABASE_URL_TEST, because Prisma blocks `migrate reset --force` when an AI agent runs it; added "local development uses a non-production database (Neon dev or a local Postgres); never point .env.local at production"; added "preview deployments must never run migrations against the production database (see #20)".
 - Earlier in the sprint: "Production and preview use their own AUTH_SECRET and DATA_ENCRYPTION_KEY" (PR #30).
 - What worked: concrete, checkable rules (route files export only handlers, validation limits, never send birthInfo, TDD commit order, end-of-task summary) were followed consistently. Asking the agent to report only the *shape* of secrets kept credentials out of logs.
 - What we learned: the agent should stop when a tool's safety guard fires (Prisma migrate reset) or a permission is denied (a production read), and ask instead of working around it.
