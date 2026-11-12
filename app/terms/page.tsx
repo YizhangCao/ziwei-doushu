@@ -49,7 +49,10 @@ export default async function TermsPage() {
       <p>{t('terms.changes.body')}</p>
 
       <h2 style={{ fontSize: 'var(--fs-small)', fontWeight: 600, color: 'var(--tx-0)', marginTop: 32, marginBottom: 8 }}>{t('terms.law.heading')}</h2>
-      <p>{t('terms.law.body')}</p>
+      {/* Section 6 (#100): California law and arbitration, in parts (a) to (i), each titled in bold */}
+      {(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'] as const).map((part) => (
+        <p key={part} style={{ marginTop: part === 'a' ? 0 : 8 }}>{t.rich(`terms.law.${part}`, { strong })}</p>
+      ))}
 
       <h2 style={{ fontSize: 'var(--fs-small)', fontWeight: 600, color: 'var(--tx-0)', marginTop: 32, marginBottom: 8 }}>{t('terms.contact.heading')}</h2>
       <p>{t('terms.contact.body', CONTACT)}</p>
