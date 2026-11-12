@@ -30,7 +30,7 @@ describe('motion', () => {
 
   it('has no FadeIn rise on the home page', () => {
     const source = readFileSync('app/page.tsx', 'utf8');
-    expect(source).not.toMatch(/function FadeIn\([^)]*\by\s*=/s);
+    expect(source).not.toMatch(/function FadeIn\(\{[^}]*\by\s*=/); // [^}] spans lines without the s flag
     expect(source).not.toMatch(/<FadeIn[^>]*\by=\{/);
   });
 });
