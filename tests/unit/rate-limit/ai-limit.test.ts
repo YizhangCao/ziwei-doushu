@@ -49,6 +49,25 @@ describe('limitAiRequest(store, { userId, ip }, now)', () => {
     expect((await limitAiRequest(store, { userId: 'u1', ip: '198.51.100.1' }, NOW)).allowed).toBe(false);
   });
 
+  it('applies the admin-set daily limit per user, resetting at 00:00 UTC', async () => {
+    const store = createMemoryStore(() => NOW);
+    const caller = { userId: 'u1', ip: '203.0.113.1', dailyLimit: 2 };
+    await limitAiRequest(store, caller, NOW);
+    await limitAiRequest(store, caller, NOW);
+
+    const third = await limitAiRequest(store, caller, NOW);
+    expect(third.allowed).toBe(false);
+    // 10:15 UTC: 13 h 45 min until the next UTC day.
+    expect(third.retryAfterSeconds).toBe((13 * 60 + 45) * 60);
+    expect((await limitAiRequest(store, caller, Date.UTC(2026, 10, 13, 0, 0, 1))).allowed).toBe(true);
+  });
+
+  it('refuses every AI request when the daily limit is 0', async () => {
+    const store = createMemoryStore(() => NOW);
+
+    expect((await limitAiRequest(store, { userId: 'u1', ip: '203.0.113.1', dailyLimit: 0 }, NOW)).allowed).toBe(false);
+  });
+
   it('lets the request through when the store fails, so a Redis outage does not stop readings', async () => {
     const broken: RateLimitStore = { increment: () => Promise.reject(new Error('connection refused')) };
 
