@@ -8,6 +8,7 @@ import {
 } from '@/lib/ai/interpret';
 import { AuthError, requireUser } from '@/lib/auth/guards';
 import { toSessionUser } from '@/lib/auth/session';
+import { localeFromRequest } from '@/lib/i18n/locale';
 
 export const runtime = 'nodejs';
 
@@ -43,7 +44,9 @@ export const POST = auth(async function POST(request) {
 
   try {
     const anthropic = new Anthropic({ apiKey });
-    const stream = await createAnthropicStream(anthropic, input, model);
+    // The reading's language comes from the visitor's saved choice or browser (#59),
+    // never from the body, so the 2.3 request contract stays { chart, messages }.
+    const stream = await createAnthropicStream(anthropic, input, model, localeFromRequest(request));
     return new Response(encodeInterpretationStream(stream), {
       headers: {
         'Cache-Control': 'no-cache, no-transform',
