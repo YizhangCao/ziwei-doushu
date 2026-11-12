@@ -17,6 +17,10 @@ const SAME_SITE = 'http://same-site.invalid';
  * The value is parsed as a URL rather than prefix-matched, because browsers treat
  * `\` as `/` and drop tabs and newlines: `/\evil.com` and `/<tab>/evil.com` both act
  * like `//evil.com`.
+ *
+ * Parsing also resolves dot segments, so `/..//evil.com` (or `/%2e%2e//evil.com`) comes
+ * back with the path `//evil.com`: same-site to the parser, but a browser reads a path
+ * that starts with two slashes as another host. The resolved path is checked for that.
  */
 export function safeCallbackUrl(value: string | string[] | undefined): string {
   if (typeof value !== 'string' || !value.startsWith('/') || value.includes('\\')) return '/';
@@ -26,5 +30,7 @@ export function safeCallbackUrl(value: string | string[] | undefined): string {
   } catch {
     return '/';
   }
-  return url.origin === SAME_SITE ? url.pathname + url.search + url.hash : '/';
+  if (url.origin !== SAME_SITE) return '/';
+  const path = url.pathname + url.search + url.hash;
+  return path.startsWith('//') ? '/' : path;
 }
