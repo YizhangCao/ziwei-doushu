@@ -1,6 +1,6 @@
 /**
  * Author: Yikang (Richard) Liu, M.S. Candidate in Computer Science, Khoury College of Computer Sciences, Northeastern University
- * Version: 1.2
+ * Version: 1.3
  * Created: November 10, 2026 · San Francisco, California, USA
  * Last Edited: November 11, 2026 · San Francisco, California, USA
  */
@@ -9,12 +9,14 @@
  * @fileoverview Integration tests for the member-only check on POST /api/interpret.
  * The route checks auth before the body, so every request sends an invalid body:
  * a guest gets 401, and a signed-in member gets past auth to the 400 body check.
- * No request reaches Anthropic.
+ * Sessions are checked against the User table. No request reaches Anthropic.
  */
 
-import { describe, it, expect, beforeAll } from 'vitest';
+import { describe, it, expect, beforeAll, beforeEach, afterAll } from 'vitest';
 import { NextRequest } from 'next/server';
 import { encode } from 'next-auth/jwt';
+import { prisma } from '@/lib/db';
+import { resetDatabase } from './helpers/reset';
 
 // Fallbacks so the suite also runs without a configured environment.
 process.env.AUTH_SECRET ??= 'integration-test-auth-secret-not-real';
@@ -30,6 +32,8 @@ let POST: RouteModule['POST'];
 beforeAll(async () => {
   ({ POST } = await import('@/app/api/interpret/route'));
 });
+beforeEach(resetDatabase);
+afterAll(() => prisma.$disconnect());
 
 /** Builds a POST /api/interpret request with an invalid body and an optional cookie. */
 function interpretRequest(cookie?: string): NextRequest {
@@ -73,7 +77,13 @@ describe('POST /api/interpret auth', () => {
   });
 
   it('lets a signed-in member past auth (invalid body then gives 400, not 401)', async () => {
-    const res = await post(await sessionCookie({ sub: 'user-1', role: 'member' }));
+    const { id } = await prisma.user.create({ data: { githubId: '3001' }, select: { id: true } });
+    const res = await post(await sessionCookie({ sub: id, role: 'member' }));
     expect(res.status).toBe(400);
+  });
+
+  it('returns 401 when the session belongs to a user that no longer exists', async () => {
+    const res = await post(await sessionCookie({ sub: 'deleted-user', role: 'member' }));
+    expect(res.status).toBe(401);
   });
 });
