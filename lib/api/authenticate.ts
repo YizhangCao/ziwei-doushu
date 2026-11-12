@@ -12,7 +12,8 @@ export interface ApiKeyCaller {
  * response never says which of those it was.
  */
 export async function authenticateApiKey(authorization: string | null): Promise<ApiKeyCaller | null> {
-  const match = authorization?.match(/^Bearer\s+(\S+)$/);
+  // The auth scheme is case-insensitive (RFC 9110 §11.1); the key itself is not.
+  const match = authorization?.match(/^Bearer\s+(\S+)$/i);
   if (!match) return null;
   const plainKey = match[1];
 
