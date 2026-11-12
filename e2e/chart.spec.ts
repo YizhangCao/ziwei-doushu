@@ -18,6 +18,7 @@ async function buildChart(page: Page) {
   await selects.nth(0).selectOption('1990');
   await selects.nth(1).selectOption('6');
   await selects.nth(2).selectOption('15');
+  await page.locator('#bf-hour').selectOption('10');
   await page.getByRole('button', { name: '女' }).click();
   await page.getByRole('button', { name: '起盘', exact: true }).click();
   await expect(page.getByRole('region', { name: '命盘' })).toBeVisible();

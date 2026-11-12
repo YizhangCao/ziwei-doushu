@@ -30,10 +30,10 @@ function sentSystem(locale?: 'zh' | 'en'): unknown {
 }
 
 describe('systemPrompt', () => {
-  it('keeps the Chinese prompt exactly as it was', () => {
-    expect(systemPrompt('zh')).toBe(
+  it('keeps the original Chinese instructions first (the tone guardrails of #63 follow them)', () => {
+    expect(systemPrompt('zh').startsWith(
       '你是专业的紫微斗数命盘解读助手。命盘数据在用户的第一条消息里。请根据命盘结构，用清晰、谨慎、具体的中文回答用户。不要声称预测必然发生，也不要编造命盘中没有的信息。',
-    );
+    )).toBe(true);
   });
 
   it('asks for direct, high-school-level English in the English prompt', () => {
