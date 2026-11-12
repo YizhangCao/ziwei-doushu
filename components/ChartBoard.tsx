@@ -1,6 +1,9 @@
 'use client';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useLocale, useTranslations } from 'next-intl';
+import { termLabel } from '@/lib/i18n/glossary';
+import { formatList } from '@/lib/i18n/format';
 import type { ZiweiChart, Palace, Star } from '@/lib/ziwei/types';
 import { BRANCHES } from '@/lib/ziwei/constants';
 import PalaceCell from './PalaceCell';
@@ -53,6 +56,8 @@ function getSanFangSiZheng(branch: number): [number, number, number, number] {
 const ANIMATION_ORDER = [5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4];
 
 export default function ChartBoard({ chart, onStarSelect, onPalaceSelect, onSiHuaClick }: ChartBoardProps) {
+  const t = useTranslations('board');
+  const locale = useLocale();
   // 起盘后默认选中命宫：三方四正的连线立刻画出来，读者一眼就有了落脚点（不触发 AI 解读）
   const [selectedBranch, setSelectedBranch] = useState<number | null>(chart.mingGongBranch);
   const [timeView, setTimeView] = useState<TimeView>('mingpan');
@@ -73,7 +78,7 @@ export default function ChartBoard({ chart, onStarSelect, onPalaceSelect, onSiHu
     }
     return {};
   })();
-  const overlayLabel = timeView === 'daxian' ? '限' : timeView === 'liunian' ? '年' : undefined;
+  const overlayLabel = timeView === 'daxian' ? t('overlay.daxian') : timeView === 'liunian' ? t('overlay.liunian') : undefined;
 
   const handlePalaceClick = (branch: number) => {
     const isDeselecting = selectedBranch === branch;
@@ -90,11 +95,13 @@ export default function ChartBoard({ chart, onStarSelect, onPalaceSelect, onSiHu
 
   // 命宫一句话：落脚点 + 唯一的操作提示
   const mingGong = palaceMap[chart.mingGongBranch];
-  const mingStars = mingGong?.stars.filter(s => s.type === 'major').map(s => s.name) ?? [];
+  const term = (zh: string) => termLabel(zh, locale);
+  const mingStars = mingGong?.stars.filter(s => s.type === 'major').map(s => term(s.name)) ?? [];
+  const borrowed = mingGong?.borrowedStars?.map(term) ?? [];
   const mingDesc = mingStars.length > 0
-    ? `坐${mingStars.join('、')}`
-    : `空宫（借对宫${mingGong?.borrowedStars?.length ? ' ' + mingGong.borrowedStars.join('、') : ''}）`;
-  const title = chart.birthInfo.name ? `${chart.birthInfo.name}的命盘` : '你的命盘';
+    ? t('withStars', { stars: formatList(mingStars, locale) })
+    : borrowed.length ? t('emptyBorrowed', { stars: formatList(borrowed, locale) }) : t('empty');
+  const title = chart.birthInfo.name ? t('titleNamed', { name: chart.birthInfo.name }) : t('title');
 
   // 600ms 由起点画向终点，缓出（与全站进场一致）
   const draw = { initial: { pathLength: 0, opacity: 0 }, animate: { pathLength: 1, opacity: 1 }, transition: { duration: 0.6, ease: [0.15, 1, 0.35, 1] as const } };
@@ -104,8 +111,9 @@ export default function ChartBoard({ chart, onStarSelect, onPalaceSelect, onSiHu
       <header className="mb-6">
         <h2 style={{ fontSize: 'var(--fs-headline)', lineHeight: 1.25, color: 'var(--tx-0)' }}>{title}</h2>
         <p className="mt-2" style={{ fontSize: 'var(--fs-read)', lineHeight: 'var(--lh-read)', color: 'var(--tx-1)' }}>
-          你的命宫在{BRANCHES[chart.mingGongBranch]}，{mingDesc}。
-          <span style={{ color: 'var(--tx-2)' }}>点击任一宫位，查看它的三方四正。</span>
+          {t('lead', { branch: term(BRANCHES[chart.mingGongBranch]), desc: mingDesc })}
+          {locale === 'en' && ' '}
+          <span style={{ color: 'var(--tx-2)' }}>{t('hint')}</span>
         </p>
       </header>
 
@@ -120,7 +128,7 @@ export default function ChartBoard({ chart, onStarSelect, onPalaceSelect, onSiHu
 
       {/* 4x4 命盘网格（含 SVG 叠加层） */}
       <section
-        aria-label="命盘"
+        aria-label={t('region')}
         className="grid relative select-none mt-4"
         style={{
           gridTemplateColumns: 'repeat(4, minmax(0, 1fr))',
@@ -162,28 +170,32 @@ export default function ChartBoard({ chart, onStarSelect, onPalaceSelect, onSiHu
           <span aria-hidden="true" className="pole-mark" />
 
           <dl className="grid grid-cols-[auto_auto] gap-x-3 gap-y-1 text-left" style={{ fontSize: 'var(--fs-caption)', lineHeight: '18px' }}>
-            <dt style={{ color: 'var(--tx-2)' }}>命宫</dt>
-            <dd style={{ color: 'var(--ac)' }}>{BRANCHES[chart.mingGongBranch]}</dd>
-            <dt style={{ color: 'var(--tx-2)' }}>身宫</dt>
-            <dd style={{ color: 'var(--tx-0)' }}>{BRANCHES[chart.shenGongBranch]}</dd>
-            <dt style={{ color: 'var(--tx-2)' }}>五行局</dt>
-            <dd style={{ color: 'var(--tx-0)' }}>{chart.wuxingJuName}</dd>
+            <dt style={{ color: 'var(--tx-2)' }}>{t('summary.life')}</dt>
+            <dd style={{ color: 'var(--ac)' }}>{term(BRANCHES[chart.mingGongBranch])}</dd>
+            <dt style={{ color: 'var(--tx-2)' }}>{t('summary.body')}</dt>
+            <dd style={{ color: 'var(--tx-0)' }}>{term(BRANCHES[chart.shenGongBranch])}</dd>
+            <dt style={{ color: 'var(--tx-2)' }}>{t('summary.ju')}</dt>
+            <dd style={{ color: 'var(--tx-0)' }}>{term(chart.wuxingJuName)}</dd>
           </dl>
 
           {chart.currentDaXianIndex >= 0 && (() => {
             const dx = chart.daXians[chart.currentDaXianIndex];
             return (
               <div className="px-3 py-2" style={{ border: '1px solid var(--ac-bdr)' }}>
-                <div style={{ fontSize: 'var(--fs-caption)', color: 'var(--tx-2)' }}>当前大限</div>
-                <div className="tabular-nums" style={{ fontSize: 'var(--fs-body)', color: 'var(--ac)' }}>{dx.startAge}–{dx.endAge} 岁</div>
-                <div style={{ fontSize: 'var(--fs-caption)', color: 'var(--tx-2)' }}>{dx.palaceName}</div>
+                <div style={{ fontSize: 'var(--fs-caption)', color: 'var(--tx-2)' }}>{t('summary.currentDecade')}</div>
+                <div className="tabular-nums" style={{ fontSize: 'var(--fs-body)', color: 'var(--ac)' }}>{t('summary.ages', { start: dx.startAge, end: dx.endAge })}</div>
+                <div style={{ fontSize: 'var(--fs-caption)', color: 'var(--tx-2)' }}>{term(dx.palaceName)}</div>
               </div>
             );
           })()}
 
           <div className="tabular-nums" style={{ fontSize: 'var(--fs-caption)', color: 'var(--tx-2)' }}>
-            农历 {chart.lunarInfo.lunarYear}·{chart.lunarInfo.isLeapMonth ? '闰' : ''}
-            {chart.lunarInfo.lunarMonth}·{chart.lunarInfo.lunarDay}
+            {t('summary.lunar', {
+              year: String(chart.lunarInfo.lunarYear),
+              leap: chart.lunarInfo.isLeapMonth ? t('summary.leap') : '',
+              month: String(chart.lunarInfo.lunarMonth),
+              day: String(chart.lunarInfo.lunarDay),
+            })}
           </div>
         </motion.div>
 

@@ -1,5 +1,6 @@
 'use client';
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import BirthForm from '@/components/BirthForm';
 import ChartBoard from '@/components/ChartBoard';
 import InsightPanel from '@/components/InsightPanel';
@@ -15,15 +16,16 @@ import type { BirthInfo, ZiweiChart, Palace } from '@/lib/ziwei/types';
 export default function ChartPage() {
   const [chart, setChart] = useState<ZiweiChart | null>(null);
   const [selectedPalace, setSelectedPalace] = useState<Palace | null>(null);
+  const t = useTranslations('chart');
 
   // ── 未起盘：出生信息表单 ──
   if (!chart) {
     return (
       <main className="page" style={{ paddingTop: 48, paddingBottom: 96 }}>
         <div style={{ maxWidth: 720 }}>
-          <h1 style={{ fontSize: 'var(--fs-headline)', lineHeight: 1.25, color: 'var(--tx-0)' }}>起盘</h1>
+          <h1 style={{ fontSize: 'var(--fs-headline)', lineHeight: 1.25, color: 'var(--tx-0)' }}>{t('title')}</h1>
           <p style={{ marginTop: 8, marginBottom: 32, color: 'var(--tx-2)' }}>
-            输入出生年月日时，几秒内生成你的紫微命盘。
+            {t('lead')}
           </p>
           <BirthForm onSubmit={(info: BirthInfo) => setChart(generateChart(info))} />
         </div>
@@ -40,7 +42,7 @@ export default function ChartPage() {
         onClick={() => { setChart(null); setSelectedPalace(null); }}
         style={{ marginBottom: 24 }}
       >
-        <span aria-hidden="true">←</span> 重新起盘
+        <span aria-hidden="true">←</span> {t('rebuild')}
       </button>
 
       <div className="chart-layout">

@@ -1,5 +1,7 @@
 'use client';
 import { motion } from 'framer-motion';
+import { useLocale, useTranslations } from 'next-intl';
+import { termLabel } from '@/lib/i18n/glossary';
 import { STEMS, SI_HUA_TABLE } from '@/lib/ziwei/constants';
 import type { ZiweiChart } from '@/lib/ziwei/types';
 
@@ -45,6 +47,9 @@ export default function TimeNav({
   onYearChange,
 }: TimeNavProps) {
   const currentDx = chart.daXians[chart.currentDaXianIndex];
+  const t = useTranslations('timeNav');
+  const locale = useLocale();
+  const term = (zh: string) => termLabel(zh, locale);
 
   // 计算当前叠加四化信息
   const getOverlayInfo = (): { stemName: string; overlay: Record<string, string> } | null => {
@@ -85,7 +90,7 @@ export default function TimeNav({
           active={view === 'mingpan'}
           onClick={() => onViewChange('mingpan')}
         >
-          本命
+          {t('natal')}
         </TabButton>
 
         {/* 大限 */}
@@ -93,7 +98,7 @@ export default function TimeNav({
           active={view === 'daxian'}
           onClick={() => onViewChange('daxian')}
         >
-          {currentDx ? `大限 ${currentDx.startAge}–${currentDx.endAge}` : '大限'}
+          {currentDx ? t('decadeAges', { start: currentDx.startAge, end: currentDx.endAge }) : t('decade')}
         </TabButton>
 
         {/* 流年 — 含年份切换 */}
@@ -108,13 +113,13 @@ export default function TimeNav({
             className="flex-1 text-center whitespace-nowrap"
             style={{ minHeight: 44, fontSize: 'var(--fs-small)', color: view === 'liunian' ? 'var(--t-text)' : 'var(--t-text2)', background: 'none', border: 'none' }}
           >
-            流年
+            {t('year')}
           </button>
           {/* 年份 +/- */}
           <div className="flex items-center gap-0.5">
             <button
               type="button"
-              aria-label="上一年"
+              aria-label={t('prevYear')}
               onClick={e => { e.stopPropagation(); onYearChange(liunianYear - 1); if (view !== 'liunian') onViewChange('liunian'); }}
               className="flex items-center justify-center"
               style={{ minWidth: 24, minHeight: 44, fontSize: 'var(--fs-body)', color: 'var(--t-text2)', background: 'none', border: 'none' }}
@@ -130,7 +135,7 @@ export default function TimeNav({
             </span>
             <button
               type="button"
-              aria-label="下一年"
+              aria-label={t('nextYear')}
               onClick={e => { e.stopPropagation(); onYearChange(liunianYear + 1); if (view !== 'liunian') onViewChange('liunian'); }}
               className="flex items-center justify-center"
               style={{ minWidth: 24, minHeight: 44, fontSize: 'var(--fs-body)', color: 'var(--t-text2)', background: 'none', border: 'none' }}
@@ -150,14 +155,16 @@ export default function TimeNav({
           className="flex items-center gap-2 mt-1.5 px-1 flex-wrap"
         >
           <span style={{ fontSize: 'var(--fs-caption)', color: 'var(--t-faint)' }}>
-            {view === 'daxian' ? '大限' : `${liunianYear}`}·{overlayInfo.stemName}年四化：
+            {view === 'daxian'
+              ? t('overlayDecade', { stem: term(overlayInfo.stemName) })
+              : t('overlayYear', { year: String(liunianYear), stem: term(overlayInfo.stemName) })}
           </span>
           {(['禄', '权', '科', '忌'] as const).map(sh => {
             const starName = Object.keys(overlayInfo.overlay).find(k => overlayInfo.overlay[k] === sh);
             if (!starName) return null;
             return (
               <span key={sh} style={{ fontSize: 'var(--fs-caption)', color: SIHUA_COLORS[sh] }}>
-                {starName}化{sh}
+                {t('transform', { star: term(starName), sihua: term(`化${sh}`) })}
               </span>
             );
           })}
