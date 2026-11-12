@@ -41,6 +41,9 @@ const CORE = [
   'app/knowledge/page.tsx',
   'app/knowledge/[star]/[topic]/page.tsx',
   'app/not-found.tsx',
+  // Legal pages, linked from every footer (#98)
+  'app/terms/page.tsx',
+  'app/privacy/page.tsx',
 ];
 
 /** Gold (the accent) is for chart meaning: stars, sihua, the life palace, the current decade, AI headers. */
