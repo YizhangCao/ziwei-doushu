@@ -149,9 +149,10 @@ export default function TimeNav({
       {/* 叠加四化说明行 */}
       {overlayInfo && (
         <motion.div
-          initial={{ opacity: 0, y: -4 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.2 }}
+          key={`${view}-${liunianYear}`}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.2, ease: [0.15, 1, 0.35, 1] }}
           className="flex items-center gap-2 mt-1.5 px-1 flex-wrap"
         >
           <span style={{ fontSize: 'var(--fs-caption)', color: 'var(--t-faint)' }}>

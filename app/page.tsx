@@ -9,16 +9,16 @@ import { useTheme, type Theme } from '@/components/ThemeProvider';
 
 // ─── 滚动入场 wrapper ────────────────────────────────────
 function FadeIn({
-  children, delay = 0, y = 12, className = '',
+  children, delay = 0, className = '',
 }: {
-  children: React.ReactNode; delay?: number; y?: number; className?: string;
+  children: React.ReactNode; delay?: number; className?: string;
 }) {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: '-80px' });
   return (
     <motion.div ref={ref}
-      initial={{ opacity: 0, y }}
-      animate={inView ? { opacity: 1, y: 0 } : {}}
+      initial={{ opacity: 0 }}
+      animate={inView ? { opacity: 1 } : {}}
       transition={{ duration: 0.6, delay, ease: [0.15, 1, 0.35, 1] }}
       className={className}
     >
@@ -223,8 +223,8 @@ function FeatureVisual({ index, colors: c }: { index: number; colors: ReturnType
         <AnimatePresence mode="wait">
           {selInfo && (
             <motion.div key={sel}
-              initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.2 }}
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              transition={{ duration: 0.15 }}
               className="rounded-xl p-4 mt-1.5"
               style={{ border: `1px solid ${c.goldLine}`, background: c.featureBg }}>
               {/* flex-wrap：英文标题带译名、标签也更长，窄屏时标签换到下一行 */}
@@ -251,8 +251,8 @@ function FeatureVisual({ index, colors: c }: { index: number; colors: ReturnType
       <div className="flex flex-col gap-2 h-full justify-center">
         {msgs.map((m, i) => (
           <motion.div key={i}
-            initial={{ opacity: 0, x: m.role === 'user' ? 10 : -10 }}
-            whileInView={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
             transition={{ delay: i * 0.15 }}
             className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
             <div className="max-w-[85%] text-[12px] px-3 py-2 rounded-lg leading-relaxed"
@@ -280,7 +280,7 @@ function FeatureVisual({ index, colors: c }: { index: number; colors: ReturnType
       <div className="flex flex-col gap-3 h-full justify-center">
         {patterns.map((p, i) => (
           <motion.div key={i}
-            initial={{ opacity: 0, x: -10 }} whileInView={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0 }} whileInView={{ opacity: 1 }}
             transition={{ delay: i * 0.12 }}
             className="flex items-center gap-3 px-3 py-2.5 rounded-lg"
             style={{
@@ -354,20 +354,20 @@ export default function HomePage() {
           <span className="pole-mark pole-mark-lg" />
         </motion.span>
         <motion.div style={{ opacity: heroOpacity }} className="w-full max-w-[1216px]">
-          <motion.p initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
+          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.1, ease: [0.15, 1, 0.35, 1] }}
             className="mb-6" style={{ fontSize: 'var(--fs-caption)', color: c.textMuted }}>
             {t('hero.eyebrow')}
           </motion.p>
 
-          <motion.h1 initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
+          <motion.h1 initial={{ opacity: 0 }} animate={{ opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.2, ease: [0.15, 1, 0.35, 1] }}
             className="grad-text grad-text-dark"
             style={{ fontSize: 'var(--fs-display)', lineHeight: 1, fontWeight: 400, letterSpacing: '0.04em' }}>
             {t('hero.title')}
           </motion.h1>
 
-          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.35, ease: [0.15, 1, 0.35, 1] }}
             className="mt-8" style={{ fontSize: 'var(--fs-headline)', lineHeight: 1.25 }}>
             <p style={{ color: c.textPrimary }}>
@@ -380,7 +380,7 @@ export default function HomePage() {
 
 
           {/* CTA：Polestar 的 52px 按钮，主次分明 */}
-          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.55, ease: [0.15, 1, 0.35, 1] }}
             className="mt-10 flex flex-wrap gap-4">
             <button type="button" className="btn-primary" onClick={() => router.push('/chart')}>
@@ -398,7 +398,7 @@ export default function HomePage() {
       <section data-theme="dark" className="relative z-10 overflow-hidden min-h-[82svh] lg:min-h-[92vh] flex items-center" style={{ padding: '72px 24px' }}>
         <WeakBoundary line={c.navBorder} />
         <div className="absolute inset-0" style={{ background: 'var(--bg-0)' }} />
-        <FadeIn className="relative mx-auto text-center w-full" y={20}>
+        <FadeIn className="relative mx-auto text-center w-full">
           <div className="flex items-center justify-center gap-4 mb-8">
             <div className="h-px w-16" style={{ background: 'linear-gradient(to right, transparent, var(--bdr))' }} />
             <span className="text-[12px] uppercase" style={{ color: 'var(--tx-3)' }}>{t('outlook.eyebrow')}</span>
@@ -411,14 +411,14 @@ export default function HomePage() {
               { text: t('outlook.line3'), size: 'clamp(24px, 3vw, 40px)', color: 'var(--tx-1)', delay: 0.34 },
             ].map((line, i) => (
               <motion.p key={i}
-                initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0 }} whileInView={{ opacity: 1 }}
                 transition={{ duration: 0.7, delay: line.delay }}
                 className="" style={{ fontSize: line.size, color: line.color, fontWeight: 400 }}>
                 {line.text}
               </motion.p>
             ))}
             <motion.p
-              initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0 }} whileInView={{ opacity: 1 }}
               transition={{ duration: 0.8, delay: 0.45 }}
               className="grad-text grad-text-dark font-medium"
               style={{ fontSize: 'clamp(24px, 3.4vw, 48px)', letterSpacing: '0.05em', lineHeight: 1.35 }}>
@@ -462,7 +462,7 @@ export default function HomePage() {
               const ready = s.status === 'ready';
               return (
                 <motion.div key={s.key}
-                  initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
+                  initial={{ opacity: 0 }} whileInView={{ opacity: 1 }}
                   transition={{ delay: i * 0.15, duration: 0.5 }}
                   viewport={{ once: true }}
                   className="relative flex flex-row lg:flex-col items-center lg:items-center text-left lg:text-center gap-4 lg:gap-0">

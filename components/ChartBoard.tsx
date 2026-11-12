@@ -120,6 +120,7 @@ export default function ChartBoard({ chart, onStarSelect, onPalaceSelect, onSiHu
                 edgeDelay={reveal.decade}
                 overlayStarSiHua={Object.keys(overlayData).length > 0 ? overlayData : undefined}
                 overlayLabel={overlayLabel}
+                overlayKey={`${timeView}-${liunianYear}`}
                 onSiHuaClick={onSiHuaClick ? (starName, siHua) => onSiHuaClick(starName, siHua, timeView) : undefined}
               />
             </div>
