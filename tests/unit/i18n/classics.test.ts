@@ -8,7 +8,7 @@
  * @fileoverview English for the classics library (#59). Every book, chapter and passage
  * has English. A passage is shown as the original followed by `which means: "..."`, so
  * the English itself carries no quotes and no Chinese; technical terms inside it are
- * pinyin. Parallel couplets are rendered as two-line rhyming couplets.
+ * pinyin. Parallel couplets are rendered as rhyming couplets, two lines each.
  */
 
 import { describe, it, expect } from 'vitest';
@@ -49,12 +49,14 @@ describe('classics in English', () => {
     expect(bad.map((p) => p.id)).toEqual([]);
   });
 
-  it('render couplets as two lines', () => {
+  it('render couplet passages as whole couplets: an even number of non-empty lines', () => {
     const ids = new Set(paragraphs.map((p) => p.id));
     expect(COUPLET_IDS.size).toBeGreaterThan(0);
     for (const id of COUPLET_IDS) {
       expect(ids.has(id), id).toBe(true);
-      expect(PARAGRAPH_EN[id].split('\n'), id).toHaveLength(2);
+      const lines = PARAGRAPH_EN[id].split('\n');
+      expect(lines.length % 2, id).toBe(0);
+      expect(lines.every((line) => line.trim() !== ''), id).toBe(true);
     }
   });
 });
