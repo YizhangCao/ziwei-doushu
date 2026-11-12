@@ -14,21 +14,21 @@
   --font: "Helvetica Neue", Helvetica, Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", "Noto Sans CJK SC", sans-serif;
   --font-mono: "SF Mono", Menlo, "Noto Sans Mono", Consolas, monospace;
 
-  /* 背景层级（日：Polestar 白） */
+  /* 背景层级（日）：Polestar 官网实测值——白 / #F4F4F4 / #F0F0F0 */
   --bg-0: #FFFFFF;
   --bg-1: #F4F4F4;
-  --bg-2: #ECECE7;
-  --bg-inv: #101820;
+  --bg-2: #F0F0F0;
+  --bg-inv: #000000;
   --bg-card: #FFFFFF;
   --bg-page: #FFFFFF;
 
-  /* 文字：一种墨色，层级靠透明度（100 / 66 / 62），不靠加粗 */
-  --tx-0: #101820;
-  --tx-1: #101820;
-  --tx-2: rgba(16, 24, 32, 0.66);
-  --tx-3: rgba(16, 24, 32, 0.62);
-  --tx-inv: #ECECE7;
-  --tx-inv2: rgba(236, 236, 231, 0.66);
+  /* 文字：Polestar 只有两级——纯黑和 60% 黑，层级靠字号，不靠加粗 */
+  --tx-0: #000000;
+  --tx-1: #000000;
+  --tx-2: rgba(0, 0, 0, 0.6);
+  --tx-3: rgba(0, 0, 0, 0.6);
+  --tx-inv: #FFFFFF;
+  --tx-inv2: rgba(255, 255, 255, 0.6);
 
   /* 唯一强调色：金。只用于命盘含义，不用于按钮、导航等界面装饰 */
   --ac: #836425;
@@ -43,31 +43,45 @@
   --ke: #7A6215;
   --ji: #A83228;
 
-  /* 1px 细线 */
-  --bdr: rgba(16, 24, 32, 0.10);
-  --bdr-med: rgba(16, 24, 32, 0.16);
-  --bdr-heavy: rgba(16, 24, 32, 0.32);
+  /* 1px 线：#D8D8D8 细线（Polestar 实测）；实线框用纯黑 */
+  --bdr: #D8D8D8;
+  --bdr-med: #D8D8D8;
+  --bdr-heavy: #000000;
 
-  /* 阴影：平面为主，只给浮层用 */
+  /* 阴影：Polestar 是纯平面，只给浮层留一点 */
   --sh-xs: none;
   --sh-sm: none;
-  --sh-md: 0 12px 32px rgba(16, 24, 32, 0.08);
-  --sh-lg: 0 24px 64px rgba(16, 24, 32, 0.12);
+  --sh-md: 0 12px 32px rgba(0, 0, 0, 0.08);
+  --sh-lg: 0 24px 64px rgba(0, 0, 0, 0.12);
 
-  /* 形状：统一 2px 直角；胶囊只留给圆形元素 */
+  /* 形状：按钮、输入框、卡片一律 0 圆角（Polestar 实测）；只有徽章这类小标签 2px */
   --r-xs: 2px;
-  --r-sm: 2px;
-  --r-md: 2px;
-  --r-lg: 2px;
-  --r-xl: 2px;
+  --r-sm: 0px;
+  --r-md: 0px;
+  --r-lg: 0px;
+  --r-xl: 0px;
   --r-pill: 999px;
+
+  /* 版式（Polestar 1440 宽实测）：页边距 112px、导航高 72px、按钮高 52px */
+  --gutter: 16px;
+  --nav-h: 72px;
+  --control-h: 52px;
+
+  /* 字号阶梯（Polestar 实测 12 / 16 / 30 / 110）；中文行高按 Apple 中国官网放宽 */
+  --fs-caption: 12px;
+  --fs-body: 16px;
+  --fs-headline: 30px;
+  --fs-display: clamp(48px, calc(66.74px + 3vw), 110px);
 
   /* 卡片：日间是实底白卡；夜间半透明，透出星空 */
   --glass-blur: 0px;
+  --starfield-opacity: 0.3;
 
-  /* 动效：200ms 交互、600ms 进场、一条缓出曲线、6s 呼吸 */
+  /* 动效（Polestar 实测）：悬停淡出 150ms、颜色 200ms、进场 600ms、一条缓出曲线、6s 呼吸 */
   --ease: cubic-bezier(0.15, 1, 0.35, 1);
+  --ease-press: cubic-bezier(0.65, 0, 0, 1);
   --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-0: 150ms;
   --dur-1: 200ms;
   --dur-2: 600ms;
   --dur-breath: 6s;
@@ -85,21 +99,21 @@
   --t-gold: var(--ac);
 }
 
-/* ─── 夜（默认主题）：Graphite 夜空 + Signal White 文字 ─────── */
+/* ─── 夜（默认主题）：Polestar 黑色区块的配色（纯黑 / 纯白 / 60% 白）+ Graphite 面 ─── */
 [data-theme="dark"] {
-  --bg-0: #0B0F14;
+  --bg-0: #000000;
   --bg-1: #101820;
-  --bg-2: #1A222B;
-  --bg-inv: #ECECE7;
+  --bg-2: #1C232B;
+  --bg-inv: #FFFFFF;
   --bg-card: rgba(16, 24, 32, 0.72);
-  --bg-page: #0B0F14;
+  --bg-page: #000000;
 
-  --tx-0: #ECECE7;
-  --tx-1: #DCDCD5;
-  --tx-2: rgba(236, 236, 231, 0.66);
-  --tx-3: rgba(236, 236, 231, 0.52);
-  --tx-inv: #101820;
-  --tx-inv2: rgba(16, 24, 32, 0.66);
+  --tx-0: #FFFFFF;
+  --tx-1: #FFFFFF;
+  --tx-2: rgba(255, 255, 255, 0.6);
+  --tx-3: rgba(255, 255, 255, 0.6);
+  --tx-inv: #000000;
+  --tx-inv2: rgba(0, 0, 0, 0.6);
 
   --ac: #C8A464;
   --ac-dim: #DDBE82;
@@ -112,15 +126,19 @@
   --ke: #D2BC6A;
   --ji: #EC7A6E;
 
-  --bdr: rgba(236, 236, 231, 0.08);
-  --bdr-med: rgba(236, 236, 231, 0.14);
-  --bdr-heavy: rgba(236, 236, 231, 0.28);
+  --bdr: rgba(255, 255, 255, 0.15);
+  --bdr-med: rgba(255, 255, 255, 0.15);
+  --bdr-heavy: #FFFFFF;
 
   --sh-md: 0 12px 32px rgba(0, 0, 0, 0.36);
   --sh-lg: 0 24px 64px rgba(0, 0, 0, 0.48);
 
   --glass-blur: 10px;
+  --starfield-opacity: 0.6;
 }
+
+@media (min-width: 744px)  { :root { --gutter: 48px; } }
+@media (min-width: 1024px) { :root { --gutter: min(7.78vw, 112px); } }
 
 /* ─── 全局基础 ───────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; }
@@ -153,6 +171,8 @@ a, button, [role="button"], input, select, textarea, summary {
   transition-timing-function: ease;
 }
 a { text-underline-offset: 0.2em; text-decoration-thickness: 1px; }
+/* 文字链接：悬停在 150ms 内淡到 60%（Polestar：opacity 0.15s cubic-bezier(0.65, 0, 0, 1)） */
+a:not([class*="btn-"]):hover { opacity: 0.6; transition: opacity var(--dur-0) var(--ease-press); }
 button:disabled, [aria-disabled="true"] { cursor: not-allowed; opacity: 0.4; }
 
 /* 焦点：一条 1px 金线，键盘用户看得清，鼠标用户不打扰 */
@@ -224,10 +244,11 @@ button:disabled, [aria-disabled="true"] { cursor: not-allowed; opacity: 0.4; }
   align-items: center;
   justify-content: center;
   gap: 8px;
-  min-height: 44px;
-  padding: 12px 24px;
-  border-radius: var(--r-xs);
-  font-size: 15px;
+  min-height: var(--control-h);
+  padding: 16px 24px;
+  border-radius: var(--r-sm);
+  font-size: var(--fs-body);
+  line-height: 18px;
   font-weight: 400;
   letter-spacing: normal;
   cursor: pointer;
@@ -243,7 +264,7 @@ button:disabled, [aria-disabled="true"] { cursor: not-allowed; opacity: 0.4; }
   color: var(--bg-0);
   border: 1px solid var(--tx-0);
 }
-.btn-primary:hover { opacity: 0.86; }
+.btn-primary:hover { opacity: 0.8; }
 
 /* 强调按钮：金色细框，不铺满金色 */
 .btn-accent {
@@ -253,13 +274,13 @@ button:disabled, [aria-disabled="true"] { cursor: not-allowed; opacity: 0.4; }
 }
 .btn-accent:hover { background: var(--ac-bg); }
 
-/* 幽灵按钮 */
+/* 描边按钮（Polestar 的主要 CTA 形态）：1px 实线框，悬停铺浅灰底 */
 .btn-ghost {
   background: transparent;
-  color: var(--tx-1);
-  border: 1px solid var(--bdr-heavy);
+  color: var(--tx-0);
+  border: 1px solid var(--tx-0);
 }
-.btn-ghost:hover { border-color: var(--tx-0); }
+.btn-ghost:hover { background: var(--bg-2); }
 
 /* Tab：文字 + 底部 1px 指示线 */
 .tab-container {
@@ -308,9 +329,10 @@ button:disabled, [aria-disabled="true"] { cursor: not-allowed; opacity: 0.4; }
   width: 100%;
   background: var(--bg-card);
   border: 1px solid var(--bdr-med);
-  border-radius: var(--r-xs);
-  padding: 10px 14px;
-  font-size: 15px;
+  border-radius: var(--r-sm);
+  min-height: var(--control-h);
+  padding: 16px;
+  font-size: var(--fs-body);
   color: var(--tx-1);
   font-family: var(--font);
   outline: none;
@@ -503,5 +525,15 @@ button:disabled, [aria-disabled="true"] { cursor: not-allowed; opacity: 0.4; }
 button.rounded-full,
 a.rounded-full,
 [role="button"].rounded-full {
-  border-radius: var(--r-xs);
+  border-radius: var(--r-sm);
 }
+
+/* ─── 主题开关（#57）：文字和滑块位置由 data-theme 决定，避免水合不一致 ─── */
+.theme-toggle-knob {
+  transform: translateX(2px);
+  transition: transform var(--dur-2) var(--ease);
+}
+[data-theme="light"] .theme-toggle-knob { transform: translateX(22px); }
+.theme-label-day { display: none; }
+[data-theme="light"] .theme-label-day { display: inline; }
+[data-theme="light"] .theme-label-night { display: none; }

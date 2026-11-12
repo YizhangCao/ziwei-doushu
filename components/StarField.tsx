@@ -67,7 +67,8 @@ export default function StarField() {
     <canvas
       ref={canvasRef}
       className="fixed inset-0 pointer-events-none z-0"
-      style={{ opacity: theme === 'light' ? 0.3 : 0.6 }}
+      // 透明度跟着 data-theme 走（CSS），服务端和浏览器一致（#57）
+      style={{ opacity: 'var(--starfield-opacity)' }}
     />
   );
 }

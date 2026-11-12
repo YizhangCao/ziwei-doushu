@@ -36,28 +36,25 @@ function WeakBoundary({ line }: { line: string }) {
 
 // ─── 主题切换按钮 ────────────────────────────────────────
 function ThemeToggle() {
-  const { theme, toggle } = useTheme();
-  const isDark = theme === 'dark';
+  // 日 / 夜的文字和滑块位置都交给 CSS（[data-theme]）：服务端和浏览器渲染出同一份 HTML，
+  // 不会再因为主题存在 localStorage 里而水合不一致（#57）。
+  const { toggle } = useTheme();
   return (
-    <motion.button
+    <button
+      type="button"
       onClick={toggle}
-      whileTap={{ opacity: 0.72 }}
-      aria-label={isDark ? '切换亮色主题' : '切换暗色主题'}
-      className="flex items-center gap-2 px-3 py-1.5 rounded-full border"
-      style={{ borderColor: 'var(--bdr-med)', background: 'transparent' }}
+      aria-label="切换日间 / 夜间主题"
+      className="theme-toggle flex items-center gap-2"
+      style={{ background: 'transparent', border: 'none', padding: 0 }}
     >
-      <div className="relative w-10 h-5 rounded-full flex-shrink-0" style={{ background: 'var(--bg-2)' }}>
-        <motion.div
-          animate={{ x: isDark ? 2 : 22 }}
-          transition={{ duration: 0.6, ease: [0.15, 1, 0.35, 1] }}
-          className="absolute top-1 w-3.5 h-3.5 rounded-full"
-          style={{ background: 'var(--tx-0)' }}
-        />
-      </div>
-      <span className="text-[11px] tracking-wide select-none" style={{ color: 'var(--tx-2)' }}>
-        {isDark ? '暗色' : '亮色'}
+      <span className="relative w-10 h-5 rounded-full flex-shrink-0" style={{ background: 'var(--bg-2)' }}>
+        <span className="theme-toggle-knob absolute top-1 left-0 w-3.5 h-3.5 rounded-full" style={{ background: 'var(--tx-0)' }} />
       </span>
-    </motion.button>
+      <span className="text-[12px] tracking-wide select-none" style={{ color: 'var(--tx-2)' }}>
+        <span className="theme-label-night">夜间</span>
+        <span className="theme-label-day">日间</span>
+      </span>
+    </button>
   );
 }
 
@@ -320,7 +317,7 @@ function FeatureVisual({ index, colors: c }: { index: number; colors: ReturnType
           <div className="text-[11px] tracking-widest mb-2 transition-colors duration-300"
             style={{ color: c.textFaint }}>四化飞星</div>
           <div className="flex gap-2 flex-wrap">
-            {[['化禄', 'rgba(52,211,153,0.7)'], ['化权', 'rgba(96,165,250,0.7)'], ['化科', 'rgba(250,204,21,0.7)'], ['化忌', 'rgba(248,113,113,0.7)']].map(([label, color]) => (
+            {[['化禄', 'var(--lu)'], ['化权', 'var(--quan)'], ['化科', 'var(--ke)'], ['化忌', 'var(--ji)']].map(([label, color]) => (
               <motion.button key={label}
                 onClick={() => setSel(sel === label ? null : label)}
                 whileHover={{ scale: 1.08 }} whileTap={{ scale: 0.95 }}
@@ -398,14 +395,14 @@ function FeatureVisual({ index, colors: c }: { index: number; colors: ReturnType
             transition={{ delay: i * 0.12 }}
             className="flex items-center gap-3 px-3 py-2.5 rounded-lg"
             style={{
-              border: `1px solid ${p.ok ? 'rgba(96,165,250,0.25)' : 'rgba(251,146,60,0.25)'}`,
-              background: p.ok ? 'rgba(96,165,250,0.05)' : 'rgba(251,146,60,0.05)',
+              border: `1px solid ${p.ok ? 'color-mix(in srgb, var(--quan) 28%, transparent)' : 'color-mix(in srgb, var(--ke) 28%, transparent)'}`,
+              background: p.ok ? 'color-mix(in srgb, var(--quan) 6%, transparent)' : 'color-mix(in srgb, var(--ke) 6%, transparent)',
             }}>
             <div className="w-1.5 h-1.5 rounded-full flex-shrink-0"
-              style={{ background: p.ok ? 'rgba(96,165,250,0.6)' : 'rgba(251,146,60,0.6)' }} />
+              style={{ background: p.ok ? 'var(--quan)' : 'var(--ke)' }} />
             <div>
               <div className="text-[11px] font-medium"
-                style={{ color: p.ok ? 'rgba(147,197,253,0.8)' : 'rgba(253,186,116,0.8)' }}>{p.name}</div>
+                style={{ color: p.ok ? 'var(--quan)' : 'var(--ke)' }}>{p.name}</div>
               <div className="text-[10px]" style={{ color: c.textMuted }}>{p.desc}</div>
             </div>
           </motion.div>
@@ -458,117 +455,74 @@ export default function HomePage() {
           style={{ background: `radial-gradient(ellipse, ${c.glowPurple} 0%, transparent 70%)` }} />
       </div>
 
-      {/* ── 顶部导航 ── nav 与 hero 同色（c.bgBase），无 blur 无 border，彻底无色差带 */}
-      <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 sm:px-8 py-3 sm:py-4 gap-2"
-        style={{
-          background: c.navBg,
-        }}>
-        <div className="text-[11px] sm:text-xs tracking-[0.3em] sm:tracking-[0.4em] font-medium transition-colors duration-300 flex-shrink-0"
-          style={{ color: c.goldSolid }}>
+      {/* ── 顶部导航（Polestar 版式，#57）：72px 高、左右边距 = 页边距；单色字标 + 16px 文字链接 ── */}
+      <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between gap-4"
+        style={{ height: 'var(--nav-h)', padding: '0 var(--gutter)', background: c.navBg }}>
+        <a href="/" className="flex-shrink-0" style={{ color: 'var(--tx-0)', fontSize: '18px', letterSpacing: '0.24em', fontWeight: 500 }}>
           紫微命盘
-        </div>
-        <div className="flex items-center gap-1.5 sm:gap-3 flex-shrink-0">
+        </a>
+        <div className="flex items-center gap-4 sm:gap-8 flex-shrink-0" style={{ fontSize: 'var(--fs-body)' }}>
           <ThemeToggle />
-          <motion.button
-            whileTap={{ opacity: 0.72 }}
-            onClick={() => router.push('/heming')}
-            className="text-[11px] sm:text-xs px-2.5 sm:px-4 py-1 sm:py-1.5 rounded-full transition-all duration-300"
-            style={{ border: `1px solid ${c.navBorder}`, color: c.textMuted }}>
-            合盘
-          </motion.button>
-          <motion.button
-            whileTap={{ opacity: 0.72 }}
-            onClick={() => router.push('/chart')}
-            className="text-[11px] sm:text-xs px-2.5 sm:px-4 py-1 sm:py-1.5 rounded-full transition-all duration-300"
-            style={{ border: '1px solid var(--tx-0)', color: 'var(--tx-0)' }}>
-            立即起盘
-          </motion.button>
+          <a href="/heming" style={{ color: 'var(--tx-0)' }}>合盘</a>
+          <a href="/chart" style={{ color: 'var(--tx-0)' }}>立即起盘</a>
         </div>
       </nav>
 
-      {/* ══ HERO ══════════════════════════════════════════ */}
-      <section ref={heroRef} className="relative min-h-[82svh] lg:min-h-[92vh] flex flex-col items-center justify-center px-6 z-10 pb-24 pt-10">
-        <motion.div style={{ y: heroY, opacity: heroOpacity, maxWidth: '960px' }} className="text-center w-full mx-auto mt-10">
-          {/* 标签行 */}
-          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className="flex items-center justify-center gap-3 mb-8">
-            <div className="h-px w-12" style={{ background: `linear-gradient(to right, transparent, ${c.goldLine})` }} />
-            <span className="text-[11px] tracking-[0.45em] transition-colors duration-300" style={{ color: c.tagText }}>
-              紫微斗数 · 倪海厦体系
-            </span>
-            <div className="h-px w-12" style={{ background: `linear-gradient(to left, transparent, ${c.goldLine})` }} />
+      {/* ══ HERO（Polestar 版式，#57）══════════════════════════
+          左对齐、贴页边距：展示级标题 → 正文色主张 + 60% 副主张 → 52px 主按钮 + 描边按钮。
+          标题在夜里带一圈极淡的金色星辉，是全页唯一的“灵性”点缀。 */}
+      <section ref={heroRef} className="relative min-h-[92svh] flex flex-col justify-center z-10"
+        style={{ padding: 'calc(var(--nav-h) + 48px) var(--gutter) 96px' }}>
+        <motion.div style={{ y: heroY, opacity: heroOpacity }} className="w-full max-w-[1216px]">
+          <motion.p initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.1, ease: [0.15, 1, 0.35, 1] }}
+            className="mb-6" style={{ fontSize: 'var(--fs-caption)', letterSpacing: '0.2em', color: c.textMuted }}>
+            紫微斗数 · 倪海厦体系
+          </motion.p>
+
+          <motion.h1 initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2, ease: [0.15, 1, 0.35, 1] }}
+            className="grad-text grad-text-dark"
+            style={{ fontSize: 'var(--fs-display)', lineHeight: 1, fontWeight: 400, letterSpacing: '0.04em' }}>
+            紫微命盘
+          </motion.h1>
+
+          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.35, ease: [0.15, 1, 0.35, 1] }}
+            className="mt-8" style={{ fontSize: 'var(--fs-headline)', lineHeight: 1.25 }}>
+            <p style={{ color: c.textPrimary }}>紫微为门 · 天地人为路 · 倪海厦为师</p>
+            <p style={{ color: c.textMuted }}>AI 答疑 · 知行合一</p>
           </motion.div>
 
-          {/* 主标题 */}
-          <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.9, delay: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
-            style={{ position: 'relative', display: 'inline-block' }}>
-            <h1
-              className={`grad-text ${theme === 'dark' ? 'grad-text-dark' : 'grad-text-light'} font-bold leading-none mb-5`}
-              style={{
-                fontSize: 'clamp(56px, 10vw, 124px)',
-                letterSpacing: '0.07em',
-              }}>
-              紫微命盘
-            </h1>
-          </motion.div>
-
-          <motion.p initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.45 }}
-            className="text-base md:text-lg tracking-[0.18em] mb-2"
-            style={{ color: c.textSecond, fontWeight: 500 }}>
-            紫微为门 · 天地人为路 · 倪海厦为师
-          </motion.p>
-          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-            transition={{ duration: 0.7, delay: 0.55 }}
-            className="text-xs md:text-sm tracking-[0.3em] mb-6"
-            style={{ color: c.textMuted, opacity: 0.85 }}>
-            AI 答疑 · 知行合一
-          </motion.p>
-          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-            transition={{ duration: 0.7, delay: 0.65 }}
-            className="text-sm max-w-xl mx-auto leading-relaxed mb-10"
-            style={{ color: c.textMuted }}>
+          <motion.p initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.45, ease: [0.15, 1, 0.35, 1] }}
+            className="mt-6 max-w-[560px]" style={{ fontSize: 'var(--fs-body)', lineHeight: 1.5, color: c.textMuted }}>
             输入出生年月日时，生成专属紫微斗数命盘 — 后续天纪、地纪、人纪学习模块陆续开放。
           </motion.p>
 
-          {/* CTA */}
+          {/* CTA：Polestar 的 52px 按钮，主次分明 */}
           <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.85 }}
-            className="flex flex-col items-center gap-4">
-            <motion.button
-              whileHover={{ opacity: 0.86 }} whileTap={{ opacity: 0.72 }}
-              onClick={() => router.push('/chart')}
-              className="px-12 py-4 font-medium text-base tracking-widest rounded-full"
-              style={{ background: c.ctaBg, color: c.ctaText }}>
-              立即起盘
-            </motion.button>
+            transition={{ duration: 0.6, delay: 0.55, ease: [0.15, 1, 0.35, 1] }}
+            className="mt-10 flex flex-wrap gap-4">
+            <button type="button" className="btn-primary" onClick={() => router.push('/chart')}>
+              立即起盘 <span aria-hidden="true">→</span>
+            </button>
+            <button type="button" className="btn-ghost" onClick={() => router.push('/heming')}>
+              合盘分析 <span aria-hidden="true">→</span>
+            </button>
           </motion.div>
 
-          {/* 十四主星 */}
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-            transition={{ delay: 1.05, duration: 0.8 }}
-            className="mt-12 grid grid-cols-7 gap-1.5 max-w-[540px] mx-auto">
-            {STARS.map((star, i) => (
-              <motion.div key={star.name}
-                initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 1.05 + i * 0.03, duration: 0.35 }}
-                className="flex items-center justify-center px-2 py-1 rounded-sm"
-                style={{ background: c.starBg, border: `1px solid ${c.starBorder}` }}>
-                <span className="text-[11px] tracking-wide" style={{ color: c.starText }}>{star.name}</span>
-              </motion.div>
+          {/* 十四主星：细线方签，静静排开 */}
+          <motion.ul initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.7, ease: [0.15, 1, 0.35, 1] }}
+            aria-label="十四主星" className="mt-14 flex flex-wrap gap-2 max-w-[640px]">
+            {STARS.map(star => (
+              <li key={star.name} className="px-3 py-1.5"
+                style={{ border: `1px solid ${c.starBorder}`, color: c.starText, fontSize: 'var(--fs-caption)', letterSpacing: '0.1em' }}>
+                {star.name}
+              </li>
             ))}
-          </motion.div>
-        </motion.div>
-
-        {/* 滚动提示（绝对定位，不影响 hero opacity 计算） */}
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-          transition={{ delay: 2, duration: 1 }}
-          className="absolute bottom-6 left-0 right-0 flex flex-col items-center gap-2 pointer-events-none">
-          <span className="text-[9px] tracking-[0.4em] uppercase" style={{ color: c.scrollText }}>探索更多</span>
-          <motion.div animate={{ y: [0, 6, 0] }} transition={{ repeat: Infinity, duration: 2, ease: 'easeInOut' }}
-            className="w-px h-8" style={{ background: `linear-gradient(to bottom, ${c.scrollLine}, transparent)` }} />
+          </motion.ul>
         </motion.div>
       </section>
 
@@ -612,9 +566,7 @@ export default function HomePage() {
       {/* ══ 4 大学习板块时间轴 ════════════════════════════ */}
       <section className="relative z-10 py-20 lg:py-24 px-6"
         style={{
-          background: theme === 'dark'
-            ? 'linear-gradient(to bottom, transparent 0%, rgba(184,146,42,0.03) 50%, transparent 100%)'
-            : 'linear-gradient(to bottom, transparent 0%, rgba(184,146,42,0.04) 50%, transparent 100%)',
+          background: 'linear-gradient(to bottom, transparent 0%, var(--ac-bg) 50%, transparent 100%)',
         }}>
         <FadeIn className="text-center mb-14">
           <div className="flex items-center justify-center gap-3 mb-3">
@@ -659,7 +611,7 @@ export default function HomePage() {
                     style={{
                       background: ready
                         ? `linear-gradient(135deg, ${c.goldSolid} 0%, ${c.goldSolid}cc 100%)`
-                        : (theme === 'dark' ? 'rgba(184,146,42,0.05)' : '#fdf8ee'),
+                        : 'var(--ac-bg)',
                       border: ready ? 'none' : `2px dashed ${c.goldLine}`,
                       color: ready ? '#fff' : c.textMuted,
                       boxShadow: ready ? `0 4px 16px ${c.goldSolid}55` : 'none',
@@ -667,7 +619,7 @@ export default function HomePage() {
                     <span className="text-2xl">{s.icon}</span>
                     {ready && (
                       <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center text-[10px] text-white"
-                        style={{ background: '#10b981', boxShadow: '0 2px 6px rgba(16,185,129,0.4)' }}>
+                        style={{ background: 'var(--lu)' }}>
                         ✓
                       </div>
                     )}
@@ -677,7 +629,7 @@ export default function HomePage() {
                     {/* 顶行：时间标签 + 板块名 + note（手机端 inline；桌面端依然分行） */}
                     <div className="flex items-baseline gap-2 lg:flex-col lg:gap-0 lg:mb-1">
                       <div className="text-[10px] tracking-[0.25em] lg:mb-1.5"
-                        style={{ color: ready ? '#10b981' : c.textMuted, fontWeight: 500 }}>
+                        style={{ color: ready ? 'var(--lu)' : c.textMuted, fontWeight: 500 }}>
                         {s.when}
                       </div>
                       <div className="text-base lg:text-xl font-semibold tracking-[0.15em]"
@@ -688,7 +640,7 @@ export default function HomePage() {
                         <div className="text-[9px] tracking-[0.15em] px-2 py-0.5 rounded-full lg:hidden"
                           style={{
                             color: c.goldSolid,
-                            background: theme === 'dark' ? 'rgba(184,146,42,0.1)' : 'rgba(184,146,42,0.08)',
+                            background: 'var(--ac-bg)',
                             border: `1px solid ${c.goldLine}`,
                             opacity: 0.85,
                           }}>
@@ -701,7 +653,7 @@ export default function HomePage() {
                       <div className="hidden lg:block text-[9px] tracking-[0.15em] mb-1.5 px-2 py-0.5 rounded-full"
                         style={{
                           color: c.goldSolid,
-                          background: theme === 'dark' ? 'rgba(184,146,42,0.1)' : 'rgba(184,146,42,0.08)',
+                          background: 'var(--ac-bg)',
                           border: `1px solid ${c.goldLine}`,
                           opacity: 0.85,
                         }}>
@@ -738,7 +690,7 @@ export default function HomePage() {
                     </div>
                   </FadeIn>
                   <FadeIn delay={0.1}>
-                    <h2 className={`grad-text ${theme === 'dark' ? 'grad-text-dark' : 'grad-text-light'} font-bold leading-tight mb-5 tracking-tight`}
+                    <h2 className={`grad-text grad-text-dark font-bold leading-tight mb-5 tracking-tight`}
                       style={{
                         fontSize: i < 2 ? 'clamp(36px, 4vw, 56px)' : 'clamp(30px, 3.5vw, 48px)',
                         whiteSpace: 'pre-line',
@@ -792,7 +744,7 @@ export default function HomePage() {
                 <span className="text-[10px] tracking-[0.5em] uppercase" style={{ color: c.tagText }}>Ni Haixia · Philosophy</span>
                 <div className="h-px w-12" style={{ background: `linear-gradient(to left, transparent, ${c.goldLine})` }} />
               </div>
-              <h2 className={`grad-text ${theme === 'dark' ? 'grad-text-dark' : 'grad-text-light'} font-bold mb-5 tracking-tight`}
+              <h2 className={`grad-text grad-text-dark font-bold mb-5 tracking-tight`}
                 style={{ fontSize: 'clamp(32px, 4vw, 48px)' }}>
                 天 · 地 · 人
               </h2>
@@ -805,8 +757,8 @@ export default function HomePage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
             {[
               { glyph: '天', label: '先天命运', pct: '⅓', color: c.goldSolid, borderColor: c.goldLine, desc: '紫微斗数所揭示的，是一个人的先天命盘格局——出生时间决定的星曜布局、五行局数、命宫主星。这只是命运的三分之一，是人生的底色，而非全貌。', sub: '命盘 · 星曜 · 五行' },
-              { glyph: '地', label: '地理环境', pct: '⅓', color: 'rgba(96,165,250,0.9)', borderColor: 'rgba(96,165,250,0.3)', desc: '你所在的地理环境、城市、国家、风水格局，乃至家庭背景与社会结构，共同构成了命运的第二个维度。同一命盘，生在不同地方，际遇可以天壤之别。', sub: '地域 · 风水 · 环境' },
-              { glyph: '人', label: '人心意念', pct: '⅓', color: 'rgba(100,216,139,0.9)', borderColor: 'rgba(100,216,139,0.3)', desc: '个人的意志、心态、选择与行动，才是改变命运最主动的力量。倪师强调：了解命盘是为了更好地做人，而不是坐等命运安排。精进自己，是最强的破局之道。', sub: '意志 · 选择 · 行动' },
+              { glyph: '地', label: '地理环境', pct: '⅓', color: 'var(--quan)', borderColor: 'color-mix(in srgb, var(--quan) 32%, transparent)', desc: '你所在的地理环境、城市、国家、风水格局，乃至家庭背景与社会结构，共同构成了命运的第二个维度。同一命盘，生在不同地方，际遇可以天壤之别。', sub: '地域 · 风水 · 环境' },
+              { glyph: '人', label: '人心意念', pct: '⅓', color: 'var(--lu)', borderColor: 'color-mix(in srgb, var(--lu) 32%, transparent)', desc: '个人的意志、心态、选择与行动，才是改变命运最主动的力量。倪师强调：了解命盘是为了更好地做人，而不是坐等命运安排。精进自己，是最强的破局之道。', sub: '意志 · 选择 · 行动' },
             ].map((item, i) => (
               <FadeIn key={item.glyph} delay={0.1 + i * 0.12}>
                 <motion.div whileHover={{ y: -4 }} transition={{ duration: 0.1 }}
@@ -851,7 +803,7 @@ export default function HomePage() {
                 <span className="text-[10px] tracking-[0.5em] uppercase" style={{ color: c.tagText }}>Master · 1953 – 2012</span>
                 <div className="h-px w-12" style={{ background: `linear-gradient(to left, transparent, ${c.goldLine})` }} />
               </div>
-              <h2 className={`grad-text ${theme === 'dark' ? 'grad-text-dark' : 'grad-text-light'} font-bold mb-6 tracking-tight`}
+              <h2 className={`grad-text grad-text-dark font-bold mb-6 tracking-tight`}
                 style={{ fontSize: 'clamp(32px, 4vw, 48px)' }}>
                 倪海厦老师
               </h2>
@@ -872,7 +824,7 @@ export default function HomePage() {
                   { label: '传承', value: '紫微斗数', sub: '经方中医 · 易经' },
                 ].map(item => (
                   <div key={item.label} className="text-center rounded-xl px-4 py-3"
-                    style={{ border: `1px solid ${c.niDivider}`, background: 'rgba(255,255,255,0.02)' }}>
+                    style={{ border: `1px solid ${c.niDivider}`, background: 'transparent' }}>
                     <div className="text-[10px] tracking-[0.3em] mb-1" style={{ color: c.textFaint }}>{item.label}</div>
                     <div className="text-2xl font-semibold mb-0.5" style={{ color: c.goldSolid }}>{item.value}</div>
                     <div className="text-[11px]" style={{ color: c.textMuted }}>{item.sub}</div>
@@ -945,7 +897,7 @@ export default function HomePage() {
         <div className="mx-auto" style={{ maxWidth: '1280px' }}>
           <div className="rounded-2xl p-10 md:p-14 text-center"
             style={{
-              background: theme === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.8)',
+              background: 'var(--bg-card)',
               border: `1px solid ${c.cardBorder}`,
               boxShadow: c.cardShadow,
             }}>
@@ -955,7 +907,7 @@ export default function HomePage() {
                 <span className="text-[10px] tracking-[0.5em] uppercase" style={{ color: c.tagText }}>Compatibility · Analysis</span>
                 <div className="h-px w-8" style={{ background: c.goldLine }} />
               </div>
-              <h2 className={`grad-text ${theme === 'dark' ? 'grad-text-dark' : 'grad-text-light'} font-bold mb-4 tracking-tight`}
+              <h2 className={`grad-text grad-text-dark font-bold mb-4 tracking-tight`}
                 style={{ fontSize: 'clamp(26px, 3.5vw, 40px)' }}>
                 紫微合盘
               </h2>
@@ -967,7 +919,7 @@ export default function HomePage() {
                 {['感情匹配度分析', '合伙创业评估', '亲子缘分解读', '婚前相性评估'].map(item => (
                   <span key={item} style={{
                     fontSize: '12px', padding: '5px 14px', borderRadius: '20px',
-                    background: theme === 'dark' ? 'rgba(212,168,67,0.08)' : 'rgba(212,168,67,0.12)',
+                    background: 'var(--ac-bg)',
                     border: `1px solid ${c.goldLine}`,
                     color: c.goldSolid,
                   }}>
@@ -980,7 +932,7 @@ export default function HomePage() {
                 onClick={() => router.push('/heming')}
                 className="px-10 py-3 font-medium text-sm tracking-widest rounded-full"
                 style={{
-                  background: theme === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(140,100,20,0.1)',
+                  background: 'var(--bdr)',
                   border: `1px solid ${c.goldLine}`,
                   color: c.goldSolid,
                   cursor: 'pointer',
@@ -996,7 +948,7 @@ export default function HomePage() {
       <section className="relative z-10 py-40 px-6 text-center" style={{ background: c.altSection }}>
         <FadeIn>
           <p className="text-[10px] tracking-[0.6em] uppercase mb-6" style={{ color: c.tagText }}>开始你的命盘之旅</p>
-          <h2 className={`grad-text ${theme === 'dark' ? 'grad-text-dark' : 'grad-text-light'} font-bold mb-8 tracking-tight leading-tight`}
+          <h2 className={`grad-text grad-text-dark font-bold mb-8 tracking-tight leading-tight`}
             style={{ fontSize: 'clamp(32px, 5vw, 60px)' }}>
             你的紫微命盘<br />等你解读
           </h2>
@@ -1072,7 +1024,7 @@ export default function HomePage() {
                     {s.name}
                   </div>
                   <div className="text-[9px] tracking-wider"
-                    style={{ color: ready ? '#10b981' : c.textMuted }}>
+                    style={{ color: ready ? 'var(--lu)' : c.textMuted }}>
                     {ready ? '✓ 已上线' : `${s.when} 开放`}
                   </div>
                 </a>

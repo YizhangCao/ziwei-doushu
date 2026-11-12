@@ -67,8 +67,9 @@ describe('app/globals.css design system', () => {
     }
   });
 
-  it('uses one square geometry: every radius token is 2px except the pill', () => {
-    for (const name of ['--r-xs', '--r-sm', '--r-md', '--r-lg', '--r-xl']) expect(themes.light[name], name).toBe('2px');
+  it('uses the Polestar square geometry: 0px for controls and containers, 2px only for small badges', () => {
+    for (const name of ['--r-sm', '--r-md', '--r-lg', '--r-xl']) expect(themes.light[name], name).toBe('0px');
+    expect(themes.light['--r-xs']).toBe('2px');
   });
 
   it('defines one motion language and turns motion off for prefers-reduced-motion', () => {
