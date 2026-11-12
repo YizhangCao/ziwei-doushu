@@ -277,6 +277,13 @@ When a chart is built, the board lays itself out the way the rules do:
 
 Each piece fades or draws over 600ms, and everything is in place within 1.4s. It runs once per chart and never blocks a click; picking a palace later draws its lines at once. Under reduced motion the whole board is simply there. The timing lives in `lib/design/chart-reveal.ts`.
 
+### State Changes
+Two state changes get their own motion, so people see what changed:
+- **Day and night:** switching crossfades the whole page, star field included, in 600ms on the site's curve. It uses View Transitions; browsers without them fall back to a colour transition.
+- **Time layers:** switching natal, decade and year on the chart, or stepping the year, fades the new overlay sihua in over 200ms. The overlay row fades in place.
+
+Under reduced motion both happen at once. Reveals elsewhere move opacity only, with no rise or slide; `tests/unit/design/motion.test.ts` holds the home page, the time navigation and the palace cell to that.
+
 ### Reading Panel
 Streamed AI text sits in an `aria-live="polite"` region. Section headers are 14px at weight 600 in Pole-Star Gold, and paragraphs are 16px body text. While a reply is on its way, the pole-star mark breathes next to a line that says what is being read and names that palace's major stars with their sihua ("Reading the Life Palace: Taiyang (Hualu) and Taiyin (Huake)…"). An empty palace gets the line without stars.
 
