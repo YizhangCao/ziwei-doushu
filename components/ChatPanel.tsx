@@ -1,5 +1,3 @@
-// Last Edited by Yikang (Richard) Liu: November 11, 2026 · San Francisco, California, USA
-
 'use client';
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';

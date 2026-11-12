@@ -1,5 +1,3 @@
-// Last Edited by Yikang (Richard) Liu: November 11, 2026 · San Francisco, California, USA
-
 import Anthropic from '@anthropic-ai/sdk';
 import { NextResponse } from 'next/server';
 import { auth } from '@/auth';

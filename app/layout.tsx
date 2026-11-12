@@ -1,5 +1,3 @@
-// Last Edited by Yikang (Richard) Liu: November 10, 2026 · San Francisco, California, USA
-
 import type { Metadata } from 'next';
 import './globals.css';
 import { SessionProvider } from 'next-auth/react';

@@ -1,5 +1,3 @@
-// Last Edited by Yikang (Richard) Liu: November 10, 2026 · San Francisco, California, USA
-
 import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'vitest/config';
 

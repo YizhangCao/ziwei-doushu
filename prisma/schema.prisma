@@ -1,5 +1,3 @@
-// Last Edited by Yikang (Richard) Liu: November 11, 2026 · San Francisco, California, USA
-
 // ZiweiHub database schema (#14). The connection URL lives in prisma.config.ts (Prisma 7).
 // Change this file only together with a new migration in prisma/migrations/.
 

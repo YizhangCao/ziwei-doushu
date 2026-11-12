@@ -1,5 +1,3 @@
-// Last Edited by Yikang (Richard) Liu: November 10, 2026 · San Francisco, California, USA
-
 'use client';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';

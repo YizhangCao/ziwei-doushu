@@ -1,5 +1,3 @@
-// Last Edited by Yikang (Richard) Liu: November 11, 2026 · San Francisco, California, USA
-
 import { describe, it, expect, beforeEach, afterAll } from 'vitest';
 import { prisma } from '@/lib/db';
 import { seed } from '@/prisma/seed';
