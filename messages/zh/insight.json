@@ -54,10 +54,13 @@
   },
   "reading": {
     "overview": "正在读命宫与三方四正…",
+    "overviewStars": "正在读命宫：{stars}…",
     "topic": "{topic, select, love {正在读感情…} career {正在读事业…} wealth {正在读财运…} health {正在读健康…} personality {正在读性格…} other {正在读命盘…}}",
     "palace": "正在读{palace}…",
+    "palaceStars": "正在读{palace}：{stars}…",
     "sihua": "正在读{star}{sihua}…",
-    "answer": "正在回答…"
+    "answer": "正在回答…",
+    "star": "{star}{sihua}"
   },
   "charsLeft": "还可以输入 {n} 字"
 }

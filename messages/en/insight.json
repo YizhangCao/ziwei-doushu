@@ -54,10 +54,13 @@
   },
   "reading": {
     "overview": "Reading the Life Palace and its sanfang sizheng…",
+    "overviewStars": "Reading the Life Palace: {stars}…",
     "topic": "{topic, select, love {Reading your love life…} career {Reading your career…} wealth {Reading your wealth…} health {Reading your health…} personality {Reading your personality…} other {Reading your chart…}}",
     "palace": "Reading the {palace} Palace…",
+    "palaceStars": "Reading the {palace} Palace: {stars}…",
     "sihua": "Reading {star} {sihua}…",
-    "answer": "Answering…"
+    "answer": "Answering…",
+    "star": "{star} ({sihua})"
   },
   "charsLeft": "{n, plural, one {# character} other {# characters}} left"
 }
