@@ -101,7 +101,7 @@ describe('C: consistency', () => {
     const tight = /[0-9A-Za-z][一-鿿]|[一-鿿][0-9A-Za-z]/;
     const plain = (t: string) => t
       .replace(/\{[^}]*\}/g, '')        // ICU arguments
-      .replace(/<[^>]+>/g, '')          // rich-text tags
+      .replace(/<[^>]+>/g, ' ')         // rich-text tags, like a line break, separate the text
       .replace(/\d+年(\d+月)?(\d+日)?|\d+月\d+日/g, '') // dates keep the Chinese format
       .replace(/\d+[上下]/g, '');        // Tian Ji lecture parts, like 2上
     expect(offenders(zh, (t) => tight.test(plain(t)))).toEqual([]);
