@@ -31,7 +31,8 @@ const ADOPTED: [string, string, string, string][] = [
   ['S2', 'home.walkthrough.lead', '先命宫，再三方四正，再四化，最后大限。倪海厦如是说。',
     'The Life Palace first, then sanfang sizheng, then the Four Transformations, and the Decade last. That is the order Ni Haixia read a chart in.'],
   ['S3', 'home.roadmap.subtitle', '紫微先开，天纪、地纪、人纪随后', 'Ziwei first. Tian Ji, Di Ji and Ren Ji follow.'],
-  ['S4', 'home.features.0.tag', '排盘', 'Charting'],
+  // 排盘法, not 排盘: 起盘 stays the only verb for building a chart (PRODUCT.md, #63)
+  ['S4', 'home.features.0.tag', '排盘法', 'Charting'],
   ['S4', 'home.features.1.tag', '命盘', 'The chart'],
   ['S4', 'home.features.2.tag', 'AI 解读', 'AI reading'],
   ['S5', 'home.features.1.title', '十四主星，\n一颗不少', 'All 14 Main Stars.\nNot one missing.'],
