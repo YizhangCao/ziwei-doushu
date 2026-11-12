@@ -1,5 +1,6 @@
 import { createCipheriv, createDecipheriv, randomBytes } from 'node:crypto';
 import { z } from 'zod';
+import { birthInfoSchema } from '@/lib/validation/birth-info';
 import type { BirthInfo } from '@/lib/ziwei/types';
 
 // Encryption at rest for birth data (AGENTS.md "Security"). Server-only: never import from a
@@ -53,21 +54,13 @@ export function decryptString(payload: string): string {
   return Buffer.concat([decipher.update(ciphertext), decipher.final()]).toString('utf8');
 }
 
-// Only the fields every chart needs; the optional ones (place, original clock time) pass through.
-const storedBirthInfoSchema = z.looseObject({
-  year: z.number().int(),
-  month: z.number().int(),
-  day: z.number().int(),
-  hour: z.number().int().min(0).max(11),
-  gender: z.enum(['male', 'female']),
-});
-
 export function encryptBirthInfo(birthInfo: BirthInfo): string {
   return encryptString(JSON.stringify(birthInfo));
 }
 
 export function decryptBirthInfo(payload: string): BirthInfo {
-  const parsed = storedBirthInfoSchema.safeParse(JSON.parse(decryptString(payload)));
+  // The same schema createChart validates with, so anything saved can be read back.
+  const parsed = birthInfoSchema.safeParse(JSON.parse(decryptString(payload)));
   if (!parsed.success) throw new Error('Decrypted birth data has an unexpected shape');
-  return parsed.data as BirthInfo;
+  return parsed.data;
 }

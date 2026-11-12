@@ -59,6 +59,22 @@ describe('createChart', () => {
     expect(String(raw.encryptedBirthInfo)).toMatch(/^v1\./);
   });
 
+  it('rejects invalid birth data with a 400 error and stores nothing', async () => {
+    const owner = await makeUser('owner@example.test');
+    const bad: unknown[] = [
+      { ...BIRTH, hour: 12 },
+      { ...BIRTH, year: 2023, month: 2, day: 29 },
+      { ...BIRTH, gender: 'other' },
+      { year: 1990, month: 6 },
+    ];
+    for (const birthInfo of bad) {
+      const attempt = createChart(owner, { name: 'Mum', birthInfo: birthInfo as BirthInfo });
+      await expect(attempt).rejects.toBeInstanceOf(ChartInputError);
+      await expect(createChart(owner, { name: 'Mum', birthInfo: birthInfo as BirthInfo })).rejects.toMatchObject({ status: 400 });
+    }
+    expect(await prisma.chart.count()).toBe(0);
+  });
+
   it('rejects an empty or over-long name', async () => {
     const owner = await makeUser('owner@example.test');
     await expect(createChart(owner, { name: '   ', birthInfo: BIRTH })).rejects.toBeInstanceOf(ChartInputError);

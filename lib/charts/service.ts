@@ -4,6 +4,7 @@ import { canModifyChart } from '@/lib/auth/permissions';
 import type { ChartRecord, SessionUser } from '@/lib/auth/types';
 import { decryptBirthInfo, encryptBirthInfo } from '@/lib/crypto';
 import { prisma } from '@/lib/db';
+import { parseBirthInfo } from '@/lib/validation/birth-info';
 import { ChartInputError, type ChartSummary, type CreateChartInput, type SavedChart } from './types';
 
 // Saved charts (#18). Every function takes the user from the server session (never a client-sent
@@ -50,8 +51,11 @@ async function requireModifiable(sessionUser: SessionUser | null, chartId: strin
 export async function createChart(sessionUser: SessionUser | null, input: CreateChartInput): Promise<ChartSummary> {
   const user = requireUser(sessionUser);
   const name = parseName(input.name);
+  // Validate before encrypting: a bad write would make the chart unreadable for good.
+  const birth = parseBirthInfo(input.birthInfo);
+  if (!birth.ok) throw new ChartInputError(birth.error);
   return prisma.chart.create({
-    data: { ownerId: user.id, name, encryptedBirthInfo: encryptBirthInfo(input.birthInfo) },
+    data: { ownerId: user.id, name, encryptedBirthInfo: encryptBirthInfo(birth.birthInfo) },
     select: SUMMARY_SELECT,
   });
 }
