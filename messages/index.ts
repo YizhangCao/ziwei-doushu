@@ -11,6 +11,7 @@
  * request config hands the active locale's messages to NextIntlClientProvider.
  */
 
+import zhAbout from './zh/about.json';
 import zhBirthForm from './zh/birthForm.json';
 import zhBoard from './zh/board.json';
 import zhChart from './zh/chart.json';
@@ -24,6 +25,7 @@ import zhMeta from './zh/meta.json';
 import zhNav from './zh/nav.json';
 import zhNotFound from './zh/notFound.json';
 import zhTimeNav from './zh/timeNav.json';
+import enAbout from './en/about.json';
 import enBirthForm from './en/birthForm.json';
 import enBoard from './en/board.json';
 import enChart from './en/chart.json';
@@ -40,6 +42,7 @@ import enTimeNav from './en/timeNav.json';
 import type { Locale } from '@/lib/i18n/locale';
 
 const zh = {
+  about: zhAbout,
   birthForm: zhBirthForm,
   board: zhBoard,
   chart: zhChart,
@@ -58,6 +61,7 @@ const zh = {
 export type Messages = typeof zh;
 
 const en: Messages = {
+  about: enAbout,
   birthForm: enBirthForm,
   board: enBoard,
   chart: enChart,
