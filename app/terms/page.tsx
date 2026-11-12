@@ -43,8 +43,7 @@ export default async function TermsPage() {
         {t('terms.ip.prohibited')}<br/>
         {t('terms.ip.scraping')}<br/>
         {t('terms.ip.training')}<br/>
-        {t('terms.ip.resale')}<br/>
-        {t('terms.ip.cloning')}<br/><br/>
+        {t('terms.ip.resale')}<br/><br/>
         {t.rich('terms.ip.penalty', { strong })}
       </p>
 
