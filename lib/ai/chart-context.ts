@@ -1,6 +1,6 @@
 import type { ZiweiChart } from '@/lib/ziwei/types';
 
-// Chart -> prompt text for AI readings (#2). Sends only what a reading uses (AGENTS.md):
+// Chart -> prompt text for AI readings. Sends only what a reading uses (AGENTS.md):
 // palaces, stars, brightness, 四化, 五行局, 命主/身主, age and 大限 ranges. Never birthInfo or lunarInfo.
 export function serializeChartForInterpretation(chart: ZiweiChart): string {
   const palaces = chart.palaces.map((palace) => ({

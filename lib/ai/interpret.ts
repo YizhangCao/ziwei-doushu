@@ -4,9 +4,6 @@ import type { ZiweiChart } from '@/lib/ziwei/types';
 import { serializeChartForInterpretation } from './chart-context';
 import { isKnownChart } from './known-chart-values';
 
-// Re-exported so existing imports keep working; the serializer lives in chart-context.ts.
-export { serializeChartForInterpretation };
-
 export interface InterpretMessage {
   role: 'user' | 'assistant';
   content: string;

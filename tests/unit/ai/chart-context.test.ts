@@ -11,7 +11,7 @@ const BIRTH: BirthInfo = {
 const chart: ZiweiChart = generateChart(BIRTH);
 const text = serializeChartForInterpretation(chart);
 
-describe('serializeChartForInterpretation (lib/ai/chart-context.ts, #2)', () => {
+describe('serializeChartForInterpretation (lib/ai/chart-context.ts)', () => {
   it('lists all 12 palaces, in chart order', () => {
     expect(chart.palaces).toHaveLength(12);
     let from = 0;
