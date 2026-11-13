@@ -2,6 +2,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
+import SharePanel from './SharePanel';
 
 interface ChartSummary {
   id: string;
@@ -19,9 +20,11 @@ const button = {
 /** Lists the member's saved charts, with open, rename and delete (after a confirmation). */
 export default function SavedChartsList() {
   const t = useTranslations('charts.list');
+  const tShare = useTranslations('consultations.share');
   const [charts, setCharts] = useState<ChartSummary[] | null>(null);
   const [modes, setModes] = useState<Record<string, RowMode>>({});
   const [message, setMessage] = useState('');
+  const [sharing, setSharing] = useState<Record<string, boolean>>({});
 
   const load = useCallback(async () => {
     try {
@@ -106,10 +109,24 @@ export default function SavedChartsList() {
                       </>
                     ) : (
                       <>
+                        <button
+                          type="button"
+                          style={button}
+                          aria-expanded={Boolean(sharing[c.id])}
+                          aria-controls={`share-${c.id}`}
+                          onClick={() => setSharing((m) => ({ ...m, [c.id]: !m[c.id] }))}
+                        >
+                          {tShare('toggle')}
+                        </button>
                         <button type="button" style={button} onClick={() => setMode(c.id, { kind: 'rename', draft: c.name })}>{t('rename')}</button>
                         <button type="button" style={button} onClick={() => setMode(c.id, { kind: 'confirm-delete' })}>{t('delete')}</button>
                       </>
                     )}
+                  </div>
+                )}
+                {sharing[c.id] && mode.kind === 'view' && (
+                  <div id={`share-${c.id}`}>
+                    <SharePanel chartId={c.id} />
                   </div>
                 )}
               </li>

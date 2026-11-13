@@ -1,10 +1,5 @@
 import { test, expect } from '@playwright/test';
-import {
-  E2E_PRACTITIONER,
-  resetConsultationUsers,
-  signInAsE2eMember,
-  signInAsE2ePractitioner,
-} from './helpers/auth';
+import { E2E_CONSULT_MEMBER, E2E_PRACTITIONER, resetConsultationUsers, signInAs } from './helpers/auth';
 
 // #21 main flow, with two browser contexts: a member shares a saved chart with a practitioner
 // by email, and both see each other's messages arrive over SSE without reloading.
@@ -17,10 +12,12 @@ test.beforeEach(async () => {
 });
 
 test('member shares a chart; member and practitioner see each other’s messages live', async ({ browser, baseURL }) => {
+  // Two browsers, two pages each and two live updates: more than the default 30 s on a cold dev server.
+  test.setTimeout(90_000);
   const memberContext = await browser.newContext();
   const practitionerContext = await browser.newContext();
-  await signInAsE2eMember(memberContext, baseURL!);
-  await signInAsE2ePractitioner(practitionerContext, baseURL!);
+  await signInAs(memberContext, baseURL!, E2E_CONSULT_MEMBER, 'member');
+  await signInAs(practitionerContext, baseURL!, E2E_PRACTITIONER, 'practitioner');
   const member = await memberContext.newPage();
   const practitioner = await practitionerContext.newPage();
 
@@ -60,8 +57,10 @@ test('member shares a chart; member and practitioner see each other’s messages
 
   // After the member revokes the share, the practitioner's list is empty again.
   await member.goto('/charts');
-  await member.getByRole('listitem').filter({ hasText: CHART_NAME }).getByRole('button', { name: '分享给命理师' }).click();
-  await member.getByRole('button', { name: '撤销分享' }).click();
+  const sharedRow = member.getByRole('listitem').filter({ hasText: CHART_NAME });
+  await sharedRow.getByRole('button', { name: '分享给命理师' }).click();
+  await sharedRow.getByRole('button', { name: '撤销分享' }).click();
+  await expect(sharedRow.getByRole('status')).toContainText('已撤销分享');
   await practitioner.goto('/consultations');
   await expect(practitioner.getByRole('link', { name: CHART_NAME })).toHaveCount(0);
 

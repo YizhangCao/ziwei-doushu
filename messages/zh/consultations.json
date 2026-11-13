@@ -1,0 +1,43 @@
+{
+  "metaTitle": "咨询 · 紫微命盘",
+  "title": "咨询",
+  "list": {
+    "lead": "会员分享给你的命盘。打开对话，和会员交流。",
+    "empty": "还没有会员把命盘分享给你。",
+    "sharedAt": "分享于 {date}",
+    "openThread": "打开对话",
+    "viewChart": "查看命盘",
+    "memberLead": "这里是命理师查看分享命盘的地方。想把命盘分享给命理师，请到<link>我的命盘</link>。"
+  },
+  "share": {
+    "toggle": "分享给命理师",
+    "emailLabel": "命理师邮箱",
+    "submit": "分享",
+    "sharing": "分享中…",
+    "shared": "已分享给 {email}。",
+    "noPractitioner": "没有找到使用这个邮箱的命理师。",
+    "failed": "分享失败，请稍后重试。",
+    "loading": "加载中…",
+    "none": "还没有分享给任何命理师。",
+    "openThread": "打开对话",
+    "revoke": "撤销分享",
+    "revoked": "已撤销分享。",
+    "revokeFailed": "撤销失败，请稍后重试。"
+  },
+  "thread": {
+    "metaTitle": "咨询对话 · 紫微命盘",
+    "back": "返回",
+    "asOwner": "你分享的命盘",
+    "asPractitioner": "分享给你的命盘",
+    "owner": "会员",
+    "practitioner": "命理师",
+    "you": "我",
+    "empty": "还没有消息。",
+    "messageLabel": "消息",
+    "send": "发送",
+    "sending": "发送中…",
+    "sendFailed": "发送失败，请稍后重试。",
+    "closed": "这个咨询已关闭，不能再发消息。",
+    "streamError": "暂时收不到新消息，请刷新页面。"
+  }
+}

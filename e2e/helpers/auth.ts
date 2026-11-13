@@ -47,30 +47,41 @@ export async function signInAsE2eMember(context: BrowserContext, baseURL: string
   await context.addCookies([{ name: SESSION_COOKIE, value, domain: hostname, path: '/', httpOnly: true, sameSite: 'Lax' }]);
 }
 
-/** A fake practitioner used only by the consultation spec (#21). */
-export const E2E_PRACTITIONER = { id: 'e2e-practitioner', email: 'e2e-practitioner@ziweihub.test' };
+/**
+ * Fake users for the consultation spec (#21). The member is not E2E_MEMBER: charts.spec resets
+ * that member's charts in parallel, which would delete the chart this spec shares.
+ */
+export const E2E_CONSULT_MEMBER = { id: 'e2e-consult-member', email: 'e2e-consult-member@ziweihub.test', name: 'E2E Consult Member' };
+export const E2E_PRACTITIONER = { id: 'e2e-practitioner', email: 'e2e-practitioner@ziweihub.test', name: 'E2E Practitioner' };
 
 /**
- * Creates (or resets) the E2E member and practitioner for the consultation spec, and removes
- * the member's charts; their shares and messages go with them (onDelete: Cascade).
+ * Creates (or resets) the consultation spec's member and practitioner, and removes the member's
+ * charts; their shares and messages go with them (onDelete: Cascade).
  */
 export async function resetConsultationUsers(): Promise<void> {
-  await resetE2eMember();
   await withDb(async (db) => {
-    await db.query(
-      `INSERT INTO "User" (id, email, name, role, "createdAt", "updatedAt")
-       VALUES ($1, $2, 'E2E Practitioner', 'practitioner', now(), now())
-       ON CONFLICT (id) DO UPDATE SET role = 'practitioner', email = $2, "updatedAt" = now()`,
-      [E2E_PRACTITIONER.id, E2E_PRACTITIONER.email],
-    );
+    for (const [user, role] of [[E2E_CONSULT_MEMBER, 'member'], [E2E_PRACTITIONER, 'practitioner']] as const) {
+      await db.query(
+        `INSERT INTO "User" (id, email, name, role, "createdAt", "updatedAt")
+         VALUES ($1, $2, $3, $4, now(), now())
+         ON CONFLICT (id) DO UPDATE SET role = $4, email = $2, "updatedAt" = now()`,
+        [user.id, user.email, user.name, role],
+      );
+    }
+    await db.query(`DELETE FROM "Chart" WHERE "ownerId" = $1`, [E2E_CONSULT_MEMBER.id]);
   });
 }
 
-/** Signs the browser context in as the E2E practitioner. */
-export async function signInAsE2ePractitioner(context: BrowserContext, baseURL: string): Promise<void> {
+/** Signs the browser context in as one of the consultation spec's users. */
+export async function signInAs(
+  context: BrowserContext,
+  baseURL: string,
+  user: { id: string; name: string },
+  role: 'member' | 'practitioner',
+): Promise<void> {
   const secret = process.env.AUTH_SECRET;
   if (!secret) throw new Error('AUTH_SECRET is not set (see .env.example)');
-  const token = { sub: E2E_PRACTITIONER.id, role: 'practitioner', name: 'E2E Practitioner', roleCheckedAt: Date.now() };
+  const token = { sub: user.id, role, name: user.name, roleCheckedAt: Date.now() };
   const value = await encode({ token, secret, salt: SESSION_COOKIE });
   const { hostname } = new URL(baseURL);
   await context.addCookies([{ name: SESSION_COOKIE, value, domain: hostname, path: '/', httpOnly: true, sameSite: 'Lax' }]);

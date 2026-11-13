@@ -1,0 +1,43 @@
+{
+  "metaTitle": "Consultations · Ziwei Natal Chart",
+  "title": "Consultations",
+  "list": {
+    "lead": "Charts members have shared with you. Open the thread to talk with the member.",
+    "empty": "No member has shared a chart with you yet.",
+    "sharedAt": "Shared {date}",
+    "openThread": "Open thread",
+    "viewChart": "View chart",
+    "memberLead": "This is where practitioners see the charts shared with them. To share one of your charts, go to <link>My charts</link>."
+  },
+  "share": {
+    "toggle": "Share with a practitioner",
+    "emailLabel": "Practitioner’s email",
+    "submit": "Share",
+    "sharing": "Sharing…",
+    "shared": "Shared with {email}.",
+    "noPractitioner": "No practitioner uses that email.",
+    "failed": "Couldn’t share. Please try again.",
+    "loading": "Loading…",
+    "none": "Not shared with any practitioner yet.",
+    "openThread": "Open thread",
+    "revoke": "Stop sharing",
+    "revoked": "Sharing stopped.",
+    "revokeFailed": "Couldn’t stop sharing. Please try again."
+  },
+  "thread": {
+    "metaTitle": "Consultation · Ziwei Natal Chart",
+    "back": "Back",
+    "asOwner": "A chart you shared",
+    "asPractitioner": "A chart shared with you",
+    "owner": "Member",
+    "practitioner": "Practitioner",
+    "you": "You",
+    "empty": "No messages yet.",
+    "messageLabel": "Message",
+    "send": "Send",
+    "sending": "Sending…",
+    "sendFailed": "Couldn’t send. Please try again.",
+    "closed": "This consultation is closed. No new messages can be sent.",
+    "streamError": "New messages can’t come through right now. Please refresh the page."
+  }
+}
