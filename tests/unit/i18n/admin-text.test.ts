@@ -13,7 +13,7 @@ import { readFileSync } from 'node:fs';
 import { describe, it, expect } from 'vitest';
 import { MESSAGES } from '@/messages';
 
-const HAN = /[㐀-鿿豈-﫿]/;
+const HAN = /[\u3400-\u9fff\uf900-\ufaff]/;
 
 /** Source text with block, JSX and line comments removed (URLs in strings are kept). */
 function code(path: string): string {
