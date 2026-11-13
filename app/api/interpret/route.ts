@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 import {
   createAnthropicStream,
   encodeInterpretationStream,
+  parseAnthropicEffort,
   validateInterpretRequest,
 } from '@/lib/ai/interpret';
 
@@ -23,13 +24,14 @@ export async function POST(request: Request) {
 
   const apiKey = process.env.ANTHROPIC_API_KEY;
   const model = process.env.ANTHROPIC_MODEL;
-  if (!apiKey || !model) {
+  const effort = parseAnthropicEffort(process.env.ANTHROPIC_EFFORT);
+  if (!apiKey || !model || !effort.ok) {
     return NextResponse.json({ error: 'AI service is not configured' }, { status: 500 });
   }
 
   try {
     const anthropic = new Anthropic({ apiKey });
-    const stream = await createAnthropicStream(anthropic, input, model);
+    const stream = await createAnthropicStream(anthropic, input, model, { effort: effort.effort });
     return new Response(encodeInterpretationStream(stream), {
       headers: {
         'Cache-Control': 'no-cache, no-transform',
