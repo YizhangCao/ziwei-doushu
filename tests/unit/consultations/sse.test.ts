@@ -12,6 +12,13 @@ interface Item {
   body: string;
 }
 
+interface Page {
+  items: Item[];
+  cursor: string | null;
+}
+
+const EMPTY: Page = { items: [], cursor: null };
+
 // Reads a stream in the background so fake timers can drive it.
 function collect(stream: ReadableStream<Uint8Array>) {
   const decoder = new TextDecoder();
@@ -66,9 +73,13 @@ describe('createPollingStream', () => {
     expect(SSE_MAX_DURATION_MS).toBe(55_000);
   });
 
-  it('starts with a retry hint, then emits new items as events and advances the cursor', async () => {
-    const batches: Item[][] = [[{ id: 'm1', body: 'one' }, { id: 'm2', body: 'two' }], [], [{ id: 'm3', body: 'three' }]];
-    const poll = vi.fn(async (_cursor: string | null) => batches.shift() ?? []);
+  it('starts with a retry hint, then emits new items as events and polls from the cursor each poll returns', async () => {
+    const batches: Page[] = [
+      { items: [{ id: 'm1', body: 'one' }, { id: 'm2', body: 'two' }], cursor: 'm2' },
+      { items: [], cursor: 'm2' },
+      { items: [{ id: 'm3', body: 'three' }], cursor: 'm3' },
+    ];
+    const poll = vi.fn(async (_cursor: string | null) => batches.shift() ?? EMPTY);
     const out = collect(createPollingStream<Item>({ poll, cursor: null }));
 
     await vi.advanceTimersByTimeAsync(0);
@@ -86,7 +97,7 @@ describe('createPollingStream', () => {
   });
 
   it('resumes from the given cursor', async () => {
-    const poll = vi.fn(async (_cursor: string | null) => [] as Item[]);
+    const poll = vi.fn(async (_cursor: string | null): Promise<Page> => ({ items: [], cursor: 'm7' }));
     const out = collect(createPollingStream<Item>({ poll, cursor: 'm7' }));
     await vi.advanceTimersByTimeAsync(0);
     expect(poll).toHaveBeenCalledWith('m7');
@@ -94,7 +105,7 @@ describe('createPollingStream', () => {
   });
 
   it('sends a heartbeat on every poll with nothing new', async () => {
-    const out = collect(createPollingStream<Item>({ poll: async () => [] }));
+    const out = collect(createPollingStream<Item>({ poll: async () => EMPTY }));
     await vi.advanceTimersByTimeAsync(10_000);
     // One poll at 0 s, then one every 2 s up to 10 s.
     expect(out.state.text.split(formatHeartbeat()).length - 1).toBe(6);
@@ -102,7 +113,7 @@ describe('createPollingStream', () => {
   });
 
   it('closes itself after 55 s by default, with a close event so the client knows to reconnect', async () => {
-    const out = collect(createPollingStream<Item>({ poll: async () => [] }));
+    const out = collect(createPollingStream<Item>({ poll: async () => EMPTY }));
 
     await vi.advanceTimersByTimeAsync(SSE_MAX_DURATION_MS - 1);
     expect(out.state.done).toBe(false);
@@ -114,7 +125,7 @@ describe('createPollingStream', () => {
   });
 
   it('takes a configurable max duration', async () => {
-    const poll = vi.fn(async () => [] as Item[]);
+    const poll = vi.fn(async () => EMPTY);
     const out = collect(createPollingStream<Item>({ poll, maxDurationMs: 5_000 }));
 
     await vi.advanceTimersByTimeAsync(5_000);
@@ -127,7 +138,7 @@ describe('createPollingStream', () => {
   });
 
   it('takes a configurable poll interval', async () => {
-    const poll = vi.fn(async () => [] as Item[]);
+    const poll = vi.fn(async () => EMPTY);
     const out = collect(createPollingStream<Item>({ poll, pollIntervalMs: 500 }));
     await vi.advanceTimersByTimeAsync(2_000);
     expect(poll).toHaveBeenCalledTimes(5);
@@ -136,7 +147,7 @@ describe('createPollingStream', () => {
 
   it('stops polling when the client disconnects (abort signal)', async () => {
     const controller = new AbortController();
-    const poll = vi.fn(async () => [] as Item[]);
+    const poll = vi.fn(async () => EMPTY);
     const out = collect(createPollingStream<Item>({ poll, signal: controller.signal }));
     await vi.advanceTimersByTimeAsync(4_000);
 
@@ -148,7 +159,7 @@ describe('createPollingStream', () => {
   });
 
   it('stops polling when the reader cancels the stream', async () => {
-    const poll = vi.fn(async () => [] as Item[]);
+    const poll = vi.fn(async () => EMPTY);
     const out = collect(createPollingStream<Item>({ poll }));
     await vi.advanceTimersByTimeAsync(2_000);
 
@@ -182,21 +193,37 @@ describe('createPollingStream', () => {
   });
 
   it('sends each id once when polls overlap (the cursor query re-reads a short window)', async () => {
-    const batches: Item[][] = [
-      [{ id: 'm1', body: 'one' }, { id: 'm2', body: 'two' }],
-      [{ id: 'm2', body: 'two' }, { id: 'm3', body: 'three' }],
-      [{ id: 'm3', body: 'three' }],
+    const batches: Page[] = [
+      { items: [{ id: 'm1', body: 'one' }, { id: 'm2', body: 'two' }], cursor: 'm2' },
+      { items: [{ id: 'm2', body: 'two' }, { id: 'm3', body: 'three' }], cursor: 'm3' },
+      { items: [{ id: 'm3', body: 'three' }], cursor: 'm3' },
     ];
-    const poll = vi.fn(async (_cursor: string | null) => batches.shift() ?? []);
+    const poll = vi.fn(async (_cursor: string | null) => batches.shift() ?? EMPTY);
     const out = collect(createPollingStream<Item>({ poll }));
 
     await vi.advanceTimersByTimeAsync(SSE_POLL_INTERVAL_MS * 2);
     for (const id of ['m1', 'm2', 'm3']) {
       expect(out.state.text.split(`id: ${id}\n`).length - 1, id).toBe(1);
     }
-    // Nothing new on the third poll, so it is a heartbeat; the cursor still advances to the newest id.
+    // Nothing new on the third poll, so it is a heartbeat; the cursor stays at the newest id.
     expect(out.state.text.endsWith(formatHeartbeat())).toBe(true);
     expect(poll.mock.calls.map(([cursor]) => cursor)).toEqual([null, 'm2', 'm3']);
+    await out.cancel();
+  });
+
+  it('never moves the cursor back to an overlap item: it only uses the cursor the poll returns', async () => {
+    const batches: Page[] = [
+      { items: [{ id: 'm5', body: 'five' }], cursor: 'm5' },
+      // A late-committing m4 comes back in the overlap; the newest message is still m5.
+      { items: [{ id: 'm4', body: 'four' }], cursor: 'm5' },
+      { items: [], cursor: 'm5' },
+    ];
+    const poll = vi.fn(async (_cursor: string | null) => batches.shift() ?? EMPTY);
+    const out = collect(createPollingStream<Item>({ poll }));
+
+    await vi.advanceTimersByTimeAsync(SSE_POLL_INTERVAL_MS * 2);
+    expect(out.state.text).toContain(formatSseEvent({ id: 'm4', data: { id: 'm4', body: 'four' } }));
+    expect(poll.mock.calls.map(([cursor]) => cursor)).toEqual([null, 'm5', 'm5']);
     await out.cancel();
   });
 });

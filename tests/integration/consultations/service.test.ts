@@ -10,7 +10,7 @@ import {
   revokeShare,
   shareChart,
 } from '@/lib/consultations/service';
-import { ConsultationInputError } from '@/lib/consultations/types';
+import { ConsultationInputError, type MessagePage } from '@/lib/consultations/types';
 import { prisma } from '@/lib/db';
 import type { BirthInfo } from '@/lib/ziwei/types';
 import { resetDatabase } from '../helpers/reset';
@@ -262,31 +262,54 @@ describe('postMessage / listMessages — only the owner and that practitioner', 
 });
 
 describe('listMessagesSince(user, shareId, cursor) — what the SSE stream polls', () => {
-  it('returns the whole thread for a null cursor', async () => {
-    const w = await world();
-    const share = await shareChart(w.owner, w.chartId, 'prac@example.test');
-    await postMessage(w.owner, share.id, 'one');
-    await postMessage(w.practitioner, share.id, 'two');
-
-    expect((await listMessagesSince(w.owner, share.id, null)).map((m) => m.body)).toEqual(['one', 'two']);
-  });
-
-  it('returns only messages after the cursor, in order', async () => {
-    const w = await world();
-    const share = await shareChart(w.owner, w.chartId, 'prac@example.test');
-    const first = await postMessage(w.owner, share.id, 'one');
-    await postMessage(w.practitioner, share.id, 'two');
-    await postMessage(w.owner, share.id, 'three');
-
-    expect((await listMessagesSince(w.practitioner, share.id, first.id)).map((m) => m.body)).toEqual(['two', 'three']);
-  });
+  const bodies = (page: MessagePage) => page.messages.map((m) => m.body);
 
   // Messages with explicit timestamps relative to the cursor, so the overlap window is testable.
   async function at(shareId: string, authorId: string, body: string, ms: number) {
     return prisma.consultMessage.create({ data: { shareId, authorId, body, createdAt: new Date(ms) } });
   }
 
-  it('re-sends only the ~5 s overlap window behind the cursor, never older messages', async () => {
+  // `count` messages one millisecond apart starting at `fromMs`, inserted in one statement.
+  async function many(shareId: string, authorId: string, prefix: string, fromMs: number, count: number) {
+    await prisma.consultMessage.createMany({
+      data: Array.from({ length: count }, (_, i) => ({ shareId, authorId, body: `${prefix}${i}`, createdAt: new Date(fromMs + i) })),
+    });
+  }
+
+  it('returns the whole thread for a null cursor, with the last message as the next cursor', async () => {
+    const w = await world();
+    const share = await shareChart(w.owner, w.chartId, 'prac@example.test');
+    await postMessage(w.owner, share.id, 'one');
+    const two = await postMessage(w.practitioner, share.id, 'two');
+
+    const page = await listMessagesSince(w.owner, share.id, null);
+    expect(bodies(page)).toEqual(['one', 'two']);
+    expect(page.cursor).toBe(two.id);
+  });
+
+  it('returns an empty page and a null cursor for an empty thread', async () => {
+    const w = await world();
+    const share = await shareChart(w.owner, w.chartId, 'prac@example.test');
+
+    expect(await listMessagesSince(w.owner, share.id, null)).toEqual({ messages: [], cursor: null });
+  });
+
+  it('returns the overlap window behind the cursor, then the messages after it, in order', async () => {
+    const w = await world();
+    const share = await shareChart(w.owner, w.chartId, 'prac@example.test');
+    const t = Date.parse('2026-11-12T12:00:00Z');
+    await at(share.id, w.owner.id, 'before', t - 1_000);
+    const cursor = await at(share.id, w.owner.id, 'cursor', t);
+    await at(share.id, w.practitioner.id, 'two', t + 1_000);
+    const three = await at(share.id, w.owner.id, 'three', t + 2_000);
+
+    const page = await listMessagesSince(w.practitioner, share.id, cursor.id);
+    // The cursor itself is never returned; 'before' is a repeat the client drops by id.
+    expect(bodies(page)).toEqual(['before', 'two', 'three']);
+    expect(page.cursor).toBe(three.id);
+  });
+
+  it('re-reads only the ~5 s overlap window behind the cursor, never older messages', async () => {
     const w = await world();
     const share = await shareChart(w.owner, w.chartId, 'prac@example.test');
     const t = Date.parse('2026-11-12T12:00:00Z');
@@ -294,11 +317,22 @@ describe('listMessagesSince(user, shareId, cursor) — what the SSE stream polls
     await at(share.id, w.owner.id, 'recent', t - 3_000);
     const cursor = await at(share.id, w.owner.id, 'cursor', t);
 
-    // 'recent' is a duplicate the client already has and drops by id; 'old' is never re-sent.
-    expect((await listMessagesSince(w.owner, share.id, cursor.id)).map((m) => m.body)).toEqual(['recent']);
+    expect(bodies(await listMessagesSince(w.owner, share.id, cursor.id))).toEqual(['recent']);
   });
 
-  it('does not skip a message that commits after a later one was already polled', async () => {
+  it('never moves the cursor back when only overlap messages come back', async () => {
+    const w = await world();
+    const share = await shareChart(w.owner, w.chartId, 'prac@example.test');
+    const t = Date.parse('2026-11-12T12:00:00Z');
+    await at(share.id, w.owner.id, 'recent', t - 3_000);
+    const cursor = await at(share.id, w.owner.id, 'cursor', t);
+
+    const page = await listMessagesSince(w.owner, share.id, cursor.id);
+    expect(bodies(page)).toEqual(['recent']);
+    expect(page.cursor).toBe(cursor.id);
+  });
+
+  it('delivers a late-committing message without moving the cursor back to it', async () => {
     const w = await world();
     const share = await shareChart(w.owner, w.chartId, 'prac@example.test');
     const t = Date.parse('2026-11-12T12:00:00Z');
@@ -306,28 +340,65 @@ describe('listMessagesSince(user, shareId, cursor) — what the SSE stream polls
     // B is committed and polled first; A has an earlier timestamp but commits afterwards.
     const b = await at(share.id, w.practitioner.id, 'B', t);
     const firstPoll = await listMessagesSince(w.owner, share.id, null);
-    expect(firstPoll.map((m) => m.body)).toEqual(['B']);
+    expect(bodies(firstPoll)).toEqual(['B']);
+    expect(firstPoll.cursor).toBe(b.id);
     const a = await at(share.id, w.owner.id, 'A', t - 1_500);
 
-    const nextPoll = await listMessagesSince(w.owner, share.id, b.id);
-    expect(nextPoll.map((m) => m.id)).toContain(a.id);
-    // Together the two polls deliver both messages, each with an id the client can dedupe on.
-    expect(new Set([...firstPoll, ...nextPoll].map((m) => m.id))).toEqual(new Set([a.id, b.id]));
+    const nextPoll = await listMessagesSince(w.owner, share.id, firstPoll.cursor);
+    expect(nextPoll.messages.map((m) => m.id)).toEqual([a.id]);
+    expect(nextPoll.cursor).toBe(b.id);
+  });
+
+  it('still delivers new messages when more than 200 sit in the overlap window', async () => {
+    const w = await world();
+    const share = await shareChart(w.owner, w.chartId, 'prac@example.test');
+    const t = Date.parse('2026-11-12T12:00:00Z');
+    // 250 messages in the 5 s before the cursor, e.g. from a script (postMessage has no rate limit).
+    await many(share.id, w.owner.id, 'flood', t - 4_000, 250);
+    const cursor = await at(share.id, w.owner.id, 'cursor', t);
+    const fresh = await at(share.id, w.practitioner.id, 'fresh', t + 1_000);
+
+    const page = await listMessagesSince(w.owner, share.id, cursor.id);
+    expect(bodies(page)).toContain('fresh');
+    expect(page.cursor).toBe(fresh.id);
+  });
+
+  it('pages forward through more than 200 new messages without stalling', async () => {
+    const w = await world();
+    const share = await shareChart(w.owner, w.chartId, 'prac@example.test');
+    const t = Date.parse('2026-11-12T12:00:00Z');
+    const cursor = await at(share.id, w.owner.id, 'cursor', t);
+    await many(share.id, w.owner.id, 'new', t + 1, 250);
+
+    const first = await listMessagesSince(w.owner, share.id, cursor.id);
+    const second = await listMessagesSince(w.owner, share.id, first.cursor);
+    const third = await listMessagesSince(w.owner, share.id, second.cursor);
+
+    const delivered = new Set([...first.messages, ...second.messages].map((m) => m.body));
+    expect(delivered.size).toBe(250);
+    expect(bodies(second)).toContain('new249');
+    // Each poll's cursor moves ahead of the last one, and stays put once there is nothing new.
+    expect(first.cursor).not.toBe(cursor.id);
+    expect(second.cursor).not.toBe(first.cursor);
+    expect(third.cursor).toBe(second.cursor);
   });
 
   it('keeps the order for messages with the same timestamp', async () => {
     const w = await world();
     const share = await shareChart(w.owner, w.chartId, 'prac@example.test');
-    const at = new Date('2026-11-11T12:00:00Z');
+    const sameTime = new Date('2026-11-11T12:00:00Z');
     const rows = [];
     for (const body of ['a', 'b', 'c']) {
-      rows.push(await prisma.consultMessage.create({ data: { shareId: share.id, authorId: w.owner.id, body, createdAt: at } }));
+      rows.push(await prisma.consultMessage.create({ data: { shareId: share.id, authorId: w.owner.id, body, createdAt: sameTime } }));
     }
     const sorted = [...rows].sort((x, y) => (x.id < y.id ? -1 : 1));
 
     const all = await listMessagesSince(w.owner, share.id, null);
-    expect(all.map((m) => m.id)).toEqual(sorted.map((r) => r.id));
-    expect((await listMessagesSince(w.owner, share.id, sorted[0].id)).map((m) => m.id)).toEqual([sorted[1].id, sorted[2].id]);
+    expect(all.messages.map((m) => m.id)).toEqual(sorted.map((r) => r.id));
+    const page = await listMessagesSince(w.owner, share.id, sorted[1].id);
+    // sorted[0] has the cursor's timestamp but sorts before it, so it comes back in the overlap.
+    expect(page.messages.map((m) => m.id)).toEqual([sorted[0].id, sorted[2].id]);
+    expect(page.cursor).toBe(sorted[2].id);
   });
 
   it('ignores a cursor from another thread instead of leaking it', async () => {
@@ -338,6 +409,6 @@ describe('listMessagesSince(user, shareId, cursor) — what the SSE stream polls
     const foreign = await postMessage(w.owner, otherShare.id, 'other thread');
     await postMessage(w.owner, share.id, 'this thread');
 
-    expect((await listMessagesSince(w.owner, share.id, foreign.id)).map((m) => m.body)).toEqual(['this thread']);
+    expect(bodies(await listMessagesSince(w.owner, share.id, foreign.id))).toEqual(['this thread']);
   });
 });
