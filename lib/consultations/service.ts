@@ -6,6 +6,7 @@ import { prisma } from '@/lib/db';
 import {
   ConsultationInputError,
   type ConsultationMessage,
+  type MessagePage,
   type SharedChartSummary,
   type ShareSummary,
 } from './types';
@@ -138,42 +139,65 @@ export async function postMessage(
 /**
  * How far behind the cursor's timestamp each poll re-reads. createdAt is set when a row is
  * written, but rows become visible when they commit, so a message can appear after a newer one
- * was already polled. Re-reading this window catches it; clients drop ids they already have.
+ * was already polled. Re-reading this window catches it, unless it commits more than this late.
  */
 export const CURSOR_OVERLAP_MS = 5_000;
 
+type Keyset = { id: string; createdAt: Date };
+
 /**
- * Messages from just before `cursor` (a message id) onwards, oldest first; the whole thread for
- * null. Each poll re-reads the last CURSOR_OVERLAP_MS behind the cursor, so a late-committing
- * message is never skipped. Messages in that window may repeat; every message has an `id` to
- * dedupe on. The cursor itself is never returned. A cursor that isn't in this thread is ignored.
+ * One poll of a thread: the whole thread (up to one page) for a null cursor. For a cursor (a
+ * message id), two queries:
+ * - forward: a strict (createdAt, id) > cursor page, oldest first. This alone decides the next
+ *   cursor, so the cursor only ever moves forward and more than a page of new messages is read
+ *   over several polls instead of stalling.
+ * - overlap: up to a page of the messages just behind the cursor, within CURSOR_OVERLAP_MS. These
+ *   catch a late commit; most are repeats the client drops by id.
+ * The cursor itself is never returned. A cursor that isn't in this thread is treated as null.
  */
 export async function listMessagesSince(
   sessionUser: SessionUser | null,
   shareId: string,
   cursor: string | null,
-): Promise<ConsultationMessage[]> {
+): Promise<MessagePage> {
   const user = requireUser(sessionUser);
   const { share, chart } = await loadThread(user, shareId);
 
-  const after = cursor
+  const at: Keyset | null = cursor
     ? await prisma.consultMessage.findFirst({ where: { id: cursor, shareId: share.id }, select: { id: true, createdAt: true } })
     : null;
 
-  const rows = await prisma.consultMessage.findMany({
-    where: {
-      shareId: share.id,
-      ...(after
-        ? { createdAt: { gte: new Date(after.createdAt.getTime() - CURSOR_OVERLAP_MS) }, id: { not: after.id } }
-        : {}),
-    },
-    orderBy: [{ createdAt: 'asc' }, { id: 'asc' }],
-    take: MAX_MESSAGES_PER_PAGE,
-  });
-  return rows.map((row) => toMessage(row, chart.ownerId));
+  const [overlap, forward] = await Promise.all([
+    at
+      ? prisma.consultMessage.findMany({
+          where: {
+            shareId: share.id,
+            OR: [
+              { createdAt: { gte: new Date(at.createdAt.getTime() - CURSOR_OVERLAP_MS), lt: at.createdAt } },
+              { createdAt: at.createdAt, id: { lt: at.id } },
+            ],
+          },
+          // Newest first so the cap keeps the rows nearest the cursor; reversed below.
+          orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+          take: MAX_MESSAGES_PER_PAGE,
+        })
+      : Promise.resolve([]),
+    prisma.consultMessage.findMany({
+      where: {
+        shareId: share.id,
+        ...(at ? { OR: [{ createdAt: { gt: at.createdAt } }, { createdAt: at.createdAt, id: { gt: at.id } }] } : {}),
+      },
+      orderBy: [{ createdAt: 'asc' }, { id: 'asc' }],
+      take: MAX_MESSAGES_PER_PAGE,
+    }),
+  ]);
+
+  const rows = [...overlap.reverse(), ...forward];
+  const newest = forward.length > 0 ? forward[forward.length - 1].id : (at?.id ?? null);
+  return { messages: rows.map((row) => toMessage(row, chart.ownerId)), cursor: newest };
 }
 
 /** The whole thread (up to one page), oldest first. */
-export function listMessages(sessionUser: SessionUser | null, shareId: string): Promise<ConsultationMessage[]> {
-  return listMessagesSince(sessionUser, shareId, null);
+export async function listMessages(sessionUser: SessionUser | null, shareId: string): Promise<ConsultationMessage[]> {
+  return (await listMessagesSince(sessionUser, shareId, null)).messages;
 }

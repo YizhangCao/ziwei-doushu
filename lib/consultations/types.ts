@@ -25,6 +25,16 @@ export interface ConsultationMessage {
   createdAt: Date;
 }
 
+/**
+ * One poll of a thread. `messages` is oldest first and may repeat ones the client already has
+ * (dedupe by id). `cursor` is what to pass to the next poll: the newest message seen so far,
+ * never an older one, or null while the thread is empty.
+ */
+export interface MessagePage {
+  messages: ConsultationMessage[];
+  cursor: string | null;
+}
+
 /** Invalid input from the caller; a route turns it into 400 `{ error }`. */
 export class ConsultationInputError extends Error {
   readonly status = 400;

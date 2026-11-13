@@ -374,7 +374,8 @@ describe('listMessagesSince(user, shareId, cursor) — what the SSE stream polls
     const second = await listMessagesSince(w.owner, share.id, first.cursor);
     const third = await listMessagesSince(w.owner, share.id, second.cursor);
 
-    const delivered = new Set([...first.messages, ...second.messages].map((m) => m.body));
+    // The overlap may also repeat 'cursor' itself on the second poll; count only the new ones.
+    const delivered = new Set([...first.messages, ...second.messages].map((m) => m.body).filter((b) => b.startsWith('new')));
     expect(delivered.size).toBe(250);
     expect(bodies(second)).toContain('new249');
     // Each poll's cursor moves ahead of the last one, and stays put once there is nothing new.

@@ -40,9 +40,18 @@ export function formatHeartbeat(): string {
   return ': heartbeat\n\n';
 }
 
+/** What one poll returns: items oldest first (repeats allowed), and the cursor for the next poll. */
+export interface PollResult<T> {
+  items: T[];
+  cursor: string | null;
+}
+
 export interface PollingStreamOptions<T extends { id: string }> {
-  /** Returns items after the cursor, oldest first. */
-  poll: (cursor: string | null) => Promise<T[]>;
+  /**
+   * Returns what's new since the cursor, plus some items just behind it that may repeat (see
+   * listMessagesSince). The stream polls next from the cursor this returns, never from an item.
+   */
+  poll: (cursor: string | null) => Promise<PollResult<T>>;
   cursor?: string | null;
   pollIntervalMs?: number;
   maxDurationMs?: number;
@@ -99,9 +108,9 @@ export function createPollingStream<T extends { id: string }>(options: PollingSt
 
       const tick = async () => {
         if (closed) return;
-        let items: T[];
+        let result: PollResult<T>;
         try {
-          items = await poll(cursor);
+          result = await poll(cursor);
         } catch {
           // Not "error": EventSource fires its own `error` for connection failures.
           return finish({ event: 'stream-error', data: { reason: 'poll-failed' } });
@@ -109,7 +118,7 @@ export function createPollingStream<T extends { id: string }>(options: PollingSt
         if (closed) return;
         // Polls overlap (the cursor query re-reads a short window), so send each id once per
         // connection. After a reconnect the client drops any repeats by id.
-        const fresh = items.filter((item) => !sent.has(item.id));
+        const fresh = result.items.filter((item) => !sent.has(item.id));
         if (fresh.length === 0) {
           send(formatHeartbeat());
         } else {
@@ -118,7 +127,8 @@ export function createPollingStream<T extends { id: string }>(options: PollingSt
             send(formatSseEvent({ id: item.id, data: item }));
           }
         }
-        if (items.length > 0) cursor = items[items.length - 1].id;
+        // The last item can be an older repeat, so the poll says where to continue from.
+        cursor = result.cursor;
         pollTimer = setTimeout(tick, pollIntervalMs);
       };
       void tick();
