@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 import { authenticateApiKey } from '@/lib/api/authenticate';
+import { limitApiKeyRequest, tooManyApiRequests } from '@/lib/rate-limit/api-key-limit';
+import { getRateLimitStore } from '@/lib/rate-limit/store';
 import { parsePublicChartRequest } from '@/lib/validation/public-chart-request';
 import { generateChart } from '@/lib/ziwei/algorithm';
 
@@ -12,6 +14,10 @@ export async function POST(request: Request) {
     if (!caller) {
       return NextResponse.json({ error: 'Missing or invalid API key' }, { status: 401 });
     }
+
+    // Counted per key, after the key check: a caller without a valid key gets 401 and uses up nothing.
+    const limit = await limitApiKeyRequest(getRateLimitStore(), caller.apiKeyId, Date.now());
+    if (!limit.allowed) return tooManyApiRequests(limit);
 
     let body: unknown;
     try {
