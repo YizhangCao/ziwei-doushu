@@ -64,7 +64,7 @@ paths:
                 $ref: '#/components/schemas/ChartResponse'
               examples:
                 chart:
-                  summary: Chart for the request example (one palace and one decade shown out of 12 each)
+                  summary: Chart for the request example, shortened (one palace and one decade of 12 each; lunarInfo without yearStem, yearBranch and the four pillars)
                   value:
                     chart:
                       birthInfo: { year: 1990, month: 6, day: 15, hour: 6, gender: female, leapMonthPolicy: split }
@@ -111,6 +111,9 @@ paths:
                 invalidDate:
                   summary: date is 1990-02-30
                   value: { error: 'date: must be a real calendar date' }
+                yearOutOfRange:
+                  summary: date is 1899-12-31, before 1900
+                  value: { error: 'date: year must be between 1900 and 2100' }
                 invalidGender:
                   summary: gender is "other"
                   value: { error: 'gender: must be "male" or "female"' }
