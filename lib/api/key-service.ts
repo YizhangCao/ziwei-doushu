@@ -27,6 +27,8 @@ export class ApiKeyInputError extends Error {
 }
 
 const MAX_NAME_LENGTH = 60;
+/** Active (unrevoked) keys one user may have, so a loop of POSTs can't fill the table. */
+export const MAX_ACTIVE_KEYS = 10;
 
 const SUMMARY_SELECT = { id: true, name: true, prefix: true, createdAt: true, lastUsedAt: true, revokedAt: true } as const;
 
@@ -40,7 +42,16 @@ export async function createApiKey(
   if (trimmed.length > MAX_NAME_LENGTH) throw new ApiKeyInputError(`name: must be at most ${MAX_NAME_LENGTH} characters`);
 
   const { plainKey, record } = generateApiKey();
-  const key = await prisma.apiKey.create({ data: { userId: user.id, name: trimmed, ...record }, select: SUMMARY_SELECT });
+  const key = await prisma.$transaction(async (tx) => {
+    // Serializes this user's creates until commit, so two requests can't both count 9 and
+    // insert. Other users' creates don't wait (the lock is keyed by user id).
+    await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${'api-keys:' + user.id}))`;
+    const active = await tx.apiKey.count({ where: { userId: user.id, revokedAt: null } });
+    if (active >= MAX_ACTIVE_KEYS) {
+      throw new ApiKeyInputError(`You can have at most ${MAX_ACTIVE_KEYS} active API keys. Revoke one to create another.`);
+    }
+    return tx.apiKey.create({ data: { userId: user.id, name: trimmed, ...record }, select: SUMMARY_SELECT });
+  });
   return { key, plainKey };
 }
 
