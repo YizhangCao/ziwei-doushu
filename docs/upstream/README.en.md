@@ -1,3 +1,5 @@
+> This is the README of the upstream open-source project, [Renhuai123/ziwei-doushu](https://github.com/Renhuai123/ziwei-doushu), kept here for credit and reference. For ZiweiHub, see the [repository home](../../README.md).
+
 <div align="center">
 
 # Zi Wei Dou Shu · Open-Source Charting Engine
@@ -5,10 +7,10 @@
 ### Algorithms are openly shared traditional wisdom; they shouldn’t be locked behind walls.
 
 [![CI](https://github.com/Renhuai123/ziwei-doushu/actions/workflows/ci.yml/badge.svg)](https://github.com/Renhuai123/ziwei-doushu/actions/workflows/ci.yml)
-[![License: MIT](https://img.shields.io/badge/code-MIT-blue.svg)](./LICENSE)
-[![Dataset: CC BY 4.0](https://img.shields.io/badge/dataset-CC%20BY%204.0-green.svg)](./DATASET-LICENSE)
+[![License: MIT](https://img.shields.io/badge/code-MIT-blue.svg)](../../LICENSE)
+[![Dataset: CC BY 4.0](https://img.shields.io/badge/dataset-CC%20BY%204.0-green.svg)](../../DATASET-LICENSE)
 
-[中文](./README.md) · **English**
+[中文](./README.zh-CN.md) · **English**
 
 </div>
 
@@ -36,7 +38,7 @@ ZiweiHub (this fork's P2 app) runs in production at <https://ziwei-doushu-seven-
 
 ## Latest update (2026-10-15)
 
-![Update overview](./docs/update-20261015.png)
+![Update overview](../update-20261015.png)
 
 - **Interpretation dataset v4.0 released**: 674,976 charts (every real solar date 1950–2026 × 12 double-hours × male/female) × 13 topics = 8,774,688 readings; 161 MB compressed, 56.6 GB uncompressed (v3.0: 33.1 GB), 77 per-year files plus an all-years bundle. See [Release v4.0-13d](https://github.com/Renhuai123/ziwei-doushu/releases/tag/v4.0-13d) and the dataset section below.
 - **The 13 topics were revised sentence by sentence** against the verbatim transcripts of Ni Haixia's *Tian Ji* and the original *Complete Book*: untraceable citations removed or replaced with verbatim quotes (with episode and timestamp), sentences about impossible transformations removed, conditions spelled out, two-sided sentences resolved per chart, and health now follows Master Ni's whole-chart method instead of mapping stars to organs by Five Element. (The judgment library itself stays closed; the results are in the v4.0 dataset.)
@@ -89,8 +91,8 @@ Download from [Releases → v4.0-13d](https://github.com/Renhuai123/ziwei-doushu
 - Generated deterministically by the charting engine and the 2026-10-15 judgment library (content version `ca268829f7a9`), no AI involved. The 13 topics were revised sentence by sentence against the verbatim transcripts of Ni Haixia's *Tian Ji* and the original *Complete Book of Zi Wei Dou Shu*.
 - Natal-chart view only: age-based rewording, the appended Master Ni rule sections and AI readings shown on the website are not included. Charts use the double-hour index directly, without true-solar-time correction.
 - Decompress with `zstd -d --long=27 year-1990.jsonl.zst` (`--long=27` is required).
-- Quotations from Ni Haixia's *Tian Ji* inside the readings are **not covered by the dataset license**: they are short citations with episode and timestamp, and copyright in the original lectures remains with the rights holder; bulk reuse of those quotations falls under the [CC BY-NC-SA 4.0](./docs/tianji-ziwei/LICENSE.md) terms of chapter 5. The *Complete Book* is in the public domain.
-- License: same as v3.0 — [CC BY 4.0](./DATASET-LICENSE), commercial use OK with attribution (except the quotations above).
+- Quotations from Ni Haixia's *Tian Ji* inside the readings are **not covered by the dataset license**: they are short citations with episode and timestamp, and copyright in the original lectures remains with the rights holder; bulk reuse of those quotations falls under the [CC BY-NC-SA 4.0](../tianji-ziwei/LICENSE.md) terms of chapter 5. The *Complete Book* is in the public domain.
+- License: same as v3.0 — [CC BY 4.0](../../DATASET-LICENSE), commercial use OK with attribution (except the quotations above).
 - A single all-years bundle `ziwei-interp-v4-all.tar` is also provided.
 
 ## Sample dataset (518,400 charts)
@@ -105,15 +107,15 @@ Download from [Releases](https://github.com/Renhuai123/ziwei-doushu/releases/tag
 
 ## Ni Haixia's original words (*Tian Ji*, Zi Wei part)
 
-[`docs/tianji-ziwei/`](./docs/tianji-ziwei/) holds **1,848 quotes** from the Zi Wei lectures of *Tian Ji* (14 lectures plus 2 supplements), each linked to the second it was said in the video. Taken from the sister repo [nihai-tianji-corpus](https://github.com/Renhuai123/nihai-tianji-corpus).
+[`docs/tianji-ziwei/`](../tianji-ziwei/) holds **1,848 quotes** from the Zi Wei lectures of *Tian Ji* (14 lectures plus 2 supplements), each linked to the second it was said in the video. Taken from the sister repo [nihai-tianji-corpus](https://github.com/Renhuai123/nihai-tianji-corpus).
 
 ## License
 
 | Part | License |
 |---|---|
-| Code (`lib/`, `app/`, `components/`) | [MIT](./LICENSE) |
-| Sample dataset (Releases) | [CC BY 4.0](./DATASET-LICENSE): commercial use OK with attribution |
+| Code (`lib/`, `app/`, `components/`) | [MIT](../../LICENSE) |
+| Sample dataset (Releases) | [CC BY 4.0](../../DATASET-LICENSE): commercial use OK with attribution |
 | Classical texts | Public domain |
-| Ni Haixia quotes (`docs/tianji-ziwei/`) | [CC BY-NC-SA 4.0](./docs/tianji-ziwei/LICENSE.md): **non-commercial only** |
+| Ni Haixia quotes (`docs/tianji-ziwei/`) | [CC BY-NC-SA 4.0](../tianji-ziwei/LICENSE.md): **non-commercial only** |
 
-Contributions are welcome. Please read [CONTRIBUTING.md](./CONTRIBUTING.md); questions go to [Discussions](https://github.com/Renhuai123/ziwei-doushu/discussions).
+Contributions are welcome. Please read [CONTRIBUTING.md](../../CONTRIBUTING.md); questions go to [Discussions](https://github.com/Renhuai123/ziwei-doushu/discussions).
