@@ -40,8 +40,8 @@ async function loadForAccess(user: SessionUser, chartId: string) {
 }
 
 // View access first (404 if none), then edit access: a practitioner with a share knows the
-// chart exists, so they get 403 rather than 404.
-async function requireModifiable(sessionUser: SessionUser | null, chartId: string): Promise<SessionUser> {
+// chart exists, so they get 403 rather than 404. A chart's conversation uses it too (#22).
+export async function requireModifiable(sessionUser: SessionUser | null, chartId: string): Promise<SessionUser> {
   const user = requireUser(sessionUser);
   const chart = await loadForAccess(user, chartId);
   if (!canModifyChart(user, chart)) throw new AuthError(403, 'Only the owner can change this chart');

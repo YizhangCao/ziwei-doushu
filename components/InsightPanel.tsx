@@ -7,6 +7,7 @@ import AiContent from './AiContent';
 import { useLocale, useTranslations } from 'next-intl';
 import { termLabel } from '@/lib/i18n/glossary';
 import { formatList } from '@/lib/i18n/format';
+import { savableMessages } from '@/lib/conversations/savable';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -37,6 +38,8 @@ interface InsightPanelProps {
   chart: ZiweiChart;
   selectedPalace?: Palace | null;
   selectedSiHua?: SelectedSiHua | null;
+  /** A saved chart's id: the conversation is kept there and shown again when it is reopened (#22). */
+  chartId?: string;
 }
 
 // Labels and prompts live in messages/{zh,en}/insight.json (#59); the Chinese is verbatim.
@@ -62,7 +65,19 @@ type RoleKey = (typeof PALACE_ROLE_KEYS)[keyof typeof PALACE_ROLE_KEYS];
 const roleKeyFor = (palaceName: string): RoleKey | undefined =>
   (PALACE_ROLE_KEYS as Record<string, RoleKey>)[palaceName];
 
-export default function InsightPanel({ chart, selectedPalace, selectedSiHua }: InsightPanelProps) {
+/** The saved conversation of a chart, or null when it couldn't be read (#22). */
+async function loadConversation(chartId: string): Promise<Message[] | null> {
+  try {
+    const res = await fetch(`/api/charts/${encodeURIComponent(chartId)}/conversation`);
+    if (!res.ok) return null;
+    const { messages } = (await res.json()) as { messages: { role: Message['role']; content: string; hidden: boolean }[] };
+    return messages.map(({ role, content, hidden }) => ({ role, content, hidden }));
+  } catch {
+    return null;
+  }
+}
+
+export default function InsightPanel({ chart, selectedPalace, selectedSiHua, chartId }: InsightPanelProps) {
   const t = useTranslations('insight');
   const locale = useLocale();
   const term = (zh: string) => termLabel(zh, locale);
@@ -77,10 +92,17 @@ export default function InsightPanel({ chart, selectedPalace, selectedSiHua }: I
   const lastPalaceBranch = useRef<number | undefined>(undefined);
   const lastSiHuaKey = useRef<string | undefined>(undefined);
   const scrollRef = useRef<HTMLDivElement>(null);
+  // The saved conversation (#22): how many savable messages are already stored, whether a save
+  // is in flight, and whether saving is off because the stored conversation couldn't be read.
+  const chartIdRef = useRef(chartId);
+  const savedCount = useRef(0);
+  const saving = useRef(false);
+  const savingOff = useRef(false);
 
   // Keep refs in sync
   useEffect(() => { messagesRef.current = messages; }, [messages]);
   useEffect(() => { loadingRef.current = loading; }, [loading]);
+  useEffect(() => { chartIdRef.current = chartId; }, [chartId]);
 
   // Auto-scroll
   useEffect(() => {
@@ -89,12 +111,42 @@ export default function InsightPanel({ chart, selectedPalace, selectedSiHua }: I
     }
   }, [messages]);
 
-  // Auto-generate 命格总览 on mount
+  // Auto-generate 命格总览 on mount. A reopened saved chart shows its saved conversation instead,
+  // without asking the AI again (#22). No cleanup: with autoLoaded set, a StrictMode re-run would
+  // skip the load, so the first run must finish.
   useEffect(() => {
     if (autoLoaded.current) return;
     autoLoaded.current = true;
-    sendMessage(t('prompts.overview'), true, { kind: 'overview' });
+    const overview = () => sendMessage(t('prompts.overview'), true, { kind: 'overview' });
+    if (!chartId) { overview(); return; }
+    void (async () => {
+      const stored = await loadConversation(chartId);
+      if (stored === null) savingOff.current = true; // never append to a conversation we couldn't read
+      if (!stored?.length) return overview();
+      savedCount.current = stored.length;
+      setMessages(stored);
+    })();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Saves finished exchanges to a saved chart's conversation (#22): after each reply, and once the
+  // chart is saved mid-conversation, so the reading from before saving is kept too. Reads refs, so
+  // a save that finishes can check again for anything that finished meanwhile.
+  const saveFinished = () => {
+    const id = chartIdRef.current;
+    if (!id || loadingRef.current || saving.current || savingOff.current) return;
+    const unsaved = savableMessages(messagesRef.current).slice(savedCount.current);
+    if (unsaved.length === 0) return;
+    saving.current = true;
+    fetch(`/api/charts/${encodeURIComponent(id)}/conversation`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages: unsaved }),
+    })
+      .then((res) => { if (res.ok) savedCount.current += unsaved.length; return res.ok; })
+      .catch(() => false) // a failed save is tried again after the next reply
+      .then((saved) => { saving.current = false; if (saved) saveFinished(); });
+  };
+  useEffect(saveFinished, [chartId, loading, messages]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Inject palace analysis when palace selected
   useEffect(() => {

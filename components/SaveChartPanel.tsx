@@ -9,6 +9,8 @@ interface SaveChartPanelProps {
   birthInfo: BirthInfo;
   /** Set when the chart was opened from /charts, so saving again isn't offered. */
   savedName?: string;
+  /** Gets the new chart's id, so the reading so far is kept with it (#22). */
+  onSaved?: (id: string) => void;
 }
 
 type SaveState = { kind: 'idle' } | { kind: 'saving' } | { kind: 'saved' } | { kind: 'error'; message: string };
@@ -20,7 +22,7 @@ const button = {
 } as const;
 
 /** "Save chart" on /chart: a name field and a button for members, a login link for guests. */
-export default function SaveChartPanel({ birthInfo, savedName }: SaveChartPanelProps) {
+export default function SaveChartPanel({ birthInfo, savedName, onSaved }: SaveChartPanelProps) {
   const { status } = useSession();
   const t = useTranslations('charts.save');
   const [name, setName] = useState(birthInfo.name ?? '');
@@ -52,7 +54,11 @@ export default function SaveChartPanel({ birthInfo, savedName }: SaveChartPanelP
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, birthInfo }),
       });
-      if (res.status === 201) return setState({ kind: 'saved' });
+      if (res.status === 201) {
+        const { chart } = (await res.json().catch(() => ({}))) as { chart?: { id?: string } };
+        if (chart?.id) onSaved?.(chart.id);
+        return setState({ kind: 'saved' });
+      }
       const body = (await res.json().catch(() => ({}))) as { error?: string };
       setState({ kind: 'error', message: res.status === 400 && body.error ? body.error : t('failed') });
     } catch {

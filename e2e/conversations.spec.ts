@@ -61,6 +61,13 @@ test.describe('signed in', () => {
 
   test('a saved chart keeps its reading and follow-ups, and shows them again when reopened', async ({ page }) => {
     const calls = await mockReadings(page);
+    // Messages the server has stored, counted from the panel's successful saves.
+    const stored = { count: 0 };
+    page.on('response', (res) => {
+      if (res.url().includes('/conversation') && res.request().method() === 'POST' && res.status() === 204) {
+        stored.count += (res.request().postDataJSON() as { messages: unknown[] }).messages.length;
+      }
+    });
 
     // Read first, then save: the reading so far is kept too.
     await buildChart(page);
@@ -73,21 +80,24 @@ test.describe('signed in', () => {
     await page.getByRole('textbox', { name: '继续追问' }).fill(QUESTION);
     await page.getByRole('button', { name: '追问', exact: true }).click();
     await expect(page.getByText(ANSWER)).toBeVisible();
-    await page.waitForLoadState('networkidle');
+    // Both exchanges are stored before leaving: the overview from before saving, then the follow-up.
+    await expect.poll(() => stored.count).toBe(4);
     const asked = calls.count;
 
     // Reopen it from /charts.
     await page.goto('/charts');
     const row = page.getByRole('listitem').filter({ hasText: 'E2E 对话盘' });
+    const restored = page.waitForResponse((res) => res.url().includes('/conversation') && res.request().method() === 'GET');
     await row.getByRole('link', { name: 'E2E 对话盘' }).click();
     await expect(page).toHaveURL(/\/chart\?id=/);
+    expect((await restored).status()).toBe(200);
 
     await expect(page.getByText(READING)).toBeVisible();
     await expect(page.getByText(QUESTION)).toBeVisible();
     await expect(page.getByText(ANSWER)).toBeVisible();
     // The overview prompt stays hidden, and the AI was not asked again.
     await expect(page.getByText(/请生成命格总览/)).toHaveCount(0);
-    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(300); // time for a stray overview request to show up, if one were sent
     expect(calls.count).toBe(asked);
   });
 });
