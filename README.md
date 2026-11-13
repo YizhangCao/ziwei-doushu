@@ -2,11 +2,10 @@
 
 # ZiweiHub · 紫微命盘
 
-### The AI-native platform for the world's traditions. Ziwei Doushu is the first.
-### 面向世界各大传统的 AI 原生平台。紫微斗数是第一站。
+### Two thousand years of Chinese metaphysics, read to you by an AI that sticks to your chart.
+### 两千年的中国术数，由一个只按命盘说话的 AI，讲给你听。
 
-Twelve palaces. One clear chart. Read to you by an AI built not to make things up.<br>
-十二宫，一盘看清。由一个被设计成不编造的 AI，一项项讲给你听。
+Twelve palaces. One clear chart. · 十二宫，一盘看清。
 
 [**Try it live**](https://ziwei-doushu-seven-omega.vercel.app) · [API docs](https://ziwei-doushu-seven-omega.vercel.app/api-docs) · [English](#english) · [中文](#中文)
 
@@ -18,63 +17,62 @@ Twelve palaces. One clear chart. Read to you by an AI built not to make things u
 
 ## English
 
-### The opportunity
+### Why this, and why now
 
-Western astrology and faith already have global consumer brands. Chinese metaphysics, practiced for two thousand years, doesn't have one yet.
+In China, more than two-thirds of people aged 18 to 35 hold at least one Xuanxue belief. AI fortune-telling is already worth more than RMB 12 billion, growing 43.7% a year, and most of its users are under thirty ([Daxue Consulting](https://daxueconsulting.com/spiritual-economy/)). Yet the tools they use forget them the moment the tab closes, and the answers are too often made up.
 
-- **The demand is here.** Both figures below come from the same [Daxue Consulting summary](https://daxueconsulting.com/spiritual-economy/).
-  - iiMedia Research put China's AI metaphysics market above RMB 12 billion (about US$1.67 billion), growing 43.7% a year, with more than 70% of users aged 18 to 30.
-  - A 2025 survey by the Chinese Academy of Social Sciences found that 68% of people aged 18 to 35 believe in at least one Xuanxue principle.
-- **The category scales.** The prayer app Hallow has raised about US$105 million ([Clay](https://www.clay.com/dossier/hallow-funding)), and the astrology app Co–Star about US$21 million ([Dealroom](https://dealroom.co/companies/co-star/)).
-- **AI changes the economics.** A reading used to need a master and an appointment; now it takes seconds. That makes trust the scarce thing, in a category long known for fabrication and scams.
+In the West, prayer and astrology have become real companies: Hallow has raised about US$105 million ([Clay](https://www.clay.com/dossier/hallow-funding)), Co–Star about US$21 million ([Dealroom](https://dealroom.co/companies/co-star/)). Chinese metaphysics, practiced for two thousand years, still has no name the world trusts.
+
+AI has made a reading almost free. When anyone can generate an answer, the scarce thing is an answer you can trust. That is what we're building.
 
 ### What we're building
 
-One core, many traditions. Every new tradition reuses the same five pieces and brings only its own engine and texts.
+A trusted layer for the whole category: one core that any tradition can run on.
 
-| The core | What it does |
-|---|---|
-| **A grounded AI reader** | Reads from the structure of the chart. It is built not to invent: no made-up quotes, nothing that isn't in the chart. |
-| **A privacy vault** | Birth data and conversations are encrypted at rest. Birth details never reach the AI. |
-| **An open API** | Any developer can put the engine in their product, with keys, rate limits and OpenAPI docs. |
-| **A practitioner network** (in progress) | Members share charts with practitioners, who read them and reply. |
-| **Open, auditable code** | The whole stack is open source and tested end to end, so anyone can check what it does with their data. |
+- **A reader that sticks to the source.** It reads from the structure of the chart, and it is built not to invent: no made-up quotes, nothing that isn't in the chart.
+- **A vault for what's personal.** Birth data and conversations are encrypted at rest, and birth details never reach the AI.
+- **An open door for developers.** A public API with keys, rate limits and OpenAPI docs, so anyone can build the engine into their own product.
+- **A home for practitioners** (coming soon). Members share a chart with a practitioner, who reads it and replies.
+- **A market for skills** (coming soon). What people know becomes something others can use: a practitioner's reading method, a scholar's translation, a developer's engine for a new tradition. Each is packaged as a skill that runs on the core, and its maker is paid when it's used.
+- **Code anyone can read.** The whole stack is open source and tested end to end, so you can check exactly what it does with your data.
 
-### How we're different
+Ziwei Doushu is the first tradition on it. The next one only brings its own engine and texts; everything else is already here.
 
-| | Charting libraries | Destination sites | **ZiweiHub** |
-|---|---|---|---|
-| What you get | An engine | One website | **A platform anyone can build on** |
-| Backend | None | Closed | **Open source, full stack** |
-| Trust | n/a | A privacy policy | **Encryption, no birth data to the AI, code you can read** |
-| Developers | A library | Rarely an API | **A public API with keys and docs** |
-| Reach | Developers | Usually one market | **Global: Chinese and English, under California law** |
-| Growth | One tradition | A few tools | **Every tradition on one core, then devices** |
+A charting library gives you an engine. A fortune-telling site gives you one website. ZiweiHub gives you a platform: open from end to end, private by design, open to developers, global from day one in Chinese and English under California law, and with a market where what people know is traded as skills.
+
+### Build it with us
+
+A platform for the world's traditions can't be built by two people. It needs the people who practice them, and it pays them for what they bring.
+
+- **Practitioners:** turn your way of reading into a skill others can use, take consultations, and help draw the line between what the AI should say and what it should leave to people.
+- **Developers:** build your product on the API, or bring a new tradition to the core as a skill: an engine, its texts, and its tests.
+- **Scholars and translators:** the classics library and the English glossary grow with every source you add and every term you translate with care, and your work travels with every reading that uses it.
+- **Everyone:** if something reads wrong or breaks, open an issue.
+
+Not sure where to start? Open an issue and tell us what you'd like to build. [AGENTS.md](AGENTS.md) explains how we work: every change starts from an issue, tests come first, and birth data never leaves the vault.
+
+Every skill published makes the platform more useful to every member. Every member who uses a skill pays the person who made it. Every developer brings new people to every practitioner, and every tradition added makes the core worth more to the next one. That loop is the company.
 
 ### What you can do today
 
-Ziwei Doushu is the first app on the platform.
-
-- **Chart in seconds.** Date, hour and birthplace in, twelve palaces out. Charted by Ni Haixia's method, with true solar time, right in your browser.
-- **A reading you can talk to.** AI reads from the Life Palace out (character, career, love, wealth, health), streams as it writes, and answers follow-ups.
-- **Yours, and private.** Sign in with GitHub and save charts for yourself and the people you know, with each chart's conversation kept beside it.
-- **Chinese and English.** One tap to switch, with academic English for the terms.
-- **The classics, at hand.** A library of the classical texts and a knowledge base of the stars.
-- **Built for developers.** `POST /api/v1/charts` returns a chart as JSON.
-- **Run with care.** Member, practitioner and admin roles, daily AI limits, and a note under every reading: for reference only.
+- **Build a chart in seconds.** Enter the date, hour and place of birth, and your twelve palaces are laid out with true solar time, by Ni Haixia's method, right in your browser.
+- **Talk to your reading.** The AI reads from the Life Palace out (character, career, love, wealth, health), writes as you watch, and answers your follow-up questions.
+- **Keep it private.** Sign in with GitHub and save charts for yourself and the people you love. Each chart keeps its conversation beside it.
+- **Read it in Chinese or English.** One tap to switch, with academic English for every term.
+- **Go to the source.** A library of the classical texts, and a knowledge base of the stars.
+- **Build with it.** `POST /api/v1/charts` returns a chart as JSON.
+- **Trust how it's run.** Member, practitioner and admin roles, a daily AI limit, and a note under every reading: for reference only.
 
 <img src="docs/screenshots/home-en.png" alt="The ZiweiHub home page in English" width="720">
 
-### Where it's going
+### Where we're headed
 
-| Stage | Milestone | What it proves |
-|---|---|---|
-| Now | Ziwei, end to end: compatibility, consultations, a paid tier, practitioner tools | One tradition, fully closed loop |
-| Next | A second tradition (Bazi) on the same core in weeks; first API partners | A platform, not an app |
-| Then | The first faith app: prayer and scripture companions | Reach across religions |
-| After | Devices built with the Greater Bay Area's hardware supply chain | Software and hardware as one practice |
+1. **Now:** finish Ziwei end to end, with compatibility, consultations, a paid tier and tools for practitioners.
+2. **Next:** bring a second tradition, Bazi, to the same core in weeks; open the API to our first partners; open the skills market to its first creators.
+3. **Then:** cross into faith, starting with prayer and scripture companions.
+4. **After that:** move the practice off the screen, onto devices built with the Greater Bay Area's hardware supply chain.
 
-We believe this is a blue ocean worth more than US$5 billion.
+We believe this grows into a market worth more than US$5 billion, and we intend to be the platform it runs on.
 
 ### Run it locally
 
@@ -88,7 +86,7 @@ npx prisma migrate dev        # creates the tables in your local Postgres
 npm run dev                   # http://localhost:3000
 ```
 
-Saving charts needs PostgreSQL and `DATA_ENCRYPTION_KEY`, signing in needs a GitHub OAuth app, and readings need an Anthropic API key. [docs/deployment.md](docs/deployment.md) explains each one.
+Saving charts needs PostgreSQL and `DATA_ENCRYPTION_KEY`, signing in needs a GitHub OAuth app, and readings need an Anthropic API key. [docs/deployment.md](docs/deployment.md) walks through each one.
 
 ```bash
 npm run typecheck && npm test && npm run test:unit   # types, engine, unit
@@ -102,75 +100,72 @@ Next.js 16 · React 19 · TypeScript · Tailwind CSS · Prisma + PostgreSQL (Neo
 
 ### Docs
 
-| | |
-|---|---|
-| [Architecture and database](docs/architecture.md) | How the pieces fit, and every table |
-| [Setup and deployment](docs/deployment.md) | Environment variables, Neon, Vercel, GitHub OAuth |
-| [API reference](https://ziwei-doushu-seven-omega.vercel.app/api-docs) | OpenAPI 3.1, served at `/api-docs` |
-| [Product requirements](docs/PRD.md) | Users, stories and release scope |
-| [AGENTS.md](AGENTS.md) | How we build: conventions, TDD, security rules |
+- [Architecture and database](docs/architecture.md): how the pieces fit, and every table
+- [Setup and deployment](docs/deployment.md): environment variables, Neon, Vercel, GitHub OAuth
+- [API reference](https://ziwei-doushu-seven-omega.vercel.app/api-docs): OpenAPI 3.1, served at `/api-docs`
+- [Product requirements](docs/PRD.md): users, stories and release scope
+- [AGENTS.md](AGENTS.md): how we build, for people and coding agents alike
 
 ---
 
 ## 中文
 
-### 机会在哪里
+### 为什么是这件事，为什么是现在
 
-西方占星和宗教信仰，早已有了全球性的消费品牌。流传两千年的中国术数，还没有。
+在中国，18 到 35 岁的人里，超过三分之二至少相信一种玄学观念。"AI 玄学"已经是一个超过 120 亿元的市场，每年增长 43.7%，用户大多不到三十岁（[Daxue Consulting](https://daxueconsulting.com/spiritual-economy/)）。可他们手里的工具，页面一关就什么都不记得，给出的答案也常常是编出来的。
 
-- **需求已经在这里。** 下面两组数据都出自同一份 [Daxue Consulting 摘要](https://daxueconsulting.com/spiritual-economy/)。
-  - 艾媒咨询测算，中国"AI 玄学"市场已超过 120 亿元人民币（约 16.7 亿美元），年增速 43.7%，七成以上用户在 18 到 30 岁之间。
-  - 中国社科院 2025 年发布的调查显示，18 到 35 岁的人里，68% 至少相信一种玄学观念。
-- **这个品类做得大。** 祈祷 App Hallow 累计融资约 1.05 亿美元（[Clay](https://www.clay.com/dossier/hallow-funding)），占星 App Co–Star 约 2,100 万美元（[Dealroom](https://dealroom.co/companies/co-star/)）。
-- **AI 改变了成本结构。** 过去一次解读要找师父、要预约，现在只要几秒。于是在一个长期充斥编造和骗局的品类里，信任成了最稀缺的东西。
+在西方，祈祷和占星已经做成了真正的公司：Hallow 融资约 1.05 亿美元（[Clay](https://www.clay.com/dossier/hallow-funding)），Co–Star 约 2,100 万美元（[Dealroom](https://dealroom.co/companies/co-star/)）。传承两千年的中国术数，却还没有一个让世界信得过的名字。
+
+AI 让一次解读几乎不要钱。当谁都能生成答案，真正稀缺的，是一个信得过的答案。我们要做的，就是这个。
 
 ### 我们在做什么
 
-一套底座，承载多门传统。每接入一门新传统，都复用同样的五样东西，只需要带来自己的引擎和典籍。
+为整个品类搭一层"信任"：一套底座，任何一门传统都能在上面运行。
 
-| 底座 | 作用 |
-|---|---|
-| **有根据的 AI 解读** | 依命盘结构来读。它被设计成不编造：不造引文，不说命盘里没有的东西。 |
-| **隐私保险库** | 出生信息和对话加密存储，出生信息从不发给 AI。 |
-| **开放 API** | 任何开发者都能把引擎接进自己的产品，配有 key、限流和 OpenAPI 文档。 |
-| **命理师网络**（建设中） | 会员把命盘分享给命理师，命理师读盘、回复。 |
-| **开放、可审计的代码** | 整个技术栈开源，测试从头到尾覆盖，谁都能查它怎样处理自己的数据。 |
+- **只按出处说话的解读。** 它依命盘结构来读，从设计上就不编造：不造引文，不说命盘里没有的东西。
+- **守得住的隐私。** 出生信息和对话加密存储，出生信息从不发给 AI。
+- **向开发者敞开的门。** 公开 API，配有 key、限流和 OpenAPI 文档，谁都能把引擎接进自己的产品。
+- **命理师的家**（即将上线）。会员把命盘分享给命理师，命理师读盘、回复。
+- **技能市场**（即将上线）。把会的东西，变成别人用得上的技能：命理师的读盘方法，学者的译注，开发者为一门新传统写的引擎。它们都打包成能在底座上运行的技能，有人用，做的人就有收入。
+- **谁都能读的代码。** 整个技术栈开源，测试从头到尾覆盖，它怎样处理你的数据，一看便知。
 
-### 我们有什么不同
+紫微斗数是第一门。下一门传统只需要带来自己的引擎和典籍，其余的，这里都已备好。
 
-| | 排盘库 | 单一网站 | **ZiweiHub** |
-|---|---|---|---|
-| 得到什么 | 一个引擎 | 一个网站 | **一个谁都能在上面搭建的平台** |
-| 后端 | 没有 | 闭源 | **开源全栈** |
-| 信任 | 不涉及 | 一份隐私政策 | **加密存储，出生信息不给 AI，代码看得见** |
-| 开发者 | 一个库 | 很少有 API | **带 key 和文档的公开 API** |
-| 市场 | 开发者 | 通常只有一个市场 | **全球：中英双语，加州法律框架** |
-| 增长 | 一门传统 | 几个工具 | **一套底座承载每一门传统，再到设备** |
+排盘库给你一个引擎，算命网站给你一个网站。我们给你一个平台：从头到尾开源，从设计上保护隐私，向开发者开放，从第一天起就面向全球，中英双语，适用加州法律，还有一个让知识以技能的形式流通、交易的市场。
+
+### 和我们一起建
+
+一个为各大传统而建的平台，靠两个人做不成，需要真正修习这些传统的人，也要让他们的付出有回报。
+
+- **命理师：** 把你的读盘方法做成别人能用的技能，接咨询，也一起划清 AI 该说什么、什么该留给人自己判断。
+- **开发者：** 在 API 上做你的产品，或者把一门新传统做成技能带到底座上：它的引擎、典籍和测试。
+- **学者和译者：** 古籍库和英文术语表，会随着你补上的每一条出处、每一个用心译出的术语，慢慢长大；用到它们的每一篇解读，都带着你的名字。
+- **每一个人：** 哪里读着不对，哪里出了问题，开一个 issue 告诉我们。
+
+不知道从哪里开始？开一个 issue，说说你想做什么。我们怎样工作，写在 [AGENTS.md](AGENTS.md) 里：每个改动都从一个 issue 开始，先写测试，出生信息永远不离开保险库。
+
+每多一个技能，平台对每位会员就更有用一点；每有一位会员用上一个技能，做它的人就有一份收入；每多一位开发者，就给每位命理师带来新的人；每多一门传统，底座对下一门就更有价值。这个循环，就是这家公司。
 
 ### 今天能做什么
 
-紫微斗数是平台上的第一个应用。
-
-- **几秒排好十二宫。** 填好出生日期、时辰和出生地，按倪海厦体系起盘，用真太阳时校正，全部在浏览器里完成。
-- **可以对话的解读。** AI 从命宫读起，性格、事业、感情、财运、健康，一边写一边显示，也能接着追问。
+- **几秒排好命盘。** 填好出生日期、时辰和地点，按倪海厦体系起盘，用真太阳时校正，全在浏览器里完成。
+- **和解读对话。** AI 从命宫读起，性格、事业、感情、财运、健康，边写边显示，也能接着追问。
 - **只属于你。** 用 GitHub 登录，保存自己和家人朋友的命盘，每张命盘的对话都留在它旁边。
-- **中文、英文。** 一键切换，术语采用学界通行的英文译法。
-- **古籍随手可查。** 古籍原典库，加上星曜知识库。
-- **为开发者开放。** `POST /api/v1/charts` 以 JSON 返回命盘。
+- **中文、英文都能读。** 一键切换，术语采用学界通行的英文译法。
+- **回到原典。** 古籍原典库，加上星曜知识库。
+- **拿去开发。** `POST /api/v1/charts` 以 JSON 返回命盘。
 - **用得放心。** 会员、命理师、管理员三种角色，AI 每日用量上限，每篇解读下方都注明：仅供参考。
 
 <img src="docs/screenshots/home-zh.png" alt="紫微命盘中文首页" width="720">
 
 ### 往哪里去
 
-| 阶段 | 里程碑 | 证明什么 |
-|---|---|---|
-| 现在 | 紫微做完整：合盘、咨询、付费层、命理师工具 | 一门传统完整闭环 |
-| 下一步 | 第二门传统（八字）用同一套底座几周上线；第一批 API 合作方 | 是平台，不是单个 App |
-| 再下一步 | 第一个信仰类应用：祈祷与经文陪伴 | 跨越宗教品类 |
-| 之后 | 依托粤港澳大湾区的硬件供应链做设备 | 软硬一体 |
+1. **现在：** 把紫微做完整：合盘、咨询、付费层，还有给命理师的工具。
+2. **下一步：** 第二门传统八字，用同一套底座几周上线；向第一批合作方开放 API；技能市场迎来第一批创作者。
+3. **再下一步：** 走进信仰类应用，从祈祷和经文陪伴开始。
+4. **之后：** 让修习离开屏幕，走进依托粤港澳大湾区硬件供应链打造的设备。
 
-我们相信，这是一片超过 50 亿美元的蓝海。
+我们相信，这会长成一个超过 50 亿美元的市场，而我们要做它所依托的平台。
 
 ### 本地运行
 
