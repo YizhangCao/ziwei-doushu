@@ -1,14 +1,14 @@
 /**
- * /knowledge — 知识库主页
- * 列出 14 主星，每星可看其在 13 宫位的解读
+ * /knowledge: the knowledge base home. Lists the 14 main stars, each with its readings in
+ * the 13 palace topics that have content.
  */
 
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { getLocale, getTranslations } from 'next-intl/server';
 import { ALL_STARS, ALL_TOPICS, getAllKnowledgeRoutes, getKnowledge, STAR_BRIEF_SEO, STAR_TO_SLUG } from '@/lib/seo/knowledge';
-import { TOPIC_LABEL } from '@/lib/ziwei/db-analysis';
 import { termLabel, withGloss } from '@/lib/i18n/glossary';
+import { palaceName } from '@/lib/i18n/format';
 import { STAR_BRIEF_EN } from '@/lib/i18n/knowledge-en';
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -20,7 +20,7 @@ export default async function KnowledgeHomePage() {
   const t = await getTranslations('knowledge');
   const locale = await getLocale();
   const brief = (star: string) => (locale === 'en' ? STAR_BRIEF_EN[star] : STAR_BRIEF_SEO[star]);
-  // 只链接真的有内容的专题：开源版的 STAR_DB 是空的，以前 14 个主星全都链到 404
+  // Link only topics that have content: STAR_DB is empty upstream, and all 14 stars used to link to a 404
   const available = getAllKnowledgeRoutes().length;
   const hasOverview = (star: string) => getKnowledge(star, 'overview').exists;
 
@@ -42,7 +42,7 @@ export default async function KnowledgeHomePage() {
         )}
       </header>
 
-      {/* 十四主星：直达各星的总论 */}
+      {/* The 14 main stars, each linking to its overview */}
       <section aria-labelledby="stars-heading" className="mt-12">
         <h2 id="stars-heading" style={{ fontSize: 'var(--fs-small)', color: 'var(--tx-2)' }}>{t('starsHeading')}</h2>
         <div className="mt-4 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-7 gap-2">
@@ -58,7 +58,7 @@ export default async function KnowledgeHomePage() {
         </div>
       </section>
 
-      {/* 每颗主星：简介 + 入各宫的专题 */}
+      {/* Each main star: its brief, then its palace topics */}
       <section aria-label={t('topicsLabel')} className="mt-14" style={{ borderBottom: '1px solid var(--bdr)' }}>
         {ALL_STARS.map(star => (
           <article key={star} className="py-6" style={{ borderTop: '1px solid var(--bdr)' }}>
@@ -73,7 +73,8 @@ export default async function KnowledgeHomePage() {
                 return (
                   <li key={topic}>
                     <Link href={`/knowledge/${STAR_TO_SLUG[star]}/${topic}`} style={{ color: 'var(--tx-0)' }}>
-                      {t('topicLink', { palace: k.palaceName, topic: TOPIC_LABEL[topic] })}
+                      {/* Chinese keeps the engine's short palace name; English reads "In the Marriage Palace" */}
+                      {t('topicLink', { palace: locale === 'en' ? palaceName(k.palaceName, locale) : k.palaceName, topic: t(`topics.${topic}`) })}
                     </Link>
                   </li>
                 );
