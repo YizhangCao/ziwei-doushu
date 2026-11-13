@@ -179,7 +179,7 @@ AI 让一次解读几乎不要钱。当谁都能生成答案，真正稀缺的�
 
 ## Team and credits · 团队与致谢
 
-Built by Yikang Liu and Yizhang Cao. · 由 Yikang Liu 与 Yizhang Cao 开发。
+Built by Yizhang Cao and Yikang Liu, Northeastern University. · 由美国东北大学（Northeastern University）的 Yizhang Cao 与 Yikang Liu 开发。
 
 - **Engine:** the charting engine started from [Renhuai123/ziwei-doushu](https://github.com/Renhuai123/ziwei-doushu) (MIT). Its original README is kept in [docs/upstream/](docs/upstream/README.zh-CN.md). · 排盘引擎源自上述开源项目，原版 README 保留在 `docs/upstream/`。
 - **Method:** charting follows Ni Haixia's teaching. · 起盘方法依倪海厦的讲授。
