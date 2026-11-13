@@ -23,7 +23,9 @@ const button = {
 export default function SaveChartPanel({ birthInfo, savedName }: SaveChartPanelProps) {
   const { status } = useSession();
   const t = useTranslations('charts.save');
-  const [name, setName] = useState(birthInfo.name ?? '');
+  // Starts empty on purpose: Chart.name is stored in plaintext, while the name typed into the
+  // birth form is part of the encrypted birth data, so a real name must not be copied over.
+  const [name, setName] = useState('');
   const [state, setState] = useState<SaveState>({ kind: 'idle' });
 
   if (savedName) {
