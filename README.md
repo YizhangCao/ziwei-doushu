@@ -2,8 +2,8 @@
 
 # ZiweiHub · 紫微命盘
 
-### Two thousand years of Chinese metaphysics, read to you by an AI that sticks to your chart.
-### 两千年的中国术数，由一个只按命盘说话的 AI，讲给你听。
+**Two thousand years of Chinese metaphysics, read to you by an AI that sticks to your chart.**<br>
+**两千年的中国术数，由一个只按命盘说话的 AI，讲给你听。**
 
 Twelve palaces. One clear chart. · 十二宫，一盘看清。
 
@@ -17,7 +17,9 @@ Twelve palaces. One clear chart. · 十二宫，一盘看清。
 
 ## English
 
-### Why this, and why now
+### Vision
+
+#### Why this, and why now
 
 In China, more than two-thirds of people aged 18 to 35 hold at least one Xuanxue belief. AI fortune-telling is already worth more than RMB 12 billion, growing 43.7% a year, and most of its users are under thirty ([Daxue Consulting](https://daxueconsulting.com/spiritual-economy/)). Yet the tools they use forget them the moment the tab closes, and the answers are too often made up.
 
@@ -25,7 +27,7 @@ In the West, prayer and astrology have become real companies: Hallow has raised 
 
 AI has made a reading almost free. When anyone can generate an answer, the scarce thing is an answer you can trust. That is what we're building.
 
-### What we're building
+#### What we're building
 
 A trusted layer for the whole category: one core that any tradition can run on.
 
@@ -38,9 +40,11 @@ A trusted layer for the whole category: one core that any tradition can run on.
 
 Ziwei Doushu is the first tradition on it. The next one only brings its own engine and texts; everything else is already here.
 
+#### How we're different
+
 A charting library gives you an engine. A fortune-telling site gives you one website. ZiweiHub gives you a platform: open from end to end, private by design, open to developers, global from day one in Chinese and English under California law, and with a market where what people know is traded as skills.
 
-### Build it with us
+#### Build it with us
 
 A platform for the world's traditions can't be built by two people. It needs the people who practice them, and it pays them for what they bring.
 
@@ -53,7 +57,9 @@ Not sure where to start? Open an issue and tell us what you'd like to build. [AG
 
 Every skill published makes the platform more useful to every member. Every member who uses a skill pays the person who made it. Every developer brings new people to every practitioner, and every tradition added makes the core worth more to the next one. That loop is the company.
 
-### What you can do today
+### Product
+
+#### What you can do today
 
 - **Build a chart in seconds.** Enter the date, hour and place of birth, and your twelve palaces are laid out with true solar time, by Ni Haixia's method, right in your browser.
 - **Talk to your reading.** The AI reads from the Life Palace out (character, career, love, wealth, health), writes as you watch, and answers your follow-up questions.
@@ -65,7 +71,7 @@ Every skill published makes the platform more useful to every member. Every memb
 
 <img src="docs/screenshots/home-en.png" alt="The ZiweiHub home page in English" width="720">
 
-### Where we're headed
+#### Where we're headed
 
 1. **Now:** finish Ziwei end to end, with compatibility, consultations, a paid tier and tools for practitioners.
 2. **Next:** bring a second tradition, Bazi, to the same core in weeks; open the API to our first partners; open the skills market to its first creators.
@@ -74,7 +80,9 @@ Every skill published makes the platform more useful to every member. Every memb
 
 We believe this grows into a market worth more than US$5 billion, and we intend to be the platform it runs on.
 
-### Run it locally
+### For developers
+
+#### Run it locally
 
 ```bash
 git clone https://github.com/YizhangCao/ziwei-doushu.git
@@ -94,11 +102,11 @@ npm run test:integration                            # needs DATABASE_URL_TEST
 npm run test:e2e                                    # Playwright, Chromium
 ```
 
-### Built with
+#### Built with
 
 Next.js 16 · React 19 · TypeScript · Tailwind CSS · Prisma + PostgreSQL (Neon) · Auth.js (GitHub) · Claude by Anthropic · next-intl · Redis (Upstash) · Vitest · Playwright · Vercel
 
-### Docs
+#### Docs
 
 - [Architecture and database](docs/architecture.md): how the pieces fit, and every table
 - [Setup and deployment](docs/deployment.md): environment variables, Neon, Vercel, GitHub OAuth
@@ -110,7 +118,9 @@ Next.js 16 · React 19 · TypeScript · Tailwind CSS · Prisma + PostgreSQL (Neo
 
 ## 中文
 
-### 为什么是这件事，为什么是现在
+### 愿景
+
+#### 为什么是这件事，为什么是现在
 
 在中国，18 到 35 岁的人里，超过三分之二至少相信一种玄学观念。"AI 玄学"已经是一个超过 120 亿元的市场，每年增长 43.7%，用户大多不到三十岁（[Daxue Consulting](https://daxueconsulting.com/spiritual-economy/)）。可他们手里的工具，页面一关就什么都不记得，给出的答案也常常是编出来的。
 
@@ -118,7 +128,7 @@ Next.js 16 · React 19 · TypeScript · Tailwind CSS · Prisma + PostgreSQL (Neo
 
 AI 让一次解读几乎不要钱。当谁都能生成答案，真正稀缺的，是一个信得过的答案。我们要做的，就是这个。
 
-### 我们在做什么
+#### 我们在做什么
 
 为整个品类搭一层"信任"：一套底座，任何一门传统都能在上面运行。
 
@@ -131,9 +141,11 @@ AI 让一次解读几乎不要钱。当谁都能生成答案，真正稀缺的�
 
 紫微斗数是第一门。下一门传统只需要带来自己的引擎和典籍，其余的，这里都已备好。
 
+#### 我们有什么不同
+
 排盘库给你一个引擎，算命网站给你一个网站。我们给你一个平台：从头到尾开源，从设计上保护隐私，向开发者开放，从第一天起就面向全球，中英双语，适用加州法律，还有一个让知识以技能的形式流通、交易的市场。
 
-### 和我们一起建
+#### 和我们一起建
 
 一个为各大传统而建的平台，靠两个人做不成，需要真正修习这些传统的人，也要让他们的付出有回报。
 
@@ -146,7 +158,9 @@ AI 让一次解读几乎不要钱。当谁都能生成答案，真正稀缺的�
 
 每多一个技能，平台对每位会员就更有用一点；每有一位会员用上一个技能，做它的人就有一份收入；每多一位开发者，就给每位命理师带来新的人；每多一门传统，底座对下一门就更有价值。这个循环，就是这家公司。
 
-### 今天能做什么
+### 产品
+
+#### 今天能做什么
 
 - **几秒排好命盘。** 填好出生日期、时辰和地点，按倪海厦体系起盘，用真太阳时校正，全在浏览器里完成。
 - **和解读对话。** AI 从命宫读起，性格、事业、感情、财运、健康，边写边显示，也能接着追问。
@@ -158,7 +172,7 @@ AI 让一次解读几乎不要钱。当谁都能生成答案，真正稀缺的�
 
 <img src="docs/screenshots/home-zh.png" alt="紫微命盘中文首页" width="720">
 
-### 往哪里去
+#### 往哪里去
 
 1. **现在：** 把紫微做完整：合盘、咨询、付费层，还有给命理师的工具。
 2. **下一步：** 第二门传统八字，用同一套底座几周上线；向第一批合作方开放 API；技能市场迎来第一批创作者。
@@ -167,11 +181,13 @@ AI 让一次解读几乎不要钱。当谁都能生成答案，真正稀缺的�
 
 我们相信，这会长成一个超过 50 亿美元的市场，而我们要做它所依托的平台。
 
-### 本地运行
+### 开发者
+
+#### 本地运行
 
 命令见上方英文部分的 [Run it locally](#run-it-locally)。保存命盘需要 PostgreSQL 和 `DATA_ENCRYPTION_KEY`，登录需要 GitHub OAuth 应用，AI 解读需要 Anthropic API key，逐项说明见 [docs/deployment.md](docs/deployment.md)。
 
-### 文档
+#### 文档
 
 架构与数据库见 [docs/architecture.md](docs/architecture.md)，部署见 [docs/deployment.md](docs/deployment.md)，API 文档在线上的 [`/api-docs`](https://ziwei-doushu-seven-omega.vercel.app/api-docs)，产品需求见 [docs/PRD.md](docs/PRD.md)。
 
