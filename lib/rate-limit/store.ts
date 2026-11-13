@@ -10,23 +10,24 @@
  */
 
 import Redis from 'ioredis';
+import { z } from 'zod';
 import { createMemoryStore, createRedisStore, type RateLimitStore } from './limiter';
 
 let store: RateLimitStore | undefined;
 
+// REDIS_URL, parsed with zod like every env variable (AGENTS.md). Unset or empty means "no Redis".
+// The error names the variable only, never the value: the value holds a password.
+const redisUrlSchema = z
+  .string()
+  .trim()
+  .transform((value) => value || null)
+  .pipe(z.url({ protocol: /^rediss?$/, error: 'REDIS_URL must be a redis:// or rediss:// URL' }).nullable());
+
 /** Reads REDIS_URL; an unset or empty value means "no Redis". */
 function redisUrl(): string | null {
-  const value = process.env.REDIS_URL?.trim();
-  if (!value) return null;
-  let protocol: string;
-  try {
-    protocol = new URL(value).protocol;
-  } catch {
-    protocol = '';
-  }
-  // The message names the variable only: the value holds a password.
-  if (protocol !== 'redis:' && protocol !== 'rediss:') throw new Error('REDIS_URL must be a redis:// or rediss:// URL');
-  return value;
+  const parsed = redisUrlSchema.safeParse(process.env.REDIS_URL ?? '');
+  if (!parsed.success) throw new Error('REDIS_URL must be a redis:// or rediss:// URL');
+  return parsed.data;
 }
 
 /** Returns the shared store, creating it on first use. */
