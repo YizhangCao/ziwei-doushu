@@ -75,7 +75,7 @@ Every skill published makes the platform more useful to every member. Every memb
 1. **Now:** finish Ziwei end to end, with compatibility, consultations, a paid tier and tools for practitioners.
 2. **Next:** bring a second tradition, Bazi, to the same core in weeks; open the API to our first partners; open the skills market to its first creators.
 3. **Then:** cross into faith, starting with prayer and scripture companions.
-4. **After that:** move the practice off the screen, onto devices built with the Greater Bay Area's hardware supply chain. We believe that with smart hardware by your side, manifestation becomes more direct.
+4. **After that:** move the practice off the screen, onto devices built with the Greater Bay Area's hardware supply chain. With smart hardware at your side to amplify the practice, manifestation becomes more direct.
 
 We believe this grows into a market worth more than US$5 billion, and we intend to be the platform it runs on.
 
