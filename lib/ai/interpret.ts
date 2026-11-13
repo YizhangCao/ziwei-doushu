@@ -1,6 +1,8 @@
 import Anthropic from '@anthropic-ai/sdk';
-import type { RawMessageStreamEvent } from '@anthropic-ai/sdk/resources/messages';
+import type { MessageCreateParamsStreaming, RawMessageStreamEvent } from '@anthropic-ai/sdk/resources/messages';
+import { z } from 'zod';
 import type { ZiweiChart } from '@/lib/ziwei/types';
+import { serializeChartForInterpretation } from './chart-context';
 import { isKnownChart } from './known-chart-values';
 
 export interface InterpretMessage {
@@ -45,37 +47,6 @@ export function validateInterpretRequest(value: unknown): InterpretRequest | nul
   return { chart, messages };
 }
 
-export function serializeChartForInterpretation(chart: ZiweiChart): string {
-  const palaces = chart.palaces.map((palace) => ({
-    name: palace.name,
-    branch: palace.branch,
-    stars: palace.stars.map((star) => ({
-      name: star.name,
-      type: star.type,
-      brightness: star.brightnessRaw ?? star.brightness,
-      siHua: star.siHua,
-    })),
-    selfSihua: palace.selfSihua,
-    daXianAge: palace.daXianAge,
-    isMingGong: palace.isMingGong,
-    isShenGong: palace.isShenGong,
-  }));
-
-  return JSON.stringify({
-    wuxingJuName: chart.wuxingJuName,
-    mingZhu: chart.mingZhu,
-    shenZhu: chart.shenZhu,
-    currentAge: chart.currentAge,
-    palaces,
-    daXians: chart.daXians.map((daXian) => ({
-      startAge: daXian.startAge,
-      endAge: daXian.endAge,
-      palaceName: daXian.palaceName,
-      siHua: daXian.siHua,
-    })),
-  });
-}
-
 /** Puts the chart text at the start of the first user turn, keeping user/assistant alternation. */
 export function withChartContext(chart: ZiweiChart, messages: InterpretMessage[]): InterpretMessage[] {
   const chartText = `${CHART_PREFIX}${serializeChartForInterpretation(chart)}`;
@@ -84,18 +55,46 @@ export function withChartContext(chart: ZiweiChart, messages: InterpretMessage[]
   return [{ role: 'user', content: chartText }, ...messages];
 }
 
+// Current models think before they answer, and thinking counts toward max_tokens. At 2,048 a
+// reading could stop before its first word; at default effort one overview took 3,512 thinking
+// tokens and 1,921 text tokens.
+const MAX_OUTPUT_TOKENS = 16000;
+
+const EffortSchema = z.enum(['low', 'medium', 'high', 'xhigh', 'max']);
+export type AnthropicEffort = z.infer<typeof EffortSchema>;
+
+/**
+ * Reads ANTHROPIC_EFFORT. Unset or empty means no effort is sent, because the model comes from
+ * ANTHROPIC_MODEL and some older models (Claude Sonnet 4.5, Claude Haiku 4.5) reject the
+ * parameter. Any other value is a configuration error.
+ */
+export function parseAnthropicEffort(
+  value: string | undefined,
+): { ok: true; effort?: AnthropicEffort } | { ok: false } {
+  if (value === undefined || value === '') return { ok: true, effort: undefined };
+  const parsed = EffortSchema.safeParse(value);
+  return parsed.success ? { ok: true, effort: parsed.data } : { ok: false };
+}
+
+// See #103: the installed SDK (0.27) predates output_config, so its params type lacks it. The
+// SDK sends the body as given, and the API accepts the field on every model that takes effort.
+type StreamParams = MessageCreateParamsStreaming & { output_config?: { effort: AnthropicEffort } };
+
 export function createAnthropicStream(
   client: Pick<Anthropic, 'messages'>,
   request: InterpretRequest,
   model: string,
+  options: { effort?: AnthropicEffort } = {},
 ) {
-  return client.messages.create({
+  const params: StreamParams = {
     model,
-    max_tokens: 2048,
+    max_tokens: MAX_OUTPUT_TOKENS,
     system: SYSTEM_PROMPT,
     messages: withChartContext(request.chart, request.messages),
     stream: true,
-  });
+    ...(options.effort ? { output_config: { effort: options.effort } } : {}),
+  };
+  return client.messages.create(params);
 }
 
 export function encodeInterpretationStream(
