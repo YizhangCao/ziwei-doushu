@@ -19,9 +19,9 @@ export async function sessionCookie(user: { id: string; role: Role }): Promise<s
 /** A request to a local route, with or without a session cookie. */
 export function apiRequest(
   path: string,
-  options: { method?: string; cookie?: string; body?: unknown } = {},
+  options: { method?: string; cookie?: string; body?: unknown; headers?: Record<string, string> } = {},
 ): NextRequest {
-  const { method = 'GET', cookie, body } = options;
+  const { method = 'GET', cookie, body, headers = {} } = options;
   return new NextRequest(`http://localhost:3000${path}`, {
     method,
     headers: {
@@ -31,6 +31,7 @@ export function apiRequest(
       host: 'localhost:3000',
       'x-forwarded-proto': 'http',
       ...(cookie ? { cookie } : {}),
+      ...headers,
     },
     ...(body === undefined ? {} : { body: typeof body === 'string' ? body : JSON.stringify(body) }),
   });
