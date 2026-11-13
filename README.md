@@ -70,7 +70,7 @@ Every skill published makes the platform more useful to every member. Every memb
 1. **Now:** finish Ziwei end to end, with compatibility, consultations, a paid tier and tools for practitioners.
 2. **Next:** bring a second tradition, Bazi, to the same core in weeks; open the API to our first partners; open the skills market to its first creators.
 3. **Then:** cross into faith, starting with prayer and scripture companions.
-4. **After that:** move the practice off the screen, onto devices built with the Greater Bay Area's hardware supply chain.
+4. **After that:** move the practice off the screen, onto devices built with the Greater Bay Area's hardware supply chain. We believe that with smart hardware by your side, manifestation becomes more direct.
 
 We believe this grows into a market worth more than US$5 billion, and we intend to be the platform it runs on.
 
@@ -163,7 +163,7 @@ AI 让一次解读几乎不要钱。当谁都能生成答案，真正稀缺的�
 1. **现在：** 把紫微做完整：合盘、咨询、付费层，还有给命理师的工具。
 2. **下一步：** 第二门传统八字，用同一套底座几周上线；向第一批合作方开放 API；技能市场迎来第一批创作者。
 3. **再下一步：** 走进信仰类应用，从祈祷和经文陪伴开始。
-4. **之后：** 让修习离开屏幕，走进依托粤港澳大湾区硬件供应链打造的设备。
+4. **之后：** 让修习离开屏幕，走进依托粤港澳大湾区硬件供应链打造的设备。我们相信，有了智能硬件在你身边，显化会变得更直接。
 
 我们相信，这会长成一个超过 50 亿美元的市场，而我们要做它所依托的平台。
 
