@@ -19,7 +19,7 @@ import { ALL_TOPICS } from '@/lib/seo/knowledge';
 import { TOPIC_LABEL } from '@/lib/ziwei/db-analysis';
 import { MESSAGES } from '@/messages';
 
-const HAN = /[㐀-鿿豈-﫿]/;
+const HAN = /[\u3400-\u9fff\uf900-\ufaff]/;
 
 /** Source text with block, JSX and line comments removed (URLs in strings are kept). */
 function withoutComments(source: string): string {
