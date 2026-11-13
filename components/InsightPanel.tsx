@@ -308,7 +308,10 @@ ${selectedSiHua.starName}化${selectedSiHua.siHua}落在【${palaceName}】，�
   const retry = () => {
     const request = lastRequest.current;
     if (!request || loadingRef.current) return;
-    const trimmed = messagesRef.current.slice(0, -2);
+    // The failed exchange is the last question and everything after it: the error, and an
+    // empty or partial reply before it if the stream had started. Cut back to before it.
+    const question = messagesRef.current.findLastIndex(m => m.role === 'user');
+    const trimmed = messagesRef.current.slice(0, Math.max(question, 0));
     messagesRef.current = trimmed;
     setMessages(trimmed);
     sendMessage(request.text, request.hidden);
