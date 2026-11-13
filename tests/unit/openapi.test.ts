@@ -112,6 +112,7 @@ describe('docs/openapi.yaml', () => {
     const bodies: Record<string, unknown> = {
       invalidHour: { date: '1990-06-15', hour: 12, gender: 'female' },
       invalidDate: { date: '1990-02-30', hour: 6, gender: 'female' },
+      yearOutOfRange: { date: '1899-12-31', hour: 6, gender: 'female' },
       invalidGender: { date: '1990-06-15', hour: 6, gender: 'other' },
       unknownField: { date: '1990-06-15', hour: 6, gender: 'female', name: 'A Person' },
     };
