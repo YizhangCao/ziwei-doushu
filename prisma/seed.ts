@@ -35,8 +35,9 @@ function isLocalDatabase(databaseUrl: string | undefined): boolean {
 /**
  * Reads E2E_API_KEY from the environment. Unset → no key is seeded. The key is public (it's in
  * ci.yml, and the repo is public), so seeding it into a real database would create a working key
- * there. It is seeded only in CI (its own Postgres) or into a database on this machine. The seed
- * never runs on Vercel, so the risk is a local DATABASE_URL pointing at a remote database.
+ * there. It is seeded only into a database on this machine; CI's Postgres is localhost too. There
+ * is no CI exception on purpose: Vercel sets CI=1 during builds, so if the seed ever ran in a
+ * build, that exception would skip the guard against the production database.
  */
 export function e2eApiKeyFromEnv(env: Record<string, string | undefined>): string | undefined {
   const value = env.E2E_API_KEY;
@@ -45,8 +46,8 @@ export function e2eApiKeyFromEnv(env: Record<string, string | undefined>): strin
   if (!e2eKeySchema.safeParse(value).success) {
     throw new Error('E2E_API_KEY must look like a ZiweiHub API key: "zwk_" followed by 43 base64url characters');
   }
-  if (!env.CI && !isLocalDatabase(env.DATABASE_URL)) {
-    throw new Error('Refusing to seed E2E_API_KEY: only in CI or into a localhost database');
+  if (!isLocalDatabase(env.DATABASE_URL)) {
+    throw new Error('Refusing to seed E2E_API_KEY: only into a localhost database');
   }
   return value;
 }
