@@ -1,3 +1,5 @@
+> 这是上游开源项目 [Renhuai123/ziwei-doushu](https://github.com/Renhuai123/ziwei-doushu) 的原版 README，保留在这里用于致谢和参考。ZiweiHub 的说明见[仓库首页](../../README.md)。
+
 <div align="center">
 
 # 紫微斗数 · 开源排盘引擎
@@ -5,8 +7,8 @@
 ### 算法是公开的传统智慧，不应该被锁在围墙里
 
 [![CI](https://github.com/Renhuai123/ziwei-doushu/actions/workflows/ci.yml/badge.svg)](https://github.com/Renhuai123/ziwei-doushu/actions/workflows/ci.yml)
-[![License: MIT](https://img.shields.io/badge/code-MIT-blue.svg)](./LICENSE)
-[![Dataset: CC BY 4.0](https://img.shields.io/badge/dataset-CC%20BY%204.0-green.svg)](./DATASET-LICENSE)
+[![License: MIT](https://img.shields.io/badge/code-MIT-blue.svg)](../../LICENSE)
+[![Dataset: CC BY 4.0](https://img.shields.io/badge/dataset-CC%20BY%204.0-green.svg)](../../DATASET-LICENSE)
 
 **中文** · [English](./README.en.md)
 
@@ -58,7 +60,7 @@ ZiweiHub（本仓库的 P2 版本）生产环境：<https://ziwei-doushu-seven-o
 
 本轮跟随网站 2026-10-15 发版（网站内容版本 `ca268829f7a9`）：
 
-![本轮更新总览](./docs/update-20261015.png)
+![本轮更新总览](../update-20261015.png)
 
 **1. 发布 13 维解读数据集 v4.0** —— 674,976 张命盘（公历 1950–2026 年每一个真实日期 × 12 时辰 × 男女）× 13 维 = **8,774,688 段解读**，正文约 204 亿字。解压后 56.6 GB（v3.0 为 33.1 GB，增加 71%），压缩后只有 161 MB，按年份分 77 个文件，可以只下需要的年份，也可以一次下全年份总包。下载见 [Release v4.0-13d](https://github.com/Renhuai123/ziwei-doushu/releases/tag/v4.0-13d)，规格和字段见[第二·新章](#二新13-维解读数据集-v402026-10-15)。发布前 77 个文件逐个解压，与原始数据逐字节比对一致。
 
@@ -72,7 +74,7 @@ ZiweiHub（本仓库的 P2 版本）生产环境：<https://ziwei-doushu-seven-o
 
 **3. 排盘引擎同步**（[PR #39](https://github.com/Renhuai123/ziwei-doushu/pull/39)）—— `dst-cn.ts` 新增 `chinaDSTSpan(year)`，查某年中国夏令时起止；`cities.ts` 补全省直辖县级单位与新疆兵团各市的经度（神农架、海南各市县、阿拉尔等），出生地选这些城市时真太阳时校正可用。
 
-**4. 许可** —— [`DATASET-LICENSE`](./DATASET-LICENSE) 适用范围加上 v4.0；写明解读里引用的倪师原话不在数据授权范围内，与第五章倪师原话的 CC BY-NC-SA 4.0 一致。v3.0 样本数据集及其条款不变。
+**4. 许可** —— [`DATASET-LICENSE`](../../DATASET-LICENSE) 适用范围加上 v4.0；写明解读里引用的倪师原话不在数据授权范围内，与第五章倪师原话的 CC BY-NC-SA 4.0 一致。v3.0 样本数据集及其条款不变。
 
 > **2026-10-31 补充**：线上平台更名 **OURANIC**，网址由 metisziwei.com 迁到 **[ouranic.cn](https://ouranic.cn/?from=gh-readme)**（运营主体北京王多鱼科技有限责任公司，京ICP备2026069066号-1）；旧网址会自动跳转，本仓库的代码、数据集与许可都不变。
 
@@ -89,7 +91,7 @@ ZiweiHub（本仓库的 P2 版本）生产环境：<https://ziwei-doushu-seven-o
 
 > **2026-10-03 补充**：倪师《天纪·紫微斗数》原话 1848 条单独成章（第五章）；合并外部贡献 #29（时辰序号校验）；引擎拒绝不存在的公历日期，数据集补字段口径与已知问题；提交 package-lock.json；站点地址改为可配置；合盘演示改用本地引擎起盘、AI 接口缺失时明确提示；补齐贡献指南、行为准则、问题与 PR 模板；新增英文简介 [README.en.md](./README.en.md)；去掉两个用不上的部署工具包（vercel CLI、@cloudflare/next-on-pages），依赖从 483 个减到 185 个；随后升级到 Next.js 16 修掉 postcss 漏洞，GitHub 安全提醒从 51 条清零。
 
-![本轮更新总览](./docs/update-20260921.png)
+![本轮更新总览](../update-20260921.png)
 
 时隔三个月，本仓库完成一次完整更新（[PR #28](https://github.com/Renhuai123/ziwei-doushu/pull/28)，26 个文件、+2736 / −108 行）：
 
@@ -111,7 +113,7 @@ ZiweiHub（本仓库的 P2 版本）生产环境：<https://ziwei-doushu-seven-o
 
 **4. 积压 issue 从 18 条清到 4 条**，留下的都是还在走的。
 
-**5. 文档与许可** —— 新增 [`DATASET-LICENSE`](./DATASET-LICENSE)；README 补齐引擎能力清单、维护节奏、开源边界；修正两处不实描述（数据集「口径与线上完全一致」、界面「完整的 Next.js 15 前端」）。
+**5. 文档与许可** —— 新增 [`DATASET-LICENSE`](../../DATASET-LICENSE)；README 补齐引擎能力清单、维护节奏、开源边界；修正两处不实描述（数据集「口径与线上完全一致」、界面「完整的 Next.js 15 前端」）。
 
 ---
 
@@ -162,11 +164,11 @@ shasum -a 256 -c SHA256SUMS.txt --ignore-missing # 校验
 
 ### 引文说明
 
-解读里引用的倪海厦《天纪》原话**不属于本数据集的授权范围**：它们是为说明断语出处而注明集数与时间码的简短引用，著作权归原权利人；要把这些原话单独成批使用，按第五章倪师原话的 [CC BY-NC-SA 4.0](./docs/tianji-ziwei/LICENSE.md) 处理。《紫微斗数全书》原文属公有领域。
+解读里引用的倪海厦《天纪》原话**不属于本数据集的授权范围**：它们是为说明断语出处而注明集数与时间码的简短引用，著作权归原权利人；要把这些原话单独成批使用，按第五章倪师原话的 [CC BY-NC-SA 4.0](../tianji-ziwei/LICENSE.md) 处理。《紫微斗数全书》原文属公有领域。
 
 ### 许可
 
-与 v3.0 相同：**CC BY 4.0，可自由商用，唯一要求是保留来源标注**（上面「引文说明」里的倪师原话除外），完整条款见 [DATASET-LICENSE](./DATASET-LICENSE)。引用时请写：
+与 v3.0 相同：**CC BY 4.0，可自由商用，唯一要求是保留来源标注**（上面「引文说明」里的倪师原话除外），完整条款见 [DATASET-LICENSE](../../DATASET-LICENSE)。引用时请写：
 
 > 本项目使用了 **紫微斗数开源解读数据集 v4.0**（674,976 张命盘 × 13 维）
 > 来源：https://github.com/Renhuai123/ziwei-doushu
@@ -266,7 +268,7 @@ Expand-Archive combined.zip
 - **学术论文**：参考文献或致谢章节
 - **二次发布的数据集**：README 或 metadata 文件里注明上游来源
 
-仅此一条，其余都自由。完整条款见 [DATASET-LICENSE](./DATASET-LICENSE)。希望这套数据能帮你做出好东西 —— 做出来记得来小红书 / 抖音 / 闲鱼 **@王多鱼AI** 打个招呼 👋
+仅此一条，其余都自由。完整条款见 [DATASET-LICENSE](../../DATASET-LICENSE)。希望这套数据能帮你做出好东西 —— 做出来记得来小红书 / 抖音 / 闲鱼 **@王多鱼AI** 打个招呼 👋
 
 ---
 
@@ -294,7 +296,7 @@ npm run typecheck   # TypeScript 全量类型检查
 npm test            # 排盘引擎回归（768 盘 × 紫微铁律、夏令时、立春边界、红鸾天喜、样本时辰一致性、时辰序号边界、日期合法性、同宫双四化）
 ```
 
-每次 push 与 PR 都会在 GitHub Actions 上跑同一套（见 [`.github/workflows/ci.yml`](./.github/workflows/ci.yml)）。
+每次 push 与 PR 都会在 GitHub Actions 上跑同一套（见 [`.github/workflows/ci.yml`](../../.github/workflows/ci.yml)）。
 
 > **注意：开源版不含后端 API 路由。**排盘、命盘展示、合盘起盘都在浏览器里用本仓库的引擎完成，**不需要任何 API Key**。AI 解读（`/api/interpret`）和合盘 AI 分析（`/api/heming`）需要你自己实现接口；没实现之前，这两处会直接提示「开源版不含该接口」，配置 API Key 也不会变成可用（#30 就是这个原因）。
 
@@ -352,11 +354,11 @@ npm test            # 排盘引擎回归（768 盘 × 紫微铁律、夏令时�
 
 ## 五、倪师《天纪·紫微斗数》原话
 
-![倪海厦《天纪·紫微斗数》一图看全](./docs/tianji-ziwei/overview.png)
+![倪海厦《天纪·紫微斗数》一图看全](../tianji-ziwei/overview.png)
 
-倪海厦《天纪》紫微斗数部分的原话共 **1848 条**：正课 14 讲（第 2–15 讲上半）加 2 段补充，按讲分成 16 个文件，放在 [`docs/tianji-ziwei/`](./docs/tianji-ziwei/)。每条都带出处时间，点一下就跳回 B 站原视频的那一秒。
+倪海厦《天纪》紫微斗数部分的原话共 **1848 条**：正课 14 讲（第 2–15 讲上半）加 2 段补充，按讲分成 16 个文件，放在 [`docs/tianji-ziwei/`](../tianji-ziwei/)。每条都带出处时间，点一下就跳回 B 站原视频的那一秒。
 
-- **怎么读**：先在上图里找到想看的主题，再点进对应那一讲，比如 [5上](./docs/tianji-ziwei/5%E4%B8%8A.md)（紫微在子）、[13上](./docs/tianji-ziwei/13%E4%B8%8A.md)（杀破狼、科权禄三会）。
+- **怎么读**：先在上图里找到想看的主题，再点进对应那一讲，比如 [5上](../tianji-ziwei/5%E4%B8%8A.md)（紫微在子）、[13上](../tianji-ziwei/13%E4%B8%8A.md)（杀破狼、科权禄三会）。
 - **从哪来**：取自姊妹仓库 [nihai-tianji-corpus](https://github.com/Renhuai123/nihai-tianji-corpus)，以语料库为准，会随语料库同步。
 - **能不能商用**：**不能**。这一章的内容单独采用 CC BY-NC-SA 4.0，详见[九、协议](#九协议)。
 
@@ -407,10 +409,10 @@ npm test            # 排盘引擎回归（768 盘 × 紫微铁律、夏令时�
 
 | 内容 | 协议 | 简单说 |
 |------|------|--------|
-| **代码**（`lib/`、`app/`、`components/`） | [MIT License](./LICENSE) | 拿去随便用，保留 LICENSE 文件即可 |
-| **数据**（Releases 中的 51.8 万样本数据集 v3.0、13 维解读数据集 v4.0） | [CC BY 4.0](./DATASET-LICENSE) · 要求 attribution | 商用也行，**注明数据来源即可** |
+| **代码**（`lib/`、`app/`、`components/`） | [MIT License](../../LICENSE) | 拿去随便用，保留 LICENSE 文件即可 |
+| **数据**（Releases 中的 51.8 万样本数据集 v3.0、13 维解读数据集 v4.0） | [CC BY 4.0](../../DATASET-LICENSE) · 要求 attribution | 商用也行，**注明数据来源即可** |
 | **古籍原文**（骨髓赋、紫微斗数全集 / 全书等） | Public Domain | 古书都是公有领域，不存在版权 |
-| **倪师原话**（[`docs/tianji-ziwei/`](./docs/tianji-ziwei/)） | [CC BY-NC-SA 4.0](./docs/tianji-ziwei/LICENSE.md) | 可以引用、转载，注明出处；**不许商用**，改编后用同样协议 |
+| **倪师原话**（[`docs/tianji-ziwei/`](../tianji-ziwei/)） | [CC BY-NC-SA 4.0](../tianji-ziwei/LICENSE.md) | 可以引用、转载，注明出处；**不许商用**，改编后用同样协议 |
 
 **一句话**：代码和数据拿去用，商用也行，把来源链接带上就行；倪师原话只限非商业的学习研究（数据集解读里引用的倪师原话同样不在数据授权范围内）。
 
@@ -433,5 +435,5 @@ npm test            # 排盘引擎回归（768 盘 × 紫微铁律、夏令时�
 ### 联系
 
 - 线上平台：[ouranic.cn](https://ouranic.cn/?from=gh-readme)（已完成 ICP 备案：京ICP备2026069066号-1）
-- 提问题、提修复：见 [CONTRIBUTING.md](./CONTRIBUTING.md)；使用交流请到 [讨论区](https://github.com/Renhuai123/ziwei-doushu/discussions)
+- 提问题、提修复：见 [CONTRIBUTING.md](../../CONTRIBUTING.md)；使用交流请到 [讨论区](https://github.com/Renhuai123/ziwei-doushu/discussions)
 - 💕 发财的小手点一下：小红书 / 抖音 / 闲鱼 / X 关注 **王多鱼AI**，第一时间看上线 + 解锁更多紫微干货～
