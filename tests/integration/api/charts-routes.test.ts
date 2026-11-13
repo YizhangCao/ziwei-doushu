@@ -164,6 +164,36 @@ describe('/api/charts/[id]', () => {
     expect(await prisma.chart.count()).toBe(0);
   });
 
+  // A double click on "confirm delete" sends two DELETEs that can both pass the access check
+  // before either deletes. The stale read below replays that race deterministically: the loser
+  // must get 404 like any missing chart, never a 500.
+  async function raceAfterAccessCheck(id: string) {
+    const stale = await prisma.chart.findUnique({
+      where: { id },
+      include: { shares: { select: { chartId: true, practitionerId: true, revokedAt: true } } },
+    });
+    await prisma.chart.delete({ where: { id } });
+    return vi.spyOn(prisma.chart, 'findUnique').mockResolvedValueOnce(stale as never);
+  }
+
+  it('DELETE that loses a race with another DELETE returns 404, not 500', async () => {
+    const { me, id } = await setup();
+    const spy = await raceAfterAccessCheck(id);
+    const res = await deleteVia(id, me.cookie);
+    spy.mockRestore();
+    expect(res.status).toBe(404);
+    await errorOf(res);
+  });
+
+  it('PATCH on a chart deleted after the access check returns 404, not 500', async () => {
+    const { me, id } = await setup();
+    const spy = await raceAfterAccessCheck(id);
+    const res = await renameVia(id, me.cookie, { name: 'New' });
+    spy.mockRestore();
+    expect(res.status).toBe(404);
+    await errorOf(res);
+  });
+
   it('a practitioner the chart is shared with can read it but not change it (403)', async () => {
     const { me, id } = await setup();
     const prac = await signedIn('prac@example.test', 'practitioner');
