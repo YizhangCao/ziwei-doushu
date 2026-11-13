@@ -16,6 +16,13 @@ test.describe('signed in', () => {
     await signInAsE2eMember(context, baseURL!);
   });
 
+  test('the user menu links to /settings', async ({ page }) => {
+    await page.goto('/');
+    await page.getByRole('navigation').getByRole('link', { name: '设置' }).click();
+    await expect(page).toHaveURL(/\/settings$/);
+    await expect(page.getByRole('heading', { name: 'API key' })).toBeVisible();
+  });
+
   test('create a key (shown once) → use it → revoke it', async ({ page }) => {
     await page.goto('/settings');
     await expect(page.getByRole('heading', { name: 'API key' })).toBeVisible();

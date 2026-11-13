@@ -87,6 +87,47 @@ describe('POST /api/keys', () => {
   });
 });
 
+describe('POST /api/keys — at most 10 active keys per user', () => {
+  const createOk = async (cookie: string, name: string) => {
+    const res = await createVia(cookie, { name });
+    expect(res.status, name).toBe(201);
+    return ((await res.json()) as { key: { id: string } }).key.id;
+  };
+
+  it('refuses the 11th active key with 400 { error } and stores nothing', async () => {
+    const me = await signedIn('me@example.test');
+    for (let i = 0; i < 10; i++) await createOk(me.cookie, `key ${i}`);
+
+    const res = await createVia(me.cookie, { name: 'one too many' });
+    expect(res.status).toBe(400);
+    const { error } = (await res.json()) as { error: string };
+    expect(error).toMatch(/10/);
+    expect(await prisma.apiKey.count({ where: { userId: me.id } })).toBe(10);
+  });
+
+  it('counts only active keys: revoking one frees a slot, and other users have their own 10', async () => {
+    const me = await signedIn('me@example.test');
+    const other = await signedIn('other@example.test');
+    const ids = [];
+    for (let i = 0; i < 10; i++) ids.push(await createOk(me.cookie, `key ${i}`));
+    await createOk(other.cookie, 'theirs');
+
+    expect((await revokeVia(ids[0], me.cookie)).status).toBe(204);
+    await createOk(me.cookie, 'replacement');
+    expect((await createVia(me.cookie, { name: 'eleventh' })).status).toBe(400);
+  });
+
+  it('never passes 10 under concurrent requests (the count and the insert are one transaction)', async () => {
+    const me = await signedIn('me@example.test');
+    for (let i = 0; i < 8; i++) await createOk(me.cookie, `key ${i}`);
+
+    const statuses = (await Promise.all(Array.from({ length: 6 }, (_, i) => createVia(me.cookie, { name: `race ${i}` })))).map((r) => r.status);
+    expect(statuses.filter((s) => s === 201)).toHaveLength(2);
+    expect(statuses.filter((s) => s === 400)).toHaveLength(4);
+    expect(await prisma.apiKey.count({ where: { userId: me.id, revokedAt: null } })).toBe(10);
+  });
+});
+
 describe('GET /api/keys', () => {
   it('lists only my keys, never the plain key or the hash', async () => {
     const me = await signedIn('me@example.test');
