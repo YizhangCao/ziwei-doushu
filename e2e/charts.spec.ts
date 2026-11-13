@@ -76,4 +76,19 @@ test.describe('signed in', () => {
     await row.getByRole('button', { name: '取消' }).click();
     await expect(row).toBeVisible();
   });
+
+  test('a double click on confirm delete deletes once, without an error', async ({ page }) => {
+    const res = await page.request.post('/api/charts', {
+      data: { name: 'E2E 双击', birthInfo: { year: 1992, month: 3, day: 8, hour: 4, gender: 'male' } },
+    });
+    expect(res.status()).toBe(201);
+
+    await page.goto('/charts');
+    const row = page.getByRole('listitem').filter({ hasText: 'E2E 双击' });
+    await row.getByRole('button', { name: '删除' }).click();
+    await row.getByRole('button', { name: '确认删除' }).dblclick();
+    await expect(page.getByRole('status').first()).toHaveText('已删除。');
+    await expect(page.getByText('删除失败，请稍后重试。')).toHaveCount(0);
+    await expect(page.getByRole('listitem').filter({ hasText: 'E2E 双击' })).toHaveCount(0);
+  });
 });
