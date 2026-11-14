@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 import { describe, it, expect } from 'vitest';
-import { API_KEY_PREFIX, generateApiKey, hashApiKey, verifyApiKey } from '@/lib/api/keys';
+import { API_KEY_PREFIX, apiKeyRecordFor, generateApiKey, hashApiKey, verifyApiKey } from '@/lib/api/keys';
 
 const sha256 = (value: string) => createHash('sha256').update(value).digest('hex');
 
@@ -30,6 +30,21 @@ describe('generateApiKey() — the plain key is shown once, only its hash is sto
     const { plainKey, record } = generateApiKey();
     expect(Object.keys(record).sort()).toEqual(['keyHash', 'prefix']);
     for (const value of Object.values(record)) expect(value).not.toContain(plainKey);
+  });
+});
+
+describe('apiKeyRecordFor(plainKey) — the stored record for a key that already exists (seeding)', () => {
+  it('is the same record generateApiKey() makes for that key', () => {
+    const { plainKey, record } = generateApiKey();
+    expect(apiKeyRecordFor(plainKey)).toEqual(record);
+  });
+
+  it('never contains the plain key', () => {
+    const plainKey = `${API_KEY_PREFIX}${'0'.repeat(43)}`;
+    const record = apiKeyRecordFor(plainKey);
+    expect(Object.keys(record).sort()).toEqual(['keyHash', 'prefix']);
+    expect(record.keyHash).toBe(sha256(plainKey));
+    for (const value of Object.values(record)) expect(value).not.toBe(plainKey);
   });
 });
 

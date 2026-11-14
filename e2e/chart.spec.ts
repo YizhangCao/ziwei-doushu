@@ -8,6 +8,9 @@
  * @fileoverview The first chart (#57): one site nav, one time navigation, a
  * sentence that anchors the reader on their life palace, and a board that stays
  * full width on a phone. Uses made-up birth data.
+ *
+ * Also user flow 1 (AGENTS.md 2.4), the part without login (#26): fill BirthForm,
+ * build the chart in the browser, and see all 12 palaces on the board.
  */
 
 import { test, expect, type Page } from '@playwright/test';
@@ -24,6 +27,22 @@ async function buildChart(page: Page) {
   await page.getByRole('button', { name: '起盘', exact: true }).click();
   await expect(page.getByRole('region', { name: '命盘' })).toBeVisible();
 }
+
+const PALACES = ['命宫', '兄弟', '夫妻', '子女', '财帛', '疾厄', '迁移', '仆役', '官禄', '田宅', '福德', '父母'];
+
+test('builds a chart from the birth form and shows 12 palaces (#26)', async ({ page }) => {
+  await page.goto('/chart');
+  await expect(page.getByRole('heading', { level: 1, name: '起盘' })).toBeVisible();
+  // No chart yet: the board isn't rendered before the form is submitted.
+  await expect(page.getByRole('region', { name: '命盘' })).toHaveCount(0);
+
+  await buildChart(page);
+
+  const board = page.getByRole('region', { name: '命盘' });
+  for (const name of PALACES) {
+    await expect(board.getByText(name).first(), `palace ${name}`).toBeVisible();
+  }
+});
 
 test('every input and select in the birth form has an id and an associated label (#46)', async ({ page }) => {
   await page.goto('/chart');
