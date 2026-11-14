@@ -1,5 +1,5 @@
 'use client';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 
@@ -22,6 +22,12 @@ export default function SavedChartsList() {
   const [charts, setCharts] = useState<ChartSummary[] | null>(null);
   const [modes, setModes] = useState<Record<string, RowMode>>({});
   const [message, setMessage] = useState('');
+  // Rows with a rename or delete in flight: their buttons are disabled, so a double click
+  // sends one request, not two.
+  const [pending, setPending] = useState<Record<string, boolean>>({});
+  // The same set, read synchronously: both clicks of a double click can fire before React
+  // re-renders the button as disabled.
+  const inFlight = useRef(new Set<string>());
 
   const load = useCallback(async () => {
     try {
@@ -36,6 +42,19 @@ export default function SavedChartsList() {
   useEffect(() => { void load(); }, [load]);
 
   const setMode = (id: string, mode: RowMode) => setModes((m) => ({ ...m, [id]: mode }));
+
+  /** Runs one request for a row, at most one at a time. */
+  async function once(id: string, request: () => Promise<void>) {
+    if (inFlight.current.has(id)) return;
+    inFlight.current.add(id);
+    setPending((p) => ({ ...p, [id]: true }));
+    try {
+      await request();
+    } finally {
+      inFlight.current.delete(id);
+      setPending((p) => ({ ...p, [id]: false }));
+    }
+  }
 
   async function rename(id: string, name: string) {
     const res = await fetch(`/api/charts/${id}`, {
@@ -77,7 +96,7 @@ export default function SavedChartsList() {
                 {mode.kind === 'rename' ? (
                   <form
                     style={{ display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center' }}
-                    onSubmit={(e) => { e.preventDefault(); void rename(c.id, mode.draft); }}
+                    onSubmit={(e) => { e.preventDefault(); void once(c.id, () => rename(c.id, mode.draft)); }}
                     onKeyDown={(e) => { if (e.key === 'Escape') setMode(c.id, { kind: 'view' }); }}
                   >
                     <label htmlFor={`rename-${c.id}`} style={{ fontSize: 13, color: 'var(--t-faint)' }}>{t('newName')}</label>
@@ -90,7 +109,7 @@ export default function SavedChartsList() {
                       onChange={(e) => setMode(c.id, { kind: 'rename', draft: e.target.value })}
                       style={{ padding: '4px 8px', borderRadius: 8, border: '1px solid var(--t-border)', background: 'transparent', color: 'inherit' }}
                     />
-                    <button type="submit" style={button}>{t('saveName')}</button>
+                    <button type="submit" style={button} disabled={pending[c.id]}>{t('saveName')}</button>
                     <button type="button" style={button} onClick={() => setMode(c.id, { kind: 'view' })}>{t('cancel')}</button>
                   </form>
                 ) : (
@@ -101,7 +120,7 @@ export default function SavedChartsList() {
                     {mode.kind === 'confirm-delete' ? (
                       <>
                         <span style={{ fontSize: 13 }}>{t('confirmQuestion')}</span>
-                        <button type="button" style={button} onClick={() => void remove(c.id)}>{t('confirm')}</button>
+                        <button type="button" style={button} disabled={pending[c.id]} onClick={() => void once(c.id, () => remove(c.id))}>{t('confirm')}</button>
                         <button type="button" style={button} onClick={() => setMode(c.id, { kind: 'view' })}>{t('cancel')}</button>
                       </>
                     ) : (

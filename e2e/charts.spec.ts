@@ -30,6 +30,23 @@ test.describe('signed in', () => {
     await signInAsE2eMember(context, baseURL!);
   });
 
+  // Chart.name is stored in plaintext; the birth form's name is part of the encrypted birth data.
+  // So the chart name starts empty instead of copying the person's name out of it.
+  test('the chart name starts empty, even when the birth form has a name', async ({ page }) => {
+    await page.goto('/chart');
+    await page.locator('#bf-name').fill('测试姓名');
+    const selects = page.locator('form select');
+    await selects.nth(0).selectOption('1992');
+    await selects.nth(1).selectOption('3');
+    await selects.nth(2).selectOption('8');
+    await page.locator('#bf-hour').selectOption('9');
+    await page.getByRole('button', { name: '男', exact: true }).click();
+    await page.getByRole('button', { name: '起盘', exact: true }).click();
+    await expect(page.getByText('仆役', { exact: true }).first()).toBeVisible();
+
+    await expect(page.getByLabel('命盘名称')).toHaveValue('');
+  });
+
   test('save → list → open → rename → delete', async ({ page }) => {
     // Save from /chart.
     await buildChart(page);
@@ -75,5 +92,20 @@ test.describe('signed in', () => {
     await row.getByRole('button', { name: '删除' }).click();
     await row.getByRole('button', { name: '取消' }).click();
     await expect(row).toBeVisible();
+  });
+
+  test('a double click on confirm delete deletes once, without an error', async ({ page }) => {
+    const res = await page.request.post('/api/charts', {
+      data: { name: 'E2E 双击', birthInfo: { year: 1992, month: 3, day: 8, hour: 4, gender: 'male' } },
+    });
+    expect(res.status()).toBe(201);
+
+    await page.goto('/charts');
+    const row = page.getByRole('listitem').filter({ hasText: 'E2E 双击' });
+    await row.getByRole('button', { name: '删除' }).click();
+    await row.getByRole('button', { name: '确认删除' }).dblclick();
+    await expect(page.getByRole('status').first()).toHaveText('已删除。');
+    await expect(page.getByText('删除失败，请稍后重试。')).toHaveCount(0);
+    await expect(page.getByRole('listitem').filter({ hasText: 'E2E 双击' })).toHaveCount(0);
   });
 });

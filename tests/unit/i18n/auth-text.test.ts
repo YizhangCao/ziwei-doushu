@@ -32,7 +32,7 @@ describe('login text', () => {
       error: '登录没有成功，请重试。',
       github: '使用 GitHub 登录',
     });
-    expect(MESSAGES.zh.auth.menu).toEqual({ signIn: '登录', signedIn: '已登录', signOut: '退出登录' });
+    expect(MESSAGES.zh.auth.menu).toEqual({ signIn: '登录', signedIn: '已登录', settings: '设置', signOut: '退出登录' });
     expect(MESSAGES.zh.insight.errors.loginRequired).toBe('AI 解读需要登录。请点击首页右上角的「登录」，或打开 /login 使用 GitHub 账号登录。');
   });
 

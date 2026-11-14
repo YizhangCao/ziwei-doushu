@@ -20,7 +20,8 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: { params: Promise<{ book: string; chapter: string }> }) {
   const { book: bookSlug, chapter: chIdx } = await params;
   const result = getChapter(bookSlug, parseInt(chIdx));
-  if (!result) return {};
+  // As in the book page: notFound() here keeps the 404's metadata in the client payload (#65).
+  if (!result) notFound();
   const t = await getTranslations('library.meta');
   const locale = await getLocale();
   const book = bookLabels(result.book, locale);

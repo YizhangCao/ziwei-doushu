@@ -105,7 +105,7 @@ When asked to implement an issue, **stop after step 1** and show the failing tes
 | E2E | Playwright | `e2e/*.spec.ts` | One spec per user story's main flow, in the browser. |
 
 - Engine tests keep the `ok()` pattern (no `node:assert`). New tests use Vitest's `describe` / `it` / `expect`.
-- Integration tests reset the DB between files (`prisma migrate reset --force` on `DATABASE_URL_TEST`) and never touch the dev or production DB.
+- Integration tests run `prisma migrate deploy` once (global setup) and truncate every table before each test, only on `DATABASE_URL_TEST`. They refuse to run if `DATABASE_URL_TEST` equals the `DATABASE_URL` in `.env.local`, and never touch the dev or production DB.
 - Never call the real Anthropic API in any test.
 - **Coverage goal:** 80% lines for `lib/` (`vitest --coverage`), every acceptance criterion covered by a test or a written manual step in the PR, and every user story has an E2E spec.
 - **Commands:** `npm run typecheck`, `npm test` (engine), `npm run test:unit`, `npm run test:integration`, `npm run test:e2e`. All must pass locally and in CI.
@@ -195,7 +195,7 @@ When a feature changes one of these flows, update this section in the same PR.
 - Read the GitHub Issue and its acceptance criteria before writing code, and restate them in your plan.
 - Reuse existing types and helpers (`ZiweiChart`, `generateChart`, `formToBirthInfo`) before writing new ones.
 - Keep changes small and focused on the issue.
-- Validate every API request body before using it: `chart.palaces` must have 12 entries, at most **30 messages**, each at most **2,000 characters**, roles only `user` / `assistant` (limits from issue #5).
+- Validate every API request body before using it: `chart.palaces` must have 12 entries, at most **30 messages**, roles only `user` / `assistant`. A user message is at most **2,000 characters**, an assistant message (the model's own earlier reply, sent back as history) at most **20,000**, and all messages together at most **100,000** (limits from #5, by role since #105). They live in `lib/ai/interpret-limits.ts`, which the route and the reading panel share.
 - Stream responses; the UI is built for streaming.
 - Write the failing test first (TDD), and add a test for each new `lib/` function.
 - Put every user-visible string in `messages/zh` and `messages/en` (#59), never in components. English follows the product owner's rules:
@@ -218,8 +218,11 @@ When a feature changes one of these flows, update this section in the same PR.
 - Validate every input with zod. Return 400 with `{ error }` on failure, 401 if not logged in, 403 if logged in but not allowed, 404 if the record isn't theirs (don't reveal it exists).
 - Birth data (`birthInfo`) is stored encrypted at rest (`lib/crypto.ts`, key in `DATA_ENCRYPTION_KEY`).
 - Public API keys are stored hashed, never in plain text. Rate-limit `/api/v1/*` and AI routes per key / per user.
+- API keys are 256-bit random tokens hashed with SHA-256 on purpose (fast lookup by hash); CodeQL's `js/insufficient-password-hash` alert on `lib/api/keys.ts` is a known false positive and is dismissed.
 - API keys only in `.env.local` (git-ignored). Add any new variable to `.env.example` with a fake value.
-- Production and preview use their own AUTH_SECRET and DATA_ENCRYPTION_KEY, set only in Vercel; development uses the values in .env.local.
+- Production and preview share AUTH_SECRET (needed for preview login through the production URL); each environment has its own DATA_ENCRYPTION_KEY. Production and preview values are set only in Vercel; development uses the values in .env.local.
+- Local development uses a non-production database (Neon dev or a local Postgres); never point .env.local at production.
+- Preview deployments must never run migrations against the production database (see #20).
 - Never import server code or read `process.env` secrets in a `'use client'` file. Only `NEXT_PUBLIC_*` variables may reach the browser.
 - **Birth data is personal data.** Don't log full birth details or chat contents on the server, don't put real people's birth data in tests or issues, and don't send more of the chart to the AI than the reading needs.
   - **Never send `birthInfo` or `lunarInfo` (birth date, hour, gender) to the AI.** Send only what a reading uses: the 12 palaces (name, branch, stars, brightness, 四化), `wuxingJuName`, `mingZhu`, `shenZhu`, `currentAge`, and the decade ranges.
@@ -246,9 +249,6 @@ A task is done when: the acceptance criteria are all met, `npm run typecheck` an
 ## Changelog
 <!-- Record each change to this file and why. This is the evidence of iteration for HW3. -->
 - v1 (10/30/2026): first version.
-- v3.2 (11/10/2026): GitHub login (#15). `/api/interpret` now returns 401 for guests (2.3, 2.4). Previews sign in through the production URL (`AUTH_REDIRECT_PROXY_URL`), which works because production and preview share one `AUTH_SECRET` (#31).
-- v3.1 (11/08/2026): re-planned for the Nov 12 deadline: GitHub OAuth only; Vercel and Neon integrations handle previews, production, and per-preview databases.
-- v3 (11/01/2026): P2 approved as ZiweiHub. Added database, auth, roles, public API, and hosting to the stack; added the roles table and auth rules; replaced the tsx-only test rule with a layered strategy (engine tests stay on tsx, new code uses Vitest and Playwright) because P2 requires unit, integration, and E2E tests; added TDD commit order. PRD now points to docs/PRD.md.
 - v2 (10/31/2026): after the first with-rules test run on issue #4. The agent ignored several rules, so v2 makes them concrete and checkable:
   - Route files may export only route fields (the agent exported a test helper from `route.ts`). Note: we first believed this breaks `next build`, but we tested it and the build passed on Next 16, so the rule is kept as an architecture convention, not a build requirement.
   - Keep the route thin; logic goes in `lib/ai/` (the agent put everything in `route.ts`).
@@ -257,5 +257,15 @@ A task is done when: the acceptance criteria are all met, `npm run typecheck` an
   - Test snippet and "no `node:assert`" (both runs used `node:assert`).
   - Don't delete existing `.env.example` entries; no hardcoded dated model ID (both runs did this).
   - Required end-of-task summary with acceptance criteria, branch, commit, and `Closes #N`.
-- v3.6 (11/11/2026): English version (#59). next-intl is in the stack table, the language switch in 2.2 and 2.4, and the translation rules under "Do".
+- v3 (11/01/2026): P2 approved as ZiweiHub. Added database, auth, roles, public API, and hosting to the stack; added the roles table and auth rules; replaced the tsx-only test rule with a layered strategy (engine tests stay on tsx, new code uses Vitest and Playwright) because P2 requires unit, integration, and E2E tests; added TDD commit order. PRD now points to docs/PRD.md.
+- v3.1 (11/08/2026): re-planned for the Nov 12 deadline: GitHub OAuth only; Vercel and Neon integrations handle previews, production, and per-preview databases.
+- v3.2 (11/10/2026): after Sprint 1.
+  - The integration-test rule now describes what we actually do: `prisma migrate deploy` once, then truncate tables before each test, on `DATABASE_URL_TEST` only. Prisma blocks `migrate reset --force` when an AI agent runs it, and resetting isn't needed for a clean state.
+  - Added "local development uses a non-production database". `.env.local` had pointed at production, because Vercel shares one `DATABASE_URL` across environments.
+  - Clarified the secrets rule: production and preview share `AUTH_SECRET` for preview login, but each environment has its own `DATA_ENCRYPTION_KEY`, because preview databases are copies of production.
+  - Added "previews never migrate production". PR #35's preview ran `prisma migrate deploy` on the production database, because previews have no Neon branch yet (#20).
+- v3.2 (11/10/2026): GitHub login (#15). `/api/interpret` now returns 401 for guests (2.3, 2.4). Previews sign in through the production URL (`AUTH_REDIRECT_PROXY_URL`), which works because production and preview share one `AUTH_SECRET` (#31).
+- v3.3 (11/11/2026): documented that API keys are hashed with SHA-256 on purpose. CodeQL flagged it as a weak password hash (alerts #2–#4 on PRs #42 and #45); the keys are random 256-bit tokens, not passwords, and lookup by hash needs a fast, deterministic hash, so the alerts were dismissed as false positives.
 - v3.5 (11/11/2026): new design system (#57). Section 2.2 now describes it: Polestar-style calm, gold only for chart meaning, Chinese type after Apple's China site. The old rule pointed at CSS variables and a `card-glass` class that were never defined, so most component colors fell back to browser defaults.
+- v3.6 (11/11/2026): English version (#59). next-intl is in the stack table, the language switch in 2.2 and 2.4, and the translation rules under "Do".
+- v3.7 (11/12/2026): request limits by role (#105). One English reading is about 5,500 characters, and the old 2,000-character cap on every message made each follow-up fail with 400. A visitor still types at most 2,000; the model's replies may be 20,000, with 100,000 in all.

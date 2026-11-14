@@ -13,16 +13,18 @@ Format: what I did · what I'll do next · blockers.
 | 11/09 PM | Yizhang | #17 roles and permissions: red/green commits, 93 unit tests passing (local, waiting on #29); synced app env vars to Vercel; separate prod/preview AUTH_SECRET and DATA_ENCRYPTION_KEY (#31, PR #30); board statuses updated | Open #17 PR once #29 merges, then #18 saved charts | PRs #27–#30 waiting for review; #18 needs #14 (database) |
 | 11/09 PM | Yikang | | | |
 | 11/10 AM | Yizhang | Status check of PRs, CI, and board: found CI failing on every PR (prisma generate with no schema; critical Next.js advisory) | CI fixes; merge PR queue (#29, #30, #28, #27, #17); take over #14 and #15 | Yikang unresponsive since 11/08 |
-| 11/10 AM | Yikang | | | |
+| 11/10 PM | Yizhang | Sprint 1 review and retro with Yikang; Sprint 2 planning; moved the repo to D: | #4 browser check; #24 and #18 lib layers | None |
+| 11/10 | Yikang | • Reviewed and approved the 7 Sprint 1 PRs merged before review (#27–#30, #33–#35)<br>&nbsp;&nbsp;– Flagged follow-ups: session check on /api/interpret, 429 passthrough, stream errors, ConsultMessage cascade, crypto before #18<br>• #15 GitHub login<br>&nbsp;&nbsp;– Auth.js with JWT sessions (test commit first, then the implementation)<br>&nbsp;&nbsp;– Match users by GitHub id and restrict user deletes, as agreed on #35<br>• Sprint 1 retro and Sprint 2 planning call with Yizhang | • Test GitHub login end to end locally<br>• #20 preview databases | • #15 adds a migration, so I can't push it until previews have their own database (#20) |
 
-## Sprint 2 (Nov 10–12)
+## Sprint 2 (Nov 11–14)
 | Date | Partner | Done | Next | Blockers |
 |---|---|---|---|---|
-| 11/10 PM | Yizhang | | | |
-| 11/10 PM | Yikang | | | |
-| 11/11 AM | Yizhang | | | |
-| 11/11 AM | Yikang | | | |
-| 11/11 PM | Yizhang | | | |
-| 11/11 PM | Yikang | | | |
-| 11/12 AM | Yizhang | | | |
-| 11/12 AM | Yikang | | | |
+| 11/11 | Yizhang | Sprint 2 planning PR | #24 and #18 lib layers (TDD) | #15 and #20 needed before #18 routes and any migration |
+| 11/11 PM | Yizhang | #24 and #18 lib layers with 256-bit encryption (PRs #42, #43); #21 lib layer and the Vercel SSE spike (PR #44); E2E for the public API (#26, PR #45) | Wire #18, #21, #24 routes and pages once #15 merges | #15 (login); eight PRs awaiting review (#37–#39, #41–#45) |
+| 11/11 | Yikang | • #20 preview databases<br>&nbsp;&nbsp;– Verified each preview gets its own Neon branch<br>&nbsp;&nbsp;– #48's migration ran only on its preview branch; production is unchanged<br>&nbsp;&nbsp;– PR #47 (also adds the production URL to the README)<br>• #15 GitHub login<br>&nbsp;&nbsp;– Tested login end to end locally<br>&nbsp;&nbsp;– Opened PR #48<br>&nbsp;&nbsp;– Added a role refresh every 5 minutes, so role changes reach active sessions<br>• Reviewed #37–#39 and #41–#45; requested changes on #44 | • Get #48 merged<br>• #19 required CI checks<br>• #25 OpenAPI spec and Swagger UI | • Actions doesn't run on #47 or #48 (asked Yizhang to check the repo settings)<br>• Can't move board cards (no Write access to the Sprint Board) |
+| 11/12 | Yizhang | Applied Yikang's review fixes on #37, #38, #39, #43 (birth data validated on write) and #45 (seed guard: CI or localhost only); merged #41 and #42; #44 cursor overlap window and the isolation test; Preview got its own DATA_ENCRYPTION_KEY; required CI checks on main (#19); #18 routes and pages (PR #76) and the #24 /settings page (PR #78), both TDD with E2E; #79 ignore *.tmp (PR #80) | Merge the queue once Yikang re-approves (#37, #38, #43, #45, #44, then #76 and #78 after #48); #21 SSE route and /consultations page; #4 browser check | Neon free plan's 10-branch limit is full, so new preview deploys fail; #76 and #78 wait on #48 |
+| 11/12 | Yikang | • Opened #51–#56: rate limit, admin area, OpenAPI, login hardening, build and template fixes<br>• UI: design system (#58), English version (#60), and 15 follow-up PRs stacked on them<br>• Terms: California law with arbitration (#101)<br>• AI reading: empty readings (#104), failed follow-ups (#106)<br>• English for Yizhang's saved-chart and settings pages (#92, #93)<br>• Reviewed 10 of Yizhang's PRs: 8 approved, changes requested on #44<br>• Planned global birthplaces (#102) | • Rate-limit /api/v1 per API key (#54)<br>• Check readings on production after the merges<br>• #22 saved conversations after #76 merges | • Reviews: the #58 stack, #104, #106, #48, #53<br>• Vercel previews fail, likely Neon's branch limit (asked Yizhang)<br>• REDIS_URL needed in Vercel |
+| 11/13 | Yizhang | Merged #80, #38, #49, #104, #52, #51, #109 and #83 (standups conflict resolved keeping both rows); reviewed and approved 20 of Yikang's PRs (#104, #52, #51, #109, #106, #49, #58, #60, #64, #48, #53, #82, #66, #68, #71, #74, #72, #56, #54, #55); #44 keyset cursor that only moves forward, with 250-row tests; #21 sharing, /consultations and the live SSE thread page with a two-browser E2E (PR #110); review fixes on #45 (seed guard localhost only), #76 (404 when a delete or rename loses a race, one request per click, chart name starts empty) and #78 (at most 10 active API keys, /settings in the user menu), all TDD; freed Neon preview slots | Merge my stack once #48 is on main: #43, #76, #110, #78, #45, #44; effort=low on Production once the AI key works; #46 BirthForm labels if time allows | Production AI readings return 500: the ANTHROPIC_API_KEY on Vercel still has no credit (last changed 11/09); the #58 → #48 chain isn't merged yet; Neon's 10-branch limit fills up again with every round of pushes |
+| 11/13 | Yikang | | | |
+| 11/14 | Yizhang | | | |
+| 11/14 | Yikang | | | |

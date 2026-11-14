@@ -1,0 +1,26 @@
+{
+  "metaTitle": "Settings · Ziwei Natal Chart",
+  "title": "Settings",
+  "keys": {
+    "heading": "API key",
+    "intro": "Use an API key to call the public API at <code>POST /api/v1/charts</code>. See the <link>API docs</link>.",
+    "loadFailed": "Couldn’t load your API keys. Refresh to try again.",
+    "createFailed": "Creating the key failed. Please try again later.",
+    "revokeFailed": "Revoking the key failed. Please try again later.",
+    "revoked": "Revoked.",
+    "nameLabel": "Key name",
+    "namePlaceholder": "e.g. My script",
+    "create": "Create API key",
+    "newKey": "This is your new API key, and it is shown only this once. Copy it now and keep it safe: it can’t be shown again.",
+    "copy": "Copy",
+    "done": "I’ve saved it",
+    "empty": "No API keys yet.",
+    "dates": "Created {created} · Last used {lastUsed}",
+    "never": "Never",
+    "revokedBadge": "Revoked",
+    "confirmText": "Revoking this key stops it working at once, and it can’t be undone.",
+    "confirm": "Revoke",
+    "cancel": "Cancel",
+    "revoke": "Revoke"
+  }
+}
