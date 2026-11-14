@@ -68,6 +68,7 @@ docs/                Data and documentation; docs/tianji-ziwei/ is NON-COMMERCIA
 ```
 
 Key patterns:
+- **The free rule-based reading must always render, even when the AI is unavailable.** It is built in the browser by `lib/reading/rule-based.ts` (#118), with no request.
 - **The engine is pure.** `lib/ziwei/*` takes plain data and returns plain data. No network, no React state, no `Date.now()` inside chart logic.
 - **AI code stays on the server.** Anything that touches `@anthropic-ai/sdk` or an API key lives in `app/api/` or `lib/ai/` and is never imported by a `'use client'` file.
 - **The frontend contract is fixed.** See section 2.3. Build the backend to match it.
@@ -163,7 +164,7 @@ The frontend already calls these endpoints. **Do not change the frontend to fit 
 
 ### 2.4 User flows the agent should follow
 
-1. **Chart + reading:** user fills `BirthForm` → `generateChart()` runs in the browser → chart renders → user opens the reading → `InsightPanel` posts to `/api/interpret` → text streams in. Guests can build charts, but a reading needs login: the panel shows a login prompt on 401.
+1. **Chart + reading:** user fills `BirthForm` → `generateChart()` runs in the browser → chart renders with the free rule-based reading (`RuleBasedReading`, no request) → for a signed-in member, `InsightPanel` above it posts to `/api/interpret` → text streams in. Guests see a sign-in prompt in the AI area instead, and no request is made (#118). When the AI fails (500) or the daily limit is used up (429), the AI area says so and the free reading stays.
 2. **Follow-up question:** user types in `ChatPanel` → the full message history plus the chart is posted → answer streams in below the history.
 3. **Compatibility:** user enters two people on `/heming` → both charts build in the browser → page posts to `/api/heming` → analysis streams in.
 4. **Language:** user taps EN / 中文 in `SiteNav` → `setLocale` stores `NEXT_LOCALE` → the page re-renders in that language → `/api/interpret` answers in it too (the server reads the cookie; the request body is unchanged).
@@ -259,6 +260,7 @@ A task is done when: the acceptance criteria are all met, `npm run typecheck` an
   - Don't delete existing `.env.example` entries; no hardcoded dated model ID (both runs did this).
   - Required end-of-task summary with acceptance criteria, branch, commit, and `Closes #N`.
 - v3.3 (11/11/2026): documented that API keys are hashed with SHA-256 on purpose. CodeQL flagged it as a weak password hash (alerts #2–#4 on PRs #42 and #45); the keys are random 256-bit tokens, not passwords, and lookup by hash needs a fast, deterministic hash, so the alerts were dismissed as false positives.
+- v3.8 (11/13/2026): two-tier reading (#118). Everyone gets a free rule-based reading built in the browser; members get the AI reading on top. Added the rule that the free reading always renders, and updated flow 1 in 2.4.
 - v3.7 (11/12/2026): request limits by role (#105). One English reading is about 5,500 characters, and the old 2,000-character cap on every message made each follow-up fail with 400. A visitor still types at most 2,000; the model's replies may be 20,000, with 100,000 in all.
 - v3.6 (11/11/2026): English version (#59). next-intl is in the stack table, the language switch in 2.2 and 2.4, and the translation rules under "Do".
 - v3.5 (11/11/2026): new design system (#57). Section 2.2 now describes it: Polestar-style calm, gold only for chart meaning, Chinese type after Apple's China site. The old rule pointed at CSS variables and a `card-glass` class that were never defined, so most component colors fell back to browser defaults.
