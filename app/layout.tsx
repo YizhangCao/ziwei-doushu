@@ -14,7 +14,7 @@ import type { Messages } from '@/messages';
 
 // Only what client components read is serialized into the page (#59); the legal,
 // knowledge and metadata text stay on the server.
-const CLIENT_NAMESPACES = ['nav', 'auth', 'charts', 'home', 'chart', 'birthForm', 'board', 'timeNav', 'insight', 'heming', 'library'] as const;
+const CLIENT_NAMESPACES = ['nav', 'auth', 'admin', 'charts', 'home', 'chart', 'birthForm', 'board', 'timeNav', 'insight', 'heming', 'library'] as const;
 
 // Title, description and Open Graph follow the visitor's language (#59).
 export async function generateMetadata(): Promise<Metadata> {
