@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { ThemeProvider } from '@/components/ThemeProvider';
+import MotionProvider from '@/components/MotionProvider';
+import SiteNav from '@/components/SiteNav';
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { SITE_URL } from '@/lib/site';
@@ -44,7 +46,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="min-h-screen">
         <ThemeProvider>
-          {children}
+          <MotionProvider>
+            {/* 全站唯一的导航（#57） */}
+            <SiteNav />
+            {children}
+          </MotionProvider>
         </ThemeProvider>
         <Analytics />
         <SpeedInsights />

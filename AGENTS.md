@@ -137,7 +137,14 @@ A user only ever sees their own charts and charts explicitly shared with them. C
 - **Chart board (`ChartBoard`, `PalaceCell`)**: 4×4 grid of the 12 palaces around a center summary. Clicking a palace selects it and updates the reading panel.
 - **Time navigation (`TimeNav`)**: switches between natal (本命), decade (大限), and annual (流年) views.
 - **Reading panel (`InsightPanel`)** and **chat (`ChatPanel`)**: stream an AI reading for the current chart, text appearing as it arrives, with a loading state and a readable error message.
-- **Visual style**: dark, gold-accented "glass card" look. Use the existing CSS variables (`var(--t-gold)`, `var(--t-border)`, `var(--t-faint)`) and the `card-glass` class. Do not add new colors or a new UI library.
+- **Visual style** (design system, #57): calm and precise, after Polestar's web design, over a quiet night sky. The default theme is night; day mode follows Polestar's white pages.
+  - **Calm:** Polestar's measured specs. Monochrome surfaces, 0px radius on controls and containers (2px only on small badges), 1px hairlines, 52 px controls, a 72 px nav and page gutters of up to 112 px. Hierarchy comes from size and opacity, not weight; weights are only 400 and 600. No text is smaller than 12 px.
+  - **Accent:** one gold, used only for chart meaning (stars, sihua, the life palace, the current decade, AI text), the way Polestar uses Swedish Gold on small details. Buttons, navigation and selected states stay monochrome.
+  - **Type:** Chinese follows Apple's China site (PingFang SC, normal tracking, line height about 1.5). Latin letters and digits use Helvetica Neue.
+  - **Motion:** 200 ms for interactions and 600 ms for reveals, on one easing curve. Pressing a button lowers its opacity, with no scaling or bouncing. `prefers-reduced-motion` turns motion off.
+  - **Tokens:** every color, radius, shadow and duration comes from the tokens in `app/globals.css`, which also defines the `--t-*` aliases and `card-glass`. Tailwind's color families map onto the five semantic tokens (`--ac`, `--lu`, `--quan`, `--ke`, `--ji`). Don't write hex or rgba values in components.
+  - **Shared pieces:** one `SiteNav` in the layout, `.btn-primary` / `.btn-ghost` for every button, `.input-base` for inputs, `AiContent` for streamed readings, and the pole-star mark (`.pole-mark`) as the brand's only symbol.
+  - **Tests:** `tests/unit/design/design-system.test.ts` checks that every token used is defined and that text keeps 4.5:1 contrast in both themes. `tests/unit/design/no-drift.test.ts` keeps the core screens free of hard-coded colors, text under 12 px, wide or tight tracking, scale or lift motion, and gold outside chart meaning.
 
 ### 2.3 Fixed API contract (build the backend to this)
 
@@ -243,3 +250,4 @@ A task is done when: the acceptance criteria are all met, `npm run typecheck` an
   - Don't delete existing `.env.example` entries; no hardcoded dated model ID (both runs did this).
   - Required end-of-task summary with acceptance criteria, branch, commit, and `Closes #N`.
 - v3.3 (11/11/2026): documented that API keys are hashed with SHA-256 on purpose. CodeQL flagged it as a weak password hash (alerts #2–#4 on PRs #42 and #45); the keys are random 256-bit tokens, not passwords, and lookup by hash needs a fast, deterministic hash, so the alerts were dismissed as false positives.
+- v3.5 (11/11/2026): new design system (#57). Section 2.2 now describes it: Polestar-style calm, gold only for chart meaning, Chinese type after Apple's China site. The old rule pointed at CSS variables and a `card-glass` class that were never defined, so most component colors fell back to browser defaults.

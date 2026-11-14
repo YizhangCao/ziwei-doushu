@@ -32,147 +32,65 @@ export default async function ChapterPage({ params }: { params: Promise<{ book: 
   const nextIdx = chapterIdx + 1;
 
   return (
-    <div style={{ background: 'var(--bg-page)', minHeight: '100vh' }}>
-      <div className="px-6 py-4 flex items-center justify-between"
-        style={{ borderBottom: '1px solid rgba(184,146,42,0.15)', background: 'var(--bg-page)' }}>
-        <Link href={`/library/${book.slug}`} style={{ fontSize: '12px', color: 'var(--ac)', letterSpacing: '0.3em', textDecoration: 'none' }}>
-          ← 《{book.title}》目录
-        </Link>
-        <div style={{ fontSize: '12px', color: 'var(--tx-3)', letterSpacing: '0.15em' }}>
-          {chapter.title}
-        </div>
-        <Link href="/library" style={{ fontSize: '12px', color: 'var(--ac)', letterSpacing: '0.2em', textDecoration: 'none' }}>
-          古籍库 →
-        </Link>
-      </div>
+    <main className="page" style={{ paddingTop: 48, paddingBottom: 96 }}>
+      <article style={{ maxWidth: 720 }}>
+        <nav aria-label="面包屑" className="breadcrumb">
+          <Link href="/library">古籍库</Link>
+          <span aria-hidden="true">/</span>
+          <Link href={`/library/${book.slug}`}>《{book.title}》</Link>
+          <span aria-hidden="true">/</span>
+          <span style={{ color: 'var(--tx-0)' }}>{chapter.title}</span>
+        </nav>
 
-      <article className="max-w-3xl mx-auto px-6 py-12">
         {/* 标题 */}
-        <div className="text-center mb-10">
-          <div style={{ fontSize: '11px', color: 'var(--tx-3)', letterSpacing: '0.25em', marginBottom: '8px' }}>
-            《{book.title}》· {book.dynasty}
-          </div>
-          <h1 style={{ fontSize: 'clamp(24px, 3.5vw, 36px)', fontWeight: 700, color: 'var(--tx-0)', letterSpacing: '0.15em', marginBottom: '8px' }}>
-            {chapter.title}
-          </h1>
-          {chapter.subtitle && (
-            <div style={{ fontSize: '13px', color: 'var(--tx-2)', letterSpacing: '0.1em' }}>
-              {chapter.subtitle}
-            </div>
-          )}
-        </div>
+        <header className="mt-8 mb-8">
+          <p style={{ fontSize: 'var(--fs-caption)', color: 'var(--tx-2)' }}>《{book.title}》 · {book.dynasty}</p>
+          <h1 className="mt-2" style={{ fontSize: 'var(--fs-headline)', lineHeight: 1.25, color: 'var(--tx-0)' }}>{chapter.title}</h1>
+          {chapter.subtitle && <p className="mt-2" style={{ color: 'var(--tx-2)' }}>{chapter.subtitle}</p>}
+        </header>
 
-        {/* 段落 */}
-        <div style={{ background: 'var(--bg-card)', borderRadius: '14px', border: '1px solid rgba(184,146,42,0.2)', padding: '32px 28px' }}>
-          {chapter.paragraphs.map((p, i) => (
-            <div
-              key={p.id}
-              id={p.id}
-              style={{
-                marginBottom: i === chapter.paragraphs.length - 1 ? 0 : '20px',
-                paddingBottom: i === chapter.paragraphs.length - 1 ? 0 : '20px',
-                borderBottom: i === chapter.paragraphs.length - 1 ? 'none' : '1px dashed rgba(184,146,42,0.15)',
-                scrollMarginTop: '80px',
-              }}
-            >
-              <div style={{
-                display: 'flex',
-                alignItems: 'baseline',
-                gap: '12px',
-              }}>
-                <span style={{
-                  fontSize: '11px',
-                  color: 'var(--ac)',
-                  fontWeight: 600,
-                  letterSpacing: '0.1em',
-                  minWidth: '24px',
-                }}>
+        {/* 原文：17px、行高 1.9，段与段之间 1px 细线；白话和倪师注是退后一级的灰底块 */}
+        <div style={{ borderBottom: '1px solid var(--bdr)' }}>
+          {chapter.paragraphs.map(p => (
+            <section key={p.id} id={p.id} className="py-6" style={{ borderTop: '1px solid var(--bdr)', scrollMarginTop: 'calc(var(--nav-h) + 16px)' }}>
+              <div className="flex items-baseline gap-4">
+                <span className="tabular-nums" style={{ minWidth: 24, fontSize: 'var(--fs-caption)', color: 'var(--tx-2)' }}>
                   {String(p.idx).padStart(2, '0')}
                 </span>
-                <p style={{
-                  flex: 1,
-                  fontSize: '16px',
-                  color: 'var(--tx-0)',
-                  lineHeight: 2,
-                  letterSpacing: '0.04em',
-                  fontFamily: '"PingFang SC", "Hiragino Sans GB", serif',
-                }}>
-                  {p.text}
-                </p>
+                <p style={{ flex: 1, fontSize: 'var(--fs-read)', lineHeight: 1.9, color: 'var(--tx-0)' }}>{p.text}</p>
               </div>
               {p.translation && (
-                <div style={{
-                  marginTop: '8px',
-                  marginLeft: '36px',
-                  padding: '8px 12px',
-                  background: 'rgba(184,146,42,0.05)',
-                  borderRadius: '6px',
-                  fontSize: '13px',
-                  color: 'var(--tx-2)',
-                  lineHeight: 1.8,
-                }}>
-                  <span style={{ fontSize: '10px', color: 'var(--ac)', marginRight: '6px' }}>白话</span>
+                <div className="mt-3 px-4 py-3" style={{ marginLeft: 40, background: 'var(--bg-1)', fontSize: 'var(--fs-small)', lineHeight: 1.8, color: 'var(--tx-2)' }}>
+                  <span className="mr-2" style={{ fontSize: 'var(--fs-caption)', color: 'var(--tx-0)' }}>白话</span>
                   {p.translation}
                 </div>
               )}
               {p.niNote && (
-                <div style={{
-                  marginTop: '8px',
-                  marginLeft: '36px',
-                  padding: '8px 12px',
-                  background: 'rgba(196,90,45,0.05)',
-                  borderRadius: '6px',
-                  fontSize: '13px',
-                  color: 'var(--tx-2)',
-                  lineHeight: 1.8,
-                }}>
-                  <span style={{ fontSize: '10px', color: 'var(--ji)', marginRight: '6px' }}>倪师注</span>
+                <div className="mt-3 px-4 py-3" style={{ marginLeft: 40, background: 'var(--bg-1)', fontSize: 'var(--fs-small)', lineHeight: 1.8, color: 'var(--tx-2)' }}>
+                  <span className="mr-2" style={{ fontSize: 'var(--fs-caption)', color: 'var(--tx-0)' }}>倪师注</span>
                   {p.niNote}
                 </div>
               )}
-            </div>
+            </section>
           ))}
         </div>
 
         {/* 章节导航 */}
-        <div style={{ marginTop: '24px', display: 'flex', justifyContent: 'space-between', gap: '12px' }}>
+        <nav aria-label="章节导航" className="mt-8 grid grid-cols-2 gap-4">
           {prevIdx >= 0 ? (
-            <Link
-              href={`/library/${book.slug}/${prevIdx}`}
-              style={{
-                flex: 1,
-                padding: '14px 18px',
-                background: 'var(--bg-card)',
-                border: '1px solid rgba(184,146,42,0.2)',
-                borderRadius: '10px',
-                textDecoration: 'none',
-                color: 'var(--tx-0)',
-              }}
-            >
-              <div style={{ fontSize: '10px', color: 'var(--tx-3)', letterSpacing: '0.2em', marginBottom: '2px' }}>← 上一章</div>
-              <div style={{ fontSize: '13px', fontWeight: 500 }}>{book.chapters[prevIdx].title}</div>
+            <Link href={`/library/${book.slug}/${prevIdx}`} className="tile" style={{ padding: 16 }}>
+              <span style={{ display: 'block', fontSize: 'var(--fs-caption)', color: 'var(--tx-2)' }}><span aria-hidden="true">←</span> 上一章</span>
+              <span style={{ display: 'block', marginTop: 4 }}>{book.chapters[prevIdx].title}</span>
             </Link>
-          ) : <div style={{ flex: 1 }} />}
+          ) : <span />}
           {nextIdx < book.chapters.length ? (
-            <Link
-              href={`/library/${book.slug}/${nextIdx}`}
-              style={{
-                flex: 1,
-                padding: '14px 18px',
-                background: 'var(--bg-card)',
-                border: '1px solid rgba(184,146,42,0.2)',
-                borderRadius: '10px',
-                textDecoration: 'none',
-                color: 'var(--tx-0)',
-                textAlign: 'right',
-              }}
-            >
-              <div style={{ fontSize: '10px', color: 'var(--tx-3)', letterSpacing: '0.2em', marginBottom: '2px' }}>下一章 →</div>
-              <div style={{ fontSize: '13px', fontWeight: 500 }}>{book.chapters[nextIdx].title}</div>
+            <Link href={`/library/${book.slug}/${nextIdx}`} className="tile" style={{ padding: 16, textAlign: 'right' }}>
+              <span style={{ display: 'block', fontSize: 'var(--fs-caption)', color: 'var(--tx-2)' }}>下一章 <span aria-hidden="true">→</span></span>
+              <span style={{ display: 'block', marginTop: 4 }}>{book.chapters[nextIdx].title}</span>
             </Link>
-          ) : <div style={{ flex: 1 }} />}
-        </div>
+          ) : <span />}
+        </nav>
       </article>
-    </div>
+    </main>
   );
 }
