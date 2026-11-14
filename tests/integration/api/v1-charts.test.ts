@@ -1,12 +1,37 @@
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import { describe, it, expect, beforeEach, afterEach, afterAll, vi } from 'vitest';
+import { parse } from 'yaml';
 import { POST } from '@/app/api/v1/charts/route';
 import { generateApiKey } from '@/lib/api/keys';
 import { prisma } from '@/lib/db';
+import { generateChart } from '@/lib/ziwei/algorithm';
 import type { ZiweiChart } from '@/lib/ziwei/types';
 import { resetDatabase } from '../helpers/reset';
 
+// The real engine, wrapped so one test can make it fail.
+vi.mock('@/lib/ziwei/algorithm', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/lib/ziwei/algorithm')>();
+  return { ...actual, generateChart: vi.fn(actual.generateChart) };
+});
+
 // Fake birth data only (AGENTS.md: no real people's birth data in tests).
 const VALID_BODY = { date: '1990-06-15', hour: 6, gender: 'female' };
+
+interface DocumentedResponses {
+  paths: Record<
+    string,
+    { post: { responses: Record<string, { content: Record<string, { examples: Record<string, { value: unknown }> }> }> } }
+  >;
+}
+
+const spec = parse(
+  readFileSync(fileURLToPath(new URL('../../../docs/openapi.yaml', import.meta.url)), 'utf8'),
+) as DocumentedResponses;
+
+/** The body docs/openapi.yaml shows for one example of a POST /api/v1/charts response. */
+const documented = (status: string, example: string) =>
+  spec.paths['/api/v1/charts'].post.responses[status].content['application/json'].examples[example].value;
 
 interface StoredKey {
   id: string;
@@ -144,5 +169,40 @@ describe('POST /api/v1/charts — server errors', () => {
     const text = await response.text();
     expect(JSON.parse(text)).toEqual({ error: expect.any(String) });
     for (const secret of [plainKey, keyHash, 'db-internal-host', 'timed out']) expect(text).not.toContain(secret);
+  });
+});
+
+// The 400 validation messages are checked against the docs in tests/unit/openapi.test.ts.
+// These come from the route itself, so they're checked here, by calling it.
+describe('POST /api/v1/charts — error bodies match docs/openapi.yaml', () => {
+  it('401 missingOrInvalidKey: no Authorization header', async () => {
+    const response = await POST(request(VALID_BODY));
+    expect(response.status).toBe(401);
+    expect(await response.json()).toEqual(documented('401', 'missingOrInvalidKey'));
+  });
+
+  it('400 notJson: a body that is not JSON', async () => {
+    const { plainKey } = await createKey();
+    const response = await POST(request('{not json', bearer(plainKey)));
+    expect(response.status).toBe(400);
+    expect(await response.json()).toEqual(documented('400', 'notJson'));
+  });
+
+  it('500 keyLookupFailed: the database fails during the key lookup', async () => {
+    const { plainKey } = await createKey();
+    vi.spyOn(prisma.apiKey, 'findUnique').mockRejectedValueOnce(new Error('connection timed out'));
+    const response = await POST(request(VALID_BODY, bearer(plainKey)));
+    expect(response.status).toBe(500);
+    expect(await response.json()).toEqual(documented('500', 'keyLookupFailed'));
+  });
+
+  it('500 engineFailed: the charting engine throws', async () => {
+    const { plainKey } = await createKey();
+    vi.mocked(generateChart).mockImplementationOnce(() => {
+      throw new Error('engine failed');
+    });
+    const response = await POST(request(VALID_BODY, bearer(plainKey)));
+    expect(response.status).toBe(500);
+    expect(await response.json()).toEqual(documented('500', 'engineFailed'));
   });
 });
