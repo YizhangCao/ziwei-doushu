@@ -5,7 +5,6 @@
     "lead": "会员分享给你的命盘。打开对话，和会员交流。",
     "empty": "还没有会员把命盘分享给你。",
     "sharedAt": "分享于 {date}",
-    "openThread": "打开对话",
     "viewChart": "查看命盘",
     "memberLead": "这里是命理师查看分享命盘的地方。想把命盘分享给命理师，请到<link>我的命盘</link>。"
   },
@@ -17,6 +16,7 @@
     "shared": "已分享给 {email}。",
     "noPractitioner": "没有找到使用这个邮箱的命理师。",
     "failed": "分享失败，请稍后重试。",
+    "loadFailed": "没能加载分享列表，请刷新页面重试。",
     "loading": "加载中…",
     "none": "还没有分享给任何命理师。",
     "openThread": "打开对话",

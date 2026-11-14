@@ -155,25 +155,28 @@ export default function ConsultationThread({
 
   return (
     <section style={{ display: 'grid', gap: 16 }}>
-      <ul role="log" aria-live="polite" style={{ listStyle: 'none', padding: 0, margin: 0, display: 'grid', gap: 10 }}>
-        {messages.length === 0 && <li style={{ color: 'var(--t-faint)' }}>{t('empty')}</li>}
-        {messages.map((m) => (
-          <li
-            key={m.id}
-            className="card-glass"
-            style={{
-              padding: '10px 14px',
-              borderRadius: 12,
-              border: '1px solid var(--t-border)',
-              justifySelf: m.authorRole === viewerRole ? 'end' : 'start',
-              maxWidth: '85%',
-            }}
-          >
-            <p style={{ fontSize: 12, color: 'var(--t-faint)', marginBottom: 4 }}>{label(m)}</p>
-            <p style={{ whiteSpace: 'pre-wrap', lineHeight: 1.6 }}>{m.body}</p>
-          </li>
-        ))}
-      </ul>
+      {/* The log announces new messages; the list stays a list, so each message keeps its list item role. */}
+      <div role="log" aria-live="polite">
+        <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'grid', gap: 10 }}>
+          {messages.length === 0 && <li style={{ color: 'var(--t-faint)' }}>{t('empty')}</li>}
+          {messages.map((m) => (
+            <li
+              key={m.id}
+              className="card-glass"
+              style={{
+                padding: '10px 14px',
+                borderRadius: 12,
+                border: '1px solid var(--t-border)',
+                justifySelf: m.authorRole === viewerRole ? 'end' : 'start',
+                maxWidth: '85%',
+              }}
+            >
+              <p style={{ fontSize: 12, color: 'var(--t-faint)', marginBottom: 4 }}>{label(m)}</p>
+              <p style={{ whiteSpace: 'pre-wrap', lineHeight: 1.6 }}>{m.body}</p>
+            </li>
+          ))}
+        </ul>
+      </div>
 
       {isClosed ? (
         <p style={{ color: 'var(--t-faint)' }}>{t('closed')}</p>

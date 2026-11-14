@@ -23,14 +23,18 @@ export default function SharePanel({ chartId }: { chartId: string }) {
   const [email, setEmail] = useState('');
   const [busy, setBusy] = useState(false);
   const [status, setStatus] = useState('');
+  const [loadFailed, setLoadFailed] = useState(false);
 
   const load = useCallback(async () => {
     try {
       const res = await fetch(`/api/charts/${encodeURIComponent(chartId)}/shares`);
       if (!res.ok) throw new Error(String(res.status));
       setShares(((await res.json()) as { shares: ChartShare[] }).shares);
+      setLoadFailed(false);
     } catch {
-      setStatus(t('failed'));
+      // Nothing was shared or changed here; only the list didn't arrive.
+      setLoadFailed(true);
+      setStatus(t('loadFailed'));
     }
   }, [chartId, t]);
 
@@ -90,7 +94,7 @@ export default function SharePanel({ chartId }: { chartId: string }) {
         <button type="submit" style={button} disabled={busy}>{busy ? t('sharing') : t('submit')}</button>
       </form>
       <p role="status" aria-live="polite" style={{ minHeight: 18, fontSize: 13, color: 'var(--t-faint)' }}>{status}</p>
-      {shares === null && <p style={{ fontSize: 13, color: 'var(--t-faint)' }}>{t('loading')}</p>}
+      {shares === null && !loadFailed && <p style={{ fontSize: 13, color: 'var(--t-faint)' }}>{t('loading')}</p>}
       {shares?.length === 0 && <p style={{ fontSize: 13, color: 'var(--t-faint)' }}>{t('none')}</p>}
       {shares && shares.length > 0 && (
         <ul style={{ listStyle: 'none', padding: 0, display: 'grid', gap: 6 }}>
