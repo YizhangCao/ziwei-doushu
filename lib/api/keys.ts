@@ -30,12 +30,14 @@ export function hashApiKey(plainKey: string): string {
   return createHash('sha256').update(plainKey).digest('hex');
 }
 
+/** The record to store for a key that already exists (the E2E seed key). Never includes the key. */
+export function apiKeyRecordFor(plainKey: string): ApiKeyRecord {
+  return { keyHash: hashApiKey(plainKey), prefix: plainKey.slice(0, DISPLAY_PREFIX_LENGTH) };
+}
+
 export function generateApiKey(): GeneratedApiKey {
   const plainKey = API_KEY_PREFIX + randomBytes(32).toString('base64url');
-  return {
-    plainKey,
-    record: { keyHash: hashApiKey(plainKey), prefix: plainKey.slice(0, DISPLAY_PREFIX_LENGTH) },
-  };
+  return { plainKey, record: apiKeyRecordFor(plainKey) };
 }
 
 /** True only for the key the hash was made from, and only while the key isn't revoked. */
