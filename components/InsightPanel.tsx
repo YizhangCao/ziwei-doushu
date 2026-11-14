@@ -1,6 +1,7 @@
 'use client';
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { rateLimitWait } from '@/lib/rate-limit/message';
 import type { ZiweiChart, Palace } from '@/lib/ziwei/types';
 import type { TimeView } from './TimeNav';
 import AiContent from './AiContent';
@@ -156,7 +157,15 @@ export default function InsightPanel({ chart, selectedPalace, selectedSiHua }: I
       }
       if (res.status === 404) return fail('apiMissing');
       if (res.status === 401) return fail('loginRequired'); // AI readings are for members (#15)
-      if (res.status === 429) return fail('rateLimited');
+      if (res.status === 429) {
+        // With Retry-After (the hourly limit, #9) the reply says how long to wait;
+        // without it, the plain used-up message (#63)
+        const wait = rateLimitWait(Number(res.headers.get('retry-after') ?? ''));
+        if (!wait) return fail('rateLimited');
+        const content = 'minutes' in wait ? t('errors.rateLimitedMinutes', wait) : t('errors.rateLimitedHours', wait);
+        setMessages(prev => [...prev, { role: 'assistant', content, error: 'rateLimited' }]);
+        return;
+      }
       if (res.status === 400) return fail('rejected');
       if (!res.ok || !res.body) return fail('failed');
 

@@ -54,7 +54,7 @@ flowchart LR
 | Roles | `member`, `practitioner` and `admin` (`lib/auth/`). A user only sees their own charts and charts shared with them. |
 | Birth data and conversations | Encrypted at rest with AES-256-GCM (`lib/crypto.ts`, key in `DATA_ENCRYPTION_KEY`). |
 | API keys | 256-bit random tokens, stored as SHA-256 hashes; the plain key is shown once. |
-| AI rate limit | 20 requests an hour per user and per IP on `/api/interpret`, plus a daily limit per user that admins set (default 50). |
+| AI rate limit | 20 requests an hour per user and 100 per IP on `/api/interpret`, plus a daily limit per user that admins set (default 50). |
 | Public API rate limit | 60 requests a minute per API key on `/api/v1/*`. |
 | Rate-limit store | Redis when `REDIS_URL` is set, so every serverless instance shares one count; memory otherwise, for local development. If Redis is down, requests go through. |
 | Input | Every request body and environment variable is parsed with zod. A 400 means a bad body, 401 no session, 403 not allowed, 404 not yours. |

@@ -158,6 +158,34 @@ describe('POST /api/v1/charts — success', () => {
   });
 });
 
+describe('POST /api/v1/charts — per-key limit (#9)', () => {
+  it('allows each key 60 requests a minute: the 61st gets 429 with Retry-After, and another key still works', async () => {
+    // Freeze the clock inside one minute, so the loop never crosses into the next window.
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(new Date(Date.UTC(2026, 10, 12, 12, 0, 30)));
+    try {
+      const key = await createKey();
+      const other = await createKey();
+      for (let i = 0; i < 60; i++) expect((await POST(request(VALID_BODY, bearer(key.plainKey)))).status).toBe(200);
+
+      const refused = await POST(request(VALID_BODY, bearer(key.plainKey)));
+      expect(refused.status).toBe(429);
+      expect(refused.headers.get('Retry-After')).toBe('30');
+      await errorOf(refused);
+
+      expect((await POST(request(VALID_BODY, bearer(other.plainKey)))).status).toBe(200);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('checks the key before counting: requests without a valid key are 401 and use up nothing', async () => {
+    const key = await createKey();
+    for (let i = 0; i < 70; i++) expect((await POST(request(VALID_BODY, bearer('zw_not_a_real_key')))).status).toBe(401);
+    expect((await POST(request(VALID_BODY, bearer(key.plainKey)))).status).toBe(200);
+  });
+});
+
 describe('POST /api/v1/charts — server errors', () => {
   it('returns 500 with a JSON { error } when the key lookup fails, without leaking the key or the cause', async () => {
     const { plainKey, keyHash } = await createKey();
