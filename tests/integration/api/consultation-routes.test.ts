@@ -55,8 +55,10 @@ async function world() {
   const owner = await person('owner@example.test');
   const practitioner = await person('prac@example.test', 'practitioner');
   const stranger = await person('stranger@example.test');
+  // A practitioner the chart was never shared with: for them the share must not exist.
+  const otherPractitioner = await person('other-prac@example.test', 'practitioner');
   const { id: chartId } = await createChart({ id: owner.id, role: owner.role }, { name: 'Mum', birthInfo: BIRTH });
-  return { owner, practitioner, stranger, chartId };
+  return { owner, practitioner, stranger, otherPractitioner, chartId };
 }
 
 const asResponse = (res: unknown): Response => {
@@ -277,5 +279,44 @@ describe('GET /api/shares/:id/stream — new messages over SSE', () => {
     expect(text).toContain('"body":"three"');
     expect(text).not.toContain('"body":"one"');
     expect(text).not.toContain(`id: ${two.id}\n`);
+  });
+});
+
+describe('a second practitioner', () => {
+  it('gets 404 on a thread shared with another practitioner, and sees nothing in their list', async () => {
+    const w = await world();
+    const res = await shareVia(w.chartId, w.owner.cookie, { email: 'prac@example.test' });
+    const { share: created } = (await res.json()) as { share: { id: string } };
+    await postVia(created.id, w.owner.cookie, { body: 'hello' });
+
+    for (const r of [
+      await threadVia(created.id, w.otherPractitioner.cookie),
+      await messagesVia(created.id, w.otherPractitioner.cookie),
+      await postVia(created.id, w.otherPractitioner.cookie, { body: 'hi' }),
+      await revokeVia(created.id, w.otherPractitioner.cookie),
+      await streamVia(created.id, w.otherPractitioner.cookie),
+    ]) {
+      expect(r.status).toBe(404);
+      await errorOf(r);
+    }
+    const list = await consultationsVia(w.otherPractitioner.cookie);
+    expect(list.status).toBe(200);
+    expect(((await list.json()) as { consultations: unknown[] }).consultations).toEqual([]);
+  });
+
+  it('gives the shared practitioner 403 on GET and POST /api/charts/:id/shares', async () => {
+    const w = await world();
+    await shareVia(w.chartId, w.owner.cookie, { email: 'prac@example.test' });
+
+    const listed = await listSharesVia(w.chartId, w.practitioner.cookie);
+    expect(listed.status).toBe(403);
+    await errorOf(listed);
+    const reshared = await shareVia(w.chartId, w.practitioner.cookie, { email: 'other-prac@example.test' });
+    expect(reshared.status).toBe(403);
+    await errorOf(reshared);
+
+    // The re-share was refused, so the other practitioner still has nothing.
+    const list = await consultationsVia(w.otherPractitioner.cookie);
+    expect(((await list.json()) as { consultations: unknown[] }).consultations).toEqual([]);
   });
 });

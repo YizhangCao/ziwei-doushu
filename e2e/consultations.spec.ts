@@ -228,3 +228,31 @@ test('a stream-error on an open thread reconnects and keeps live updates', async
   await expect(member.getByRole('log')).toContainText('重连后的消息', { timeout: 15_000 });
   await expect(member.getByText('暂时收不到新消息，请刷新页面。')).toHaveCount(0);
 });
+
+test('the thread is a list of messages inside a live log', async ({ browser, baseURL }) => {
+  const member = await signedIn(browser, baseURL!, 'member');
+  const shareId = await shareChart(member);
+  await postMessage(member, shareId, '列表里的第一条');
+  await postMessage(member, shareId, '列表里的第二条');
+
+  await member.goto(`/consultations/${shareId}`);
+  // The log announces new messages; the list inside keeps each message a list item.
+  const log = member.getByRole('log');
+  await expect(log).toHaveAttribute('aria-live', 'polite');
+  await expect(log.getByRole('list').getByRole('listitem')).toHaveCount(2);
+});
+
+test('when the share list fails to load, the panel says so instead of "couldn’t share"', async ({ browser, baseURL }) => {
+  const member = await signedIn(browser, baseURL!, 'member');
+  await shareChart(member);
+  await member.route('**/api/charts/*/shares', (route) =>
+    route.request().method() === 'GET' ? route.fulfill({ status: 500, json: { error: 'stubbed' } }) : route.continue(),
+  );
+
+  await member.goto('/charts');
+  const row = member.getByRole('listitem').filter({ hasText: LIVE_CHART_NAME });
+  await row.getByRole('button', { name: '分享给命理师' }).click();
+  await expect(row.getByRole('status')).toHaveText('没能加载分享列表，请刷新页面重试。');
+  await expect(row.getByText('分享失败，请稍后重试。')).toHaveCount(0);
+  await expect(row.getByText('加载中…')).toHaveCount(0);
+});
