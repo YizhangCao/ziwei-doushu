@@ -10,7 +10,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { AI_HOURLY_LIMIT, limitAiRequest, tooManyRequests } from '@/lib/rate-limit/ai-limit';
+import { AI_HOURLY_LIMIT, AI_IP_HOURLY_LIMIT, limitAiRequest, tooManyRequests } from '@/lib/rate-limit/ai-limit';
 import { createMemoryStore, type RateLimitStore } from '@/lib/rate-limit/limiter';
 import { rateLimitWait } from '@/lib/rate-limit/message';
 
@@ -35,11 +35,20 @@ describe('limitAiRequest(store, { userId, ip }, now)', () => {
     });
   });
 
-  it('limits an IP shared by several accounts', async () => {
+  it('lets other accounts on a shared IP keep reading after one reaches its limit', async () => {
+    // A demo room or campus wifi puts many people behind one address.
     const store = createMemoryStore(() => NOW);
     await send(store, { userId: 'u1', ip: '203.0.113.1' }, 20);
 
-    expect((await limitAiRequest(store, { userId: 'u2', ip: '203.0.113.1' }, NOW)).allowed).toBe(false);
+    expect((await limitAiRequest(store, { userId: 'u2', ip: '203.0.113.1' }, NOW)).allowed).toBe(true);
+  });
+
+  it('limits an IP shared by many accounts to 100 requests an hour', async () => {
+    const store = createMemoryStore(() => NOW);
+    expect(AI_IP_HOURLY_LIMIT).toBe(100);
+    for (let u = 0; u < 5; u++) await send(store, { userId: `u${u}`, ip: '203.0.113.1' }, 20);
+
+    expect((await limitAiRequest(store, { userId: 'u5', ip: '203.0.113.1' }, NOW)).allowed).toBe(false);
   });
 
   it('limits one account across several IPs', async () => {

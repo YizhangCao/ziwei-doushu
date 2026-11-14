@@ -70,12 +70,18 @@ describe('POST /api/interpret rate limit', () => {
     expect(await res.json()).toEqual({ error: expect.any(String) });
   });
 
-  it('limits an IP shared by several accounts', async () => {
-    const first = await memberCookie('5002');
-    const second = await memberCookie('5003');
-    for (let i = 0; i < 20; i++) await post(first, '203.0.113.20');
+  it('lets other accounts on a shared IP through, and limits the IP at 100 an hour', async () => {
+    const accounts: string[] = [];
+    for (const githubId of ['5002', '5003', '5006', '5007', '5008', '5009']) accounts.push(await memberCookie(githubId));
+    for (let i = 0; i < 20; i++) await post(accounts[0], '203.0.113.20');
 
-    expect((await post(second, '203.0.113.20')).status).toBe(429);
+    // The first account is at its own limit, but the next one still gets through (400: the body is invalid).
+    expect((await post(accounts[1], '203.0.113.20')).status).toBe(400);
+
+    // Five accounts use up the IP's 100 requests; a sixth on the same IP is refused.
+    for (let i = 1; i < 20; i++) await post(accounts[1], '203.0.113.20');
+    for (const account of accounts.slice(2, 5)) for (let i = 0; i < 20; i++) await post(account, '203.0.113.20');
+    expect((await post(accounts[5], '203.0.113.20')).status).toBe(429);
   });
 
   it('does not limit another account on another IP', async () => {
