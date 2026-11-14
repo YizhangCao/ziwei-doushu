@@ -1,0 +1,32 @@
+{
+  "metaTitle": "My charts · Ziwei Natal Chart",
+  "title": "My charts",
+  "save": {
+    "savedLabel": "Saved chart: ",
+    "myCharts": "My charts",
+    "signInToSave": "Sign in to save this chart",
+    "failed": "Saving failed. Please try again later.",
+    "network": "Saving failed. Check your connection and try again.",
+    "nameLabel": "Chart name",
+    "namePlaceholder": "e.g. Mom",
+    "saving": "Saving…",
+    "save": "Save chart",
+    "saved": "Saved. <link>See my charts</link>"
+  },
+  "list": {
+    "loadFailed": "Couldn’t load your charts. Refresh to try again.",
+    "renameFailed": "Renaming failed. Please try again later.",
+    "renamed": "Renamed.",
+    "deleteFailed": "Deleting failed. Please try again later.",
+    "deleted": "Deleted.",
+    "loading": "Loading…",
+    "empty": "No saved charts yet. <link>Build your chart</link>",
+    "newName": "New name",
+    "saveName": "Save name",
+    "cancel": "Cancel",
+    "confirmQuestion": "Delete this chart?",
+    "confirm": "Delete",
+    "rename": "Rename",
+    "delete": "Delete"
+  }
+}

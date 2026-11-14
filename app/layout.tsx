@@ -14,7 +14,7 @@ import type { Messages } from '@/messages';
 
 // Only what client components read is serialized into the page (#59); the legal,
 // knowledge and metadata text stay on the server.
-const CLIENT_NAMESPACES = ['nav', 'auth', 'settings', 'home', 'chart', 'birthForm', 'board', 'timeNav', 'insight', 'heming', 'library'] as const;
+const CLIENT_NAMESPACES = ['nav', 'auth', 'admin', 'charts', 'settings', 'home', 'chart', 'birthForm', 'board', 'timeNav', 'insight', 'heming', 'library'] as const;
 
 // Title, description and Open Graph follow the visitor's language (#59).
 export async function generateMetadata(): Promise<Metadata> {
@@ -24,13 +24,16 @@ export async function generateMetadata(): Promise<Metadata> {
   description: t('description'),
   keywords: t('keywords'),
   metadataBase: new URL(SITE_URL),
+  // Every page inherits these two blocks whole unless it sets its own, so they must not
+  // name the home page (#65). './' resolves against the path being rendered
+  // (vercel/next.js#47743), so each page is its own canonical and og:url. og:title and
+  // og:description are left out: Next fills them, and the twitter card, from each page's
+  // own title and description.
   alternates: {
-    canonical: '/',
+    canonical: './',
   },
   openGraph: {
-    title: t('title'),
-    description: t('description'),
-    url: SITE_URL,
+    url: './',
     siteName: t('siteName'),
     locale: t('ogLocale'),
     type: 'website',

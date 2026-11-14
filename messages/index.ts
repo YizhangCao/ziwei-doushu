@@ -11,10 +11,15 @@
  * request config hands the active locale's messages to NextIntlClientProvider.
  */
 
+import zhAbout from './zh/about.json';
+import zhAdmin from './zh/admin.json';
+import zhApiDocs from './zh/apiDocs.json';
 import zhAuth from './zh/auth.json';
 import zhBirthForm from './zh/birthForm.json';
 import zhBoard from './zh/board.json';
 import zhChart from './zh/chart.json';
+import zhCharts from './zh/charts.json';
+import zhForbidden from './zh/forbidden.json';
 import zhHeming from './zh/heming.json';
 import zhHome from './zh/home.json';
 import zhInsight from './zh/insight.json';
@@ -26,10 +31,15 @@ import zhNav from './zh/nav.json';
 import zhNotFound from './zh/notFound.json';
 import zhSettings from './zh/settings.json';
 import zhTimeNav from './zh/timeNav.json';
+import enAbout from './en/about.json';
+import enAdmin from './en/admin.json';
+import enApiDocs from './en/apiDocs.json';
 import enAuth from './en/auth.json';
 import enBirthForm from './en/birthForm.json';
 import enBoard from './en/board.json';
 import enChart from './en/chart.json';
+import enCharts from './en/charts.json';
+import enForbidden from './en/forbidden.json';
 import enHeming from './en/heming.json';
 import enHome from './en/home.json';
 import enInsight from './en/insight.json';
@@ -44,10 +54,15 @@ import enTimeNav from './en/timeNav.json';
 import type { Locale } from '@/lib/i18n/locale';
 
 const zh = {
+  about: zhAbout,
+  admin: zhAdmin,
+  apiDocs: zhApiDocs,
   auth: zhAuth,
   birthForm: zhBirthForm,
   board: zhBoard,
   chart: zhChart,
+  charts: zhCharts,
+  forbidden: zhForbidden,
   heming: zhHeming,
   home: zhHome,
   insight: zhInsight,
@@ -64,10 +79,15 @@ const zh = {
 export type Messages = typeof zh;
 
 const en: Messages = {
+  about: enAbout,
+  admin: enAdmin,
+  apiDocs: enApiDocs,
   auth: enAuth,
   birthForm: enBirthForm,
   board: enBoard,
   chart: enChart,
+  charts: enCharts,
+  forbidden: enForbidden,
   heming: enHeming,
   home: enHome,
   insight: enInsight,

@@ -46,12 +46,15 @@
   "errors": {
     "failed": "The reading didn’t finish. Please try again in a moment.",
     "rateLimited": "You’ve used today’s readings. You can continue tomorrow.",
+    "rejected": "This conversation can’t continue. Build the chart again to start over.",
     "network": "The connection dropped, so the reading didn’t finish.",
     "tooLong": "Keep your question under 2,000 characters.",
     "tooMany": "This conversation is already long. Build the chart again to start over.",
     "apiMissing": "Readings aren’t available yet. Your chart still works.",
     "apiMissingDev": "(Developer note: the open-source version has no AI reading endpoint at /api/interpret; add your own, see “Quick start” in the README. Building a chart needs no API key.)",
-    "loginRequired": "AI readings need you to sign in. Click Sign in at the top right, or open /login to sign in with GitHub."
+    "loginRequired": "AI readings need you to sign in. Click Sign in at the top right, or open /login to sign in with GitHub.",
+    "rateLimitedMinutes": "Too many AI reading requests. Please try again in about {minutes, plural, one {# minute} other {# minutes}}.",
+    "rateLimitedHours": "Too many AI reading requests. Please try again in about {hours, plural, one {# hour} other {# hours}}."
   },
   "reading": {
     "overview": "Reading the Life Palace and its sanfang sizheng…",
