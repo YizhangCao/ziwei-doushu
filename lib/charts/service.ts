@@ -84,13 +84,26 @@ export async function getChart(sessionUser: SessionUser | null, chartId: string)
   };
 }
 
+// The chart can disappear between the access check and the write (a double click on delete, or
+// a rename racing a delete). Prisma reports that as P2025; it means the chart is gone, so it gets
+// the same 404 as any missing chart instead of a 500.
+const isRecordNotFound = (error: unknown) => (error as { code?: unknown } | null)?.code === 'P2025';
+
 export async function renameChart(sessionUser: SessionUser | null, chartId: string, name: string): Promise<ChartSummary> {
   const user = await requireModifiable(sessionUser, chartId);
   const newName = parseName(name);
-  return prisma.chart.update({ where: { id: chartId, ownerId: user.id }, data: { name: newName }, select: SUMMARY_SELECT });
+  try {
+    return await prisma.chart.update({ where: { id: chartId, ownerId: user.id }, data: { name: newName }, select: SUMMARY_SELECT });
+  } catch (error) {
+    if (isRecordNotFound(error)) throw new AuthError(404, 'Chart not found');
+    throw error;
+  }
 }
 
 export async function deleteChart(sessionUser: SessionUser | null, chartId: string): Promise<void> {
   const user = await requireModifiable(sessionUser, chartId);
-  await prisma.chart.delete({ where: { id: chartId, ownerId: user.id } });
+  // deleteMany reports how many rows went instead of throwing, so the request that lost the race
+  // sees 0 and gets the same 404 as a missing chart.
+  const { count } = await prisma.chart.deleteMany({ where: { id: chartId, ownerId: user.id } });
+  if (count === 0) throw new AuthError(404, 'Chart not found');
 }
