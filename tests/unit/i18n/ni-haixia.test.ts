@@ -95,4 +95,13 @@ describe('Ni Haixia section (#69)', () => {
     // "Master" as a title (the old "Master · 1954 – 2012"), not the word in "influential masters".
     expect(found(both('en'), ['Master ·', 'Master Ni'])).toEqual([]);
   });
+
+  it('cites its sources on the about page, and states only what they support (#72 review)', () => {
+    expect(MESSAGES.zh.about.sources).toContain('维基百科');
+    expect(MESSAGES.en.about.sources).toContain('Wikipedia');
+    // The sources name one acupuncture teacher, date the college without a place, and don't
+    // support "more than twenty years" of teaching.
+    expect(found(about('zh'), ['多位中医名家', '在美国创立', '二十余年'])).toEqual([]);
+    expect(found(about('en'), ['several noted doctors', 'more than twenty years'])).toEqual([]);
+  });
 });

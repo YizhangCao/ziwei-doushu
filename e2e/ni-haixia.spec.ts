@@ -27,5 +27,6 @@ test('the about page holds his life, teaching and approach, without the cause of
   await expect(page).toHaveTitle(/关于倪海厦/);
   await expect(page.getByRole('heading', { level: 1, name: '关于倪海厦' })).toBeVisible();
   await expect(page.getByText(/汉唐中医学院/)).toBeVisible();
+  await expect(page.getByRole('link', { name: /维基百科/ })).toHaveAttribute('href', /^https:\/\/zh\.wikipedia\.org\/wiki\//);
   await expect(page.getByText(/肝癌/)).toHaveCount(0);
 });
