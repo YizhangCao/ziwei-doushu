@@ -11,12 +11,18 @@
 
 import { consume, type RateLimitResult, type RateLimitRule, type RateLimitStore } from './limiter';
 
-/** AI requests allowed per hour, for each user and for each IP. */
+/** AI requests allowed per hour for each user. */
 export const AI_HOURLY_LIMIT = 20;
+
+/**
+ * AI requests allowed per hour for each IP. Several times the user limit, because a demo room
+ * or campus wifi puts many people behind one address; it only stops abuse across many accounts.
+ */
+export const AI_IP_HOURLY_LIMIT = 100;
 
 const HOUR_MS = 60 * 60 * 1000;
 const PER_USER: RateLimitRule = { name: 'ai-user', limit: AI_HOURLY_LIMIT, windowMs: HOUR_MS };
-const PER_IP: RateLimitRule = { name: 'ai-ip', limit: AI_HOURLY_LIMIT, windowMs: HOUR_MS };
+const PER_IP: RateLimitRule = { name: 'ai-ip', limit: AI_IP_HOURLY_LIMIT, windowMs: HOUR_MS };
 
 const ALLOWED: RateLimitResult = { allowed: true, limit: AI_HOURLY_LIMIT, remaining: AI_HOURLY_LIMIT, retryAfterSeconds: 0 };
 
