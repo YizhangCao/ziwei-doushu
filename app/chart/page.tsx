@@ -3,12 +3,14 @@ import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import BirthForm from '@/components/BirthForm';
 import ChartBoard from '@/components/ChartBoard';
-import InsightPanel from '@/components/InsightPanel';
+import AiReadingSection from '@/components/AiReadingSection';
+import RuleBasedReading from '@/components/RuleBasedReading';
 import { generateChart } from '@/lib/ziwei/algorithm';
 import type { BirthInfo, ZiweiChart, Palace } from '@/lib/ziwei/types';
 
 /**
- * 起盘页（#57）：一步表单 → 命盘 + AI 解读。
+ * 起盘页（#57）：一步表单 → 命盘 + 解读。解读分两层（#118）：会员的 AI 解读在上，
+ * 人人可见的基础解读在下，AI 不可用时基础解读照常显示。
  *
  * 版式跟全站一致：页边距来自 .page，命盘和解读在 .chart-layout 里——手机上
  * 上下排，≥1024px 左右排。时间导航只有一条，在 ChartBoard 里。
@@ -47,7 +49,10 @@ export default function ChartPage() {
 
       <div className="chart-layout">
         <ChartBoard chart={chart} onPalaceSelect={setSelectedPalace} />
-        <InsightPanel chart={chart} selectedPalace={selectedPalace} />
+        <div style={{ display: 'grid', gap: 24, alignContent: 'start' }}>
+          <AiReadingSection chart={chart} selectedPalace={selectedPalace} />
+          <RuleBasedReading chart={chart} />
+        </div>
       </div>
     </main>
   );

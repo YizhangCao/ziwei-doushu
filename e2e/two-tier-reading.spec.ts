@@ -9,18 +9,10 @@
  */
 
 import { test, expect, type Page } from '@playwright/test';
+import { stubMemberSession } from './helpers/session';
 
 const FREE_TITLE = '基础解读（依星曜规则生成）';
 const AI_TITLE = 'AI 个性化解读';
-
-/** Signs the page in as a member, as far as the browser can tell. */
-async function stubMemberSession(page: Page) {
-  await page.route('**/api/auth/session', (route) =>
-    route.fulfill({
-      json: { user: { name: 'E2E Member', email: 'e2e-two-tier@ziweihub.test', role: 'member' }, expires: '2099-01-01T00:00:00.000Z' },
-    }),
-  );
-}
 
 /** Answers every /api/interpret call with the given status and records how many were made. */
 async function stubInterpret(page: Page, status: number, headers: Record<string, string> = {}) {

@@ -21,10 +21,15 @@ interface Message {
 
 /**
  * Each cause has its own message, so a used-up limit never reads like a bug (#63). A refused
- * request (400) is not retryable: sending the same request again gets the same answer.
+ * request (400) is not retryable: sending the same request again gets the same answer. Nor is
+ * a 500 (#118): the route answers 500 when the AI isn't set up or can't be reached, which a
+ * retry won't fix, and the free reading below stays on screen either way.
  */
-type ReadingError = 'network' | 'apiMissing' | 'loginRequired' | 'rateLimited' | 'rejected' | 'failed';
+type ReadingError = 'network' | 'apiMissing' | 'loginRequired' | 'rateLimited' | 'rejected' | 'unavailable' | 'failed';
 const RETRYABLE: ReadonlySet<ReadingError> = new Set(['network', 'failed']);
+
+/** The longest wait the hourly limit can ask for (#9). */
+const HOUR_SECONDS = 3600;
 
 /** The character counter appears once a question gets this long. */
 const COUNTER_FROM = 1800;
@@ -160,13 +165,20 @@ export default function InsightPanel({ chart, selectedPalace, selectedSiHua }: I
       if (res.status === 429) {
         // With Retry-After (the hourly limit, #9) the reply says how long to wait;
         // without it, the plain used-up message (#63)
-        const wait = rateLimitWait(Number(res.headers.get('retry-after') ?? ''));
+        const retryAfter = Number(res.headers.get('retry-after') ?? '');
+        // The hourly window resets within the hour, so a longer wait is the daily limit (#118).
+        if (retryAfter > HOUR_SECONDS) {
+          setMessages(prev => [...prev, { role: 'assistant', content: t('errors.dailyLimitHours', { hours: Math.ceil(retryAfter / HOUR_SECONDS) }), error: 'rateLimited' }]);
+          return;
+        }
+        const wait = rateLimitWait(retryAfter);
         if (!wait) return fail('rateLimited');
         const content = 'minutes' in wait ? t('errors.rateLimitedMinutes', wait) : t('errors.rateLimitedHours', wait);
         setMessages(prev => [...prev, { role: 'assistant', content, error: 'rateLimited' }]);
         return;
       }
       if (res.status === 400) return fail('rejected');
+      if (res.status === 500) return fail('unavailable');
       if (!res.ok || !res.body) return fail('failed');
 
       const reader = res.body.getReader();

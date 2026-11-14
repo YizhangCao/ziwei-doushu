@@ -1,0 +1,24 @@
+{
+  "freeTitle": "Basic reading (rule-based)",
+  "freeLead": "Built from the chart’s main stars, their brightness and sihua by fixed rules. No AI is involved.",
+  "note": "Star keywords are shown in Chinese for now; English versions are still being written.",
+  "aiTitle": "Personalized AI reading",
+  "signInPrompt": "Sign in for a personalized AI reading and follow-up questions.",
+  "signIn": "Sign in",
+  "overview": {
+    "withStars": "Main stars in the Life Palace: {stars}.",
+    "borrowed": "The Life Palace has no main stars, so by rule it borrows those of the opposite palace: {stars}.",
+    "none": "Neither the Life Palace nor the opposite palace has main stars; read it through the minor stars and sihua.",
+    "basics": "Five-element configuration: {ju}. Life Ruler: {mingZhu}. Body Ruler: {shenZhu}."
+  },
+  "palace": {
+    "withStars": "The {palace} covers {domain}. Main stars: {stars}.",
+    "borrowed": "The {palace} covers {domain}. It has no main stars, so by rule it borrows those of the opposite palace ({opposite}): {stars}.",
+    "none": "The {palace} covers {domain}. Neither it nor the opposite palace has main stars; read it through the minor stars and sihua.",
+    "sihua": "Sihua here: {list}."
+  },
+  "star": {
+    "withDetails": "{star} ({details}), {keywords}",
+    "plain": "{star}, {keywords}"
+  }
+}

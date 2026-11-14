@@ -12,6 +12,10 @@
  */
 
 import { test, expect, type Page } from '@playwright/test';
+import { stubMemberSession } from './helpers/session';
+
+// The AI reading panel is for members (#118); the session is stubbed, like /api/interpret.
+test.beforeEach(async ({ page }) => { await stubMemberSession(page); });
 
 interface SentBody {
   messages: { role: 'user' | 'assistant'; content: string }[];
@@ -64,11 +68,11 @@ test('a failure message stays on screen and is never sent to the model', async (
   });
 
   await buildChart(page);
-  await expect(page.getByText('解读没有完成，请稍后重试。')).toBeVisible();
+  await expect(page.getByText('AI 解读暂时不可用。下方的基础解读不受影响。')).toBeVisible();
   await ask(page, '再说说命宫');
 
   await expect(page.getByText('这次读完了。')).toBeVisible();
-  expect(JSON.stringify(bodies[1].messages)).not.toContain('解读没有完成');
+  expect(JSON.stringify(bodies[1].messages)).not.toContain('暂时不可用');
 });
 
 test('a refused request says so, with no retry', async ({ page }) => {

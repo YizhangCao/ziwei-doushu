@@ -13,6 +13,10 @@
  */
 
 import { test, expect, type Page } from '@playwright/test';
+import { stubMemberSession } from './helpers/session';
+
+// The AI reading panel is for members (#118); the session is stubbed, like /api/interpret.
+test.beforeEach(async ({ page }) => { await stubMemberSession(page); });
 
 async function fillBirth(page: Page) {
   await page.goto('/chart');
@@ -45,9 +49,9 @@ test('the reading panel says what it is reading while it waits', async ({ page }
 });
 
 for (const { name, respond, message } of [
-  { name: 'a used-up daily limit', respond: { status: 429, body: '{"error":"rate limited"}' }, message: '今天的解读次数已用完，明天可以继续。' },
+  { name: 'a used-up daily limit', respond: { status: 429, body: '{"error":"rate limited"}' }, message: '今天的 AI 解读次数已用完，明天可以继续。下方的基础解读不受影响。' },
   { name: 'a missing AI route', respond: { status: 404, body: 'not found' }, message: '解读暂未开放。命盘可以正常查看。' },
-  { name: 'a server failure', respond: { status: 500, body: '{"error":"failed"}' }, message: '解读没有完成，请稍后重试。' },
+  { name: 'a server failure', respond: { status: 500, body: '{"error":"failed"}' }, message: 'AI 解读暂时不可用。下方的基础解读不受影响。' },
 ]) {
   test(`the reading panel explains ${name}`, async ({ page }) => {
     await page.route('**/api/interpret', (route) => route.fulfill({ status: respond.status, contentType: 'application/json', body: respond.body }));
