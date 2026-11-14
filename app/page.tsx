@@ -360,12 +360,6 @@ export default function HomePage() {
       <section ref={heroRef} className="relative min-h-[92svh] flex flex-col justify-center z-10"
         style={{ padding: '48px var(--gutter) 96px' }}>
         <motion.div style={{ y: heroY, opacity: heroOpacity }} className="w-full max-w-[1216px]">
-          <motion.p initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1, ease: [0.15, 1, 0.35, 1] }}
-            className="mb-6" style={{ fontSize: 'var(--fs-caption)', color: c.textMuted }}>
-            {t('hero.eyebrow')}
-          </motion.p>
-
           <motion.h1 initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2, ease: [0.15, 1, 0.35, 1] }}
             className="grad-text grad-text-dark"
