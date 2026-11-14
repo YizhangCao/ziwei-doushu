@@ -57,7 +57,13 @@ export function readCookie(cookieHeader: string | null | undefined, name: string
   if (!cookieHeader) return undefined;
   for (const pair of cookieHeader.split(';')) {
     const [key, ...rest] = pair.trim().split('=');
-    if (key === name) return decodeURIComponent(rest.join('='));
+    if (key !== name) continue;
+    try {
+      return decodeURIComponent(rest.join('='));
+    } catch {
+      // A malformed value (half a UTF-8 character, such as %E4) counts as unset.
+      return undefined;
+    }
   }
   return undefined;
 }

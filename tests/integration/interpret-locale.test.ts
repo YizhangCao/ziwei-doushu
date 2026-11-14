@@ -68,6 +68,13 @@ describe('POST /api/interpret and the visitor language', () => {
     expect(created[0]?.system).toBe(systemPrompt('en'));
   });
 
+  it('falls back to the browser language when the saved cookie is malformed', async () => {
+    // %E4 is half a UTF-8 character: decoding it throws, which used to fail every reading.
+    const response = await post(body, { cookie: 'NEXT_LOCALE=%E4', 'accept-language': 'en-US' });
+    expect(response.status).toBe(200);
+    expect(created[0]?.system).toBe(systemPrompt('en'));
+  });
+
   it('answers in Chinese for a Chinese browser with no saved choice', async () => {
     await post(body, { 'accept-language': 'zh-CN,zh;q=0.9' });
     expect(created[0]?.system).toBe(systemPrompt('zh'));

@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 import {
   createAnthropicStream,
   encodeInterpretationStream,
+  parseAnthropicEffort,
   validateInterpretRequest,
 } from '@/lib/ai/interpret';
 import { localeFromRequest } from '@/lib/i18n/locale';
@@ -24,15 +25,19 @@ export async function POST(request: Request) {
 
   const apiKey = process.env.ANTHROPIC_API_KEY;
   const model = process.env.ANTHROPIC_MODEL;
-  if (!apiKey || !model) {
+  const effort = parseAnthropicEffort(process.env.ANTHROPIC_EFFORT);
+  if (!apiKey || !model || !effort.ok) {
     return NextResponse.json({ error: 'AI service is not configured' }, { status: 500 });
   }
 
+  // The reading's language comes from the visitor's saved choice or browser (#59), never
+  // from the body, so the 2.3 request contract stays { chart, messages }. Resolved outside
+  // the try below, so a locale problem can't pass for an AI outage.
+  const locale = localeFromRequest(request);
+
   try {
     const anthropic = new Anthropic({ apiKey });
-    // The reading's language comes from the visitor's saved choice or browser (#59),
-    // never from the body, so the 2.3 request contract stays { chart, messages }.
-    const stream = await createAnthropicStream(anthropic, input, model, localeFromRequest(request));
+    const stream = await createAnthropicStream(anthropic, input, model, locale, { effort: effort.effort });
     return new Response(encodeInterpretationStream(stream), {
       headers: {
         'Cache-Control': 'no-cache, no-transform',
