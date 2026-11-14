@@ -8,10 +8,10 @@
  * @fileoverview Which language a request gets (#59). Pure functions, shared by the
  * next-intl request config and by API routes that read the plain Request.
  *
- * A saved choice in the NEXT_LOCALE cookie always wins. Without one, a browser whose
- * top language is Chinese gets Chinese and any other browser gets English. A request
- * with no language preference at all (crawlers, curl) gets Chinese, the site's
- * primary language.
+ * A saved choice in the NEXT_LOCALE cookie always wins. Without one, a browser that
+ * lists Chinese anywhere in its languages gets Chinese, and a browser that lists no
+ * Chinese gets English (#67). A request with no language preference at all (crawlers,
+ * curl) gets Chinese, the site's primary language.
  */
 
 export const LOCALES = ['zh', 'en'] as const;
@@ -29,9 +29,9 @@ export function isLocale(value: unknown): value is Locale {
   return typeof value === 'string' && (LOCALES as readonly string[]).includes(value);
 }
 
-/** The highest-ranked language tag in an Accept-Language header, or undefined. */
-function topLanguage(acceptLanguage: string): string | undefined {
-  let best: { tag: string; q: number } | undefined;
+/** The language tags an Accept-Language header accepts (q > 0), in the order sent. */
+function acceptedLanguages(acceptLanguage: string): string[] {
+  const tags: string[] = [];
   for (const part of acceptLanguage.split(',')) {
     const [rawTag, ...params] = part.trim().split(';');
     const tag = rawTag.trim();
@@ -39,17 +39,18 @@ function topLanguage(acceptLanguage: string): string | undefined {
     const qParam = params.map((p) => p.trim()).find((p) => p.startsWith('q='));
     const q = qParam ? Number(qParam.slice(2)) : 1;
     if (!Number.isFinite(q) || q <= 0) continue;
-    // Ties keep the earlier tag: browsers list their preferences in order.
-    if (!best || q > best.q) best = { tag, q };
+    tags.push(tag);
   }
-  return best?.tag;
+  return tags;
 }
 
 export function resolveLocale(cookie: string | null | undefined, acceptLanguage: string | null | undefined): Locale {
   if (isLocale(cookie)) return cookie;
-  const top = acceptLanguage ? topLanguage(acceptLanguage) : undefined;
-  if (!top) return DEFAULT_LOCALE;
-  return top.toLowerCase().startsWith('zh') ? 'zh' : 'en';
+  const tags = acceptLanguage ? acceptedLanguages(acceptLanguage) : [];
+  if (tags.length === 0) return DEFAULT_LOCALE;
+  // Chinese anywhere in the list wins, not only in first place: the site is Chinese-first,
+  // and bilingual visitors often keep an English system language ahead of Chinese (#67).
+  return tags.some((tag) => tag.toLowerCase().startsWith('zh')) ? 'zh' : 'en';
 }
 
 /** Reads one cookie out of a Cookie header. */

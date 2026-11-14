@@ -5,9 +5,10 @@
  */
 
 /**
- * @fileoverview Which language a request gets (#59). A saved choice (the NEXT_LOCALE
- * cookie) always wins. Without one, a browser that prefers Chinese gets Chinese, any
- * other browser gets English, and a request with no language preference gets Chinese.
+ * @fileoverview Which language a request gets (#59, #67). A saved choice (the NEXT_LOCALE
+ * cookie) always wins. Without one, a browser that lists Chinese anywhere gets Chinese,
+ * a browser that lists no Chinese gets English, and a request with no language
+ * preference gets Chinese.
  */
 
 import { describe, it, expect } from 'vitest';
@@ -30,15 +31,23 @@ describe('resolveLocale', () => {
     expect(resolveLocale(undefined, 'ZH-hans-cn')).toBe('zh');
   });
 
-  it('gives English to browsers that prefer any other language', () => {
+  it('gives Chinese to bilingual browsers that list Chinese after another language (#67)', () => {
+    // The order macOS sends for an English system with Chinese added as a second language.
+    expect(resolveLocale(undefined, 'en-US,en-CN;q=0.9,zh-Hans-CN;q=0.8,zh-Hant-CN;q=0.7')).toBe('zh');
+    expect(resolveLocale(undefined, 'en-US,en;q=0.9,zh-CN;q=0.8')).toBe('zh');
+    expect(resolveLocale(undefined, 'ja-JP,ja;q=0.9,zh;q=0.5')).toBe('zh');
+    expect(resolveLocale(undefined, 'en;q=0.5,zh-TW;q=0.9')).toBe('zh');
+  });
+
+  it('gives English to browsers that list no Chinese', () => {
     expect(resolveLocale(undefined, 'en-US,en;q=0.9')).toBe('en');
-    expect(resolveLocale(undefined, 'ja-JP,ja;q=0.9,zh;q=0.5')).toBe('en');
+    expect(resolveLocale(undefined, 'ja-JP,en;q=0.8')).toBe('en');
     expect(resolveLocale(undefined, 'fr')).toBe('en');
   });
 
-  it('ranks languages by their q value, not by their order', () => {
-    expect(resolveLocale(undefined, 'en;q=0.5,zh-TW;q=0.9')).toBe('zh');
+  it('treats a Chinese tag with q=0 as not listed', () => {
     expect(resolveLocale(undefined, 'zh;q=0,en')).toBe('en');
+    expect(resolveLocale(undefined, 'en-US,zh-CN;q=0')).toBe('en');
   });
 
   it('falls back to Chinese when there is no usable preference', () => {
@@ -59,6 +68,7 @@ describe('readCookie and localeFromRequest', () => {
     const request = (headers: Record<string, string>) => new Request('http://localhost/api/interpret', { headers });
     expect(localeFromRequest(request({ cookie: `${LOCALE_COOKIE}=en`, 'accept-language': 'zh-CN' }))).toBe('en');
     expect(localeFromRequest(request({ 'accept-language': 'en-GB' }))).toBe('en');
+    expect(localeFromRequest(request({ 'accept-language': 'en-GB,zh-CN;q=0.5' }))).toBe('zh');
     expect(localeFromRequest(request({}))).toBe('zh');
   });
 

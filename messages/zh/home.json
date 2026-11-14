@@ -1,6 +1,5 @@
 {
   "hero": {
-    "eyebrow": "紫微斗数 · 倪海厦体系",
     "title": "紫微命盘",
     "claim": "<phrase>输入出生年月日时，</phrase><phrase>生成你的紫微命盘。</phrase>",
     "subclaim": "<phrase>按倪海厦体系起盘，</phrase><phrase>AI 逐宫解读。</phrase>",

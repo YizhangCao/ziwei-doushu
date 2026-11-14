@@ -186,10 +186,10 @@ function FeatureVisual({ index, colors: c }: { index: number; colors: ReturnType
               style={{ color: c.textFaint }}>{t(`visuals.starGroups.${group.group}`)}</div>
             <div className="flex flex-wrap gap-1.5">
               {group.stars.map(key => `stars.${key}`).map(s => (
-                <motion.button key={s}
+                <motion.button key={s} type="button" aria-pressed={sel === s}
                   onClick={() => setSel(sel === s ? null : s)} whileTap={{ opacity: 0.72 }}
                   transition={{ duration: 0.1 }}
-                  className="text-xs px-2 py-1 rounded-md cursor-pointer"
+                  className="chip text-xs px-2 py-1 rounded-md cursor-pointer"
                   style={{
                     border: `1px solid ${sel === s ? c.goldSolid : c.goldLine}`,
                     color: c.goldSolid,
@@ -207,14 +207,16 @@ function FeatureVisual({ index, colors: c }: { index: number; colors: ReturnType
             style={{ color: c.textFaint }}>{t('visuals.sihuaLabel')}</div>
           <div className="flex gap-2 flex-wrap">
             {[['sihua.hualu', 'var(--lu)'], ['sihua.huaquan', 'var(--quan)'], ['sihua.huake', 'var(--ke)'], ['sihua.huaji', 'var(--ji)']].map(([label, color]) => (
-              <motion.button key={label}
+              <motion.button key={label} type="button" aria-pressed={sel === label}
                 onClick={() => setSel(sel === label ? null : label)} whileTap={{ opacity: 0.72 }}
                 transition={{ duration: 0.1 }}
-                className="text-xs px-2.5 py-1 rounded-md cursor-pointer"
+                className="chip text-xs px-2.5 py-1 rounded-md cursor-pointer"
                 style={{
                   border: `1px solid ${color}`,
                   color,
-                  background: sel === label ? `${color.replace('0.7', '0.15')}` : 'transparent',
+                  // Pressed looks like every other toggle: the raised fill under the chip's own color.
+                  // The old replace('0.7', ...) never matched a var(), so the fill equalled the text (#81).
+                  background: sel === label ? 'var(--bg-2)' : 'transparent',
                   fontWeight: sel === label ? 600 : 400,
                 }}>
                 {t(`${label}.name`)}
@@ -222,6 +224,7 @@ function FeatureVisual({ index, colors: c }: { index: number; colors: ReturnType
             ))}
           </div>
         </div>
+        <div aria-live="polite">
         <AnimatePresence mode="wait">
           {selInfo && (
             <motion.div key={sel}
@@ -238,6 +241,7 @@ function FeatureVisual({ index, colors: c }: { index: number; colors: ReturnType
             </motion.div>
           )}
         </AnimatePresence>
+        </div>
       </div>
     );
   }
@@ -352,18 +356,13 @@ export default function HomePage() {
       </div>
 
 
+      <main>
       {/* ══ HERO（Polestar 版式，#57）══════════════════════════
           左对齐、贴页边距：展示级标题 → 正文色主张 + 60% 副主张 → 52px 主按钮 + 描边按钮。
           标题在夜里带一圈极淡的金色星辉，是全页唯一的“灵性”点缀。 */}
       <section ref={heroRef} className="relative min-h-[92svh] flex flex-col justify-center z-10"
         style={{ padding: '48px var(--gutter) 96px' }}>
         <motion.div style={{ y: heroY, opacity: heroOpacity }} className="w-full max-w-[1216px]">
-          <motion.p initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1, ease: [0.15, 1, 0.35, 1] }}
-            className="mb-6" style={{ fontSize: 'var(--fs-caption)', color: c.textMuted }}>
-            {t('hero.eyebrow')}
-          </motion.p>
-
           <motion.h1 initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2, ease: [0.15, 1, 0.35, 1] }}
             className="grad-text grad-text-dark"
@@ -402,7 +401,7 @@ export default function HomePage() {
         <FadeIn className="relative mx-auto text-center w-full" y={20}>
           <div className="flex items-center justify-center gap-4 mb-8">
             <div className="h-px w-16" style={{ background: 'linear-gradient(to right, transparent, var(--bdr))' }} />
-            <span className="text-[12px] uppercase" style={{ color: 'var(--tx-3)' }}>{t('outlook.eyebrow')}</span>
+            <h2 className="text-[12px] uppercase" style={{ color: 'var(--tx-3)' }}>{t('outlook.eyebrow')}</h2>
             <div className="h-px w-16" style={{ background: 'linear-gradient(to left, transparent, var(--bdr))' }} />
           </div>
           <div className="space-y-3" style={{ maxWidth: '840px', margin: '0 auto' }}>
@@ -440,9 +439,9 @@ export default function HomePage() {
             <span className="text-[12px] uppercase" style={{ color: c.goldSolid, opacity: 0.7 }}>{t('roadmap.eyebrow')}</span>
             <div className="h-px w-12" style={{ background: `linear-gradient(to left, transparent, ${c.goldLine})` }} />
           </div>
-          <div className="text-2xl lg:text-3xl font-bold mb-2" style={{ color: c.textPrimary }}>
+          <h2 className="text-2xl lg:text-3xl font-bold mb-2" style={{ color: c.textPrimary }}>
             {t('roadmap.title')}
-          </div>
+          </h2>
           <div className="text-xs lg:text-sm" style={{ color: c.textMuted }}>
             {t('roadmap.subtitle')}
           </div>
@@ -778,6 +777,8 @@ export default function HomePage() {
         </FadeIn>
       </section>
 
+      </main>
+
       {/* Footer */}
       <footer className="relative z-10 py-10 px-6"
         style={{ borderTop: `1px solid ${c.niCardBord}` }}>
@@ -785,7 +786,7 @@ export default function HomePage() {
         {/* 4 板块导航占位（已上线 + 即将开放）*/}
         <div className="max-w-4xl mx-auto mb-8">
           <div className="text-[12px] text-center mb-4 uppercase"
-            style={{ color: c.textMuted, opacity: 0.6 }}>
+            style={{ color: c.textMuted }}>
             {t('footer.label')}
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
@@ -801,7 +802,6 @@ export default function HomePage() {
                     background: ready ? c.starBg : 'transparent',
                     border: `1px ${ready ? 'solid' : 'dashed'} ${ready ? c.goldLine : c.navBorder}`,
                     cursor: ready ? 'pointer' : 'not-allowed',
-                    opacity: ready ? 1 : 0.5,
                     textDecoration: 'none',
                   }}
                 >
@@ -824,7 +824,7 @@ export default function HomePage() {
             {t('footer.tagline')}
           </p>
           <p className="text-[12px] mb-3 max-w-2xl mx-auto leading-relaxed"
-            style={{ color: c.footerText, opacity: 0.85 }}>
+            style={{ color: c.footerText }}>
             {t.rich('footer.disclaimer', { br: () => <br className="sm:hidden" /> })}
           </p>
           <p className="text-[12px]" style={{ color: c.footerText }}>

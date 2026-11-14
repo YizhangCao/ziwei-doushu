@@ -1,9 +1,8 @@
 {
   "hero": {
-    "eyebrow": "Ziwei Doushu (Purple Star Astrology) · Ni Haixia’s method",
     "title": "Ziwei Natal Chart",
     "claim": "<phrase>Enter the date and hour of your birth</phrase> <phrase>to build your Ziwei natal chart.</phrase>",
-    "subclaim": "<phrase>Charted by Ni Haixia’s method,</phrase> <phrase>read by AI palace by palace.</phrase>",
+    "subclaim": "<phrase>Charted by Ni Haixia’s method,</phrase> <phrase>analyzed by AI.</phrase>",
     "cta": "Build your chart"
   },
   "outlook": {
