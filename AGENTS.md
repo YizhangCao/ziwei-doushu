@@ -34,6 +34,7 @@ those contracts (section 2.3) and build around them.
 | Database | PostgreSQL 16 + Prisma | Schema in `prisma/schema.prisma`. One shared client in `lib/db.ts`. Change the schema only with a migration (`npx prisma migrate dev --name <name>`). |
 | Auth | Auth.js (NextAuth v5), JWT sessions | GitHub OAuth. Config in `auth.ts`. Read the session with `auth()` on the server. |
 | Validation | `zod` | Every request body, query, and env variable is parsed with a zod schema. |
+| i18n | next-intl 4, no locale routing | Chinese and English (#59). The locale comes from the `NEXT_LOCALE` cookie, else `Accept-Language` (`lib/i18n/locale.ts`); URLs don't change. Messages live in `messages/{zh,en}/<namespace>.json`, and Chinese is the source of truth. Chosen over hand-written dictionaries (server-only, needs `/[lang]` routes), i18next (hand-written server/client glue) and Lingui or Paraglide (Next 16 support unverified). |
 | Unit / integration tests | Vitest | New app code. See "Testing strategy". |
 | E2E tests | Playwright | `e2e/*.spec.ts`, Chromium in CI. |
 | API docs | OpenAPI 3.1 + Swagger UI | Spec in `docs/openapi.yaml`, served at `/api-docs`. |
@@ -137,7 +138,15 @@ A user only ever sees their own charts and charts explicitly shared with them. C
 - **Chart board (`ChartBoard`, `PalaceCell`)**: 4×4 grid of the 12 palaces around a center summary. Clicking a palace selects it and updates the reading panel.
 - **Time navigation (`TimeNav`)**: switches between natal (本命), decade (大限), and annual (流年) views.
 - **Reading panel (`InsightPanel`)** and **chat (`ChatPanel`)**: stream an AI reading for the current chart, text appearing as it arrives, with a loading state and a readable error message.
-- **Visual style**: dark, gold-accented "glass card" look. Use the existing CSS variables (`var(--t-gold)`, `var(--t-border)`, `var(--t-faint)`) and the `card-glass` class. Do not add new colors or a new UI library.
+- **Visual style** (design system, #57): calm and precise, after Polestar's web design, over a quiet night sky. The default theme is night; day mode follows Polestar's white pages.
+  - **Calm:** Polestar's measured specs. Monochrome surfaces, 0px radius on controls and containers (2px only on small badges), 1px hairlines, 52 px controls, a 72 px nav and page gutters of up to 112 px. Hierarchy comes from size and opacity, not weight; weights are only 400 and 600. No text is smaller than 12 px.
+  - **Accent:** one gold, used only for chart meaning (stars, sihua, the life palace, the current decade, AI text), the way Polestar uses Swedish Gold on small details. Buttons, navigation and selected states stay monochrome.
+  - **Type:** Chinese follows Apple's China site (PingFang SC, normal tracking, line height about 1.5). Latin letters and digits use Helvetica Neue.
+  - **Motion:** 200 ms for interactions and 600 ms for reveals, on one easing curve. Pressing a button lowers its opacity, with no scaling or bouncing. `prefers-reduced-motion` turns motion off.
+  - **Tokens:** every color, radius, shadow and duration comes from the tokens in `app/globals.css`, which also defines the `--t-*` aliases and `card-glass`. Tailwind's color families map onto the five semantic tokens (`--ac`, `--lu`, `--quan`, `--ke`, `--ji`). Don't write hex or rgba values in components.
+  - **Shared pieces:** one `SiteNav` in the layout, `.btn-primary` / `.btn-ghost` for every button, `.input-base` for inputs, `AiContent` for streamed readings, and the pole-star mark (`.pole-mark`) as the brand's only symbol.
+  - **Language switch:** `LanguageToggle` in `SiteNav` shows the other language's name in that language ("EN" / "中文"), so its visible text is its accessible name.
+  - **Tests:** `tests/unit/design/design-system.test.ts` checks that every token used is defined and that text keeps 4.5:1 contrast in both themes. `tests/unit/design/no-drift.test.ts` keeps the core screens free of hard-coded colors, text under 12 px, wide or tight tracking, scale or lift motion, and gold outside chart meaning.
 
 ### 2.3 Fixed API contract (build the backend to this)
 
@@ -146,7 +155,7 @@ The frontend already calls these endpoints. **Do not change the frontend to fit 
 `POST /api/interpret`
 - Request JSON: `{ chart: ZiweiChart, messages: { role: 'user' | 'assistant', content: string }[] }`
 - Response: `text/event-stream`. Each chunk is a line `data: {"delta":{"text":"..."}}`, and the stream ends with `data: [DONE]`.
-- Errors: 400 for an invalid body, 500 with a short JSON `{ error }` for server failures. Never 404 (the UI shows 404 as "API not implemented").
+- Errors: 401 `{ error }` when not logged in (readings are member-only; checked before the body), 400 for an invalid body, 500 with a short JSON `{ error }` for server failures. Never 404 (the UI shows 404 as "API not implemented").
 
 `POST /api/heming`
 - Request JSON: `{ chartA: ZiweiChart, chartB: ZiweiChart, question?: string }`
@@ -154,9 +163,10 @@ The frontend already calls these endpoints. **Do not change the frontend to fit 
 
 ### 2.4 User flows the agent should follow
 
-1. **Chart + reading:** user fills `BirthForm` → `generateChart()` runs in the browser → chart renders → user opens the reading → `InsightPanel` posts to `/api/interpret` → text streams in.
+1. **Chart + reading:** user fills `BirthForm` → `generateChart()` runs in the browser → chart renders → user opens the reading → `InsightPanel` posts to `/api/interpret` → text streams in. Guests can build charts, but a reading needs login: the panel shows a login prompt on 401.
 2. **Follow-up question:** user types in `ChatPanel` → the full message history plus the chart is posted → answer streams in below the history.
 3. **Compatibility:** user enters two people on `/heming` → both charts build in the browser → page posts to `/api/heming` → analysis streams in.
+4. **Language:** user taps EN / 中文 in `SiteNav` → `setLocale` stores `NEXT_LOCALE` → the page re-renders in that language → `/api/interpret` answers in it too (the server reads the cookie; the request body is unchanged).
 
 When a feature changes one of these flows, update this section in the same PR.
 
@@ -185,9 +195,14 @@ When a feature changes one of these flows, update this section in the same PR.
 - Read the GitHub Issue and its acceptance criteria before writing code, and restate them in your plan.
 - Reuse existing types and helpers (`ZiweiChart`, `generateChart`, `formToBirthInfo`) before writing new ones.
 - Keep changes small and focused on the issue.
-- Validate every API request body before using it: `chart.palaces` must have 12 entries, at most **30 messages**, each at most **2,000 characters**, roles only `user` / `assistant` (limits from issue #5).
+- Validate every API request body before using it: `chart.palaces` must have 12 entries, at most **30 messages**, roles only `user` / `assistant`. A user message is at most **2,000 characters**, an assistant message (the model's own earlier reply, sent back as history) at most **20,000**, and all messages together at most **100,000** (limits from #5, by role since #105). They live in `lib/ai/interpret-limits.ts`, which the route and the reading panel share.
 - Stream responses; the UI is built for streaming.
 - Write the failing test first (TDD), and add a test for each new `lib/` function.
+- Put every user-visible string in `messages/zh` and `messages/en` (#59), never in components. English follows the product owner's rules:
+  - **Terms:** the academic English rendering where one exists, with its source in `lib/i18n/glossary.ts`; a Western-astrology or plain substitute only after the product owner approves it; otherwise pinyin. Stars, brightness grades and sihua show in pinyin on the board, with the academic English as a gloss.
+  - **Descriptions:** direct English at about a high-school reading level.
+  - **Classical quotes:** the original, then `which means: "…"`, with technical terms in pinyin inside the quotes.
+  - **Parallel couplets:** rhyming heroic couplets in 18th to 19th century English.
 
 ### Don't
 - **Don't add Jest, Mocha, or any other test framework.** Use tsx for engine tests, Vitest for unit/integration, Playwright for E2E.
@@ -203,6 +218,7 @@ When a feature changes one of these flows, update this section in the same PR.
 - Validate every input with zod. Return 400 with `{ error }` on failure, 401 if not logged in, 403 if logged in but not allowed, 404 if the record isn't theirs (don't reveal it exists).
 - Birth data (`birthInfo`) is stored encrypted at rest (`lib/crypto.ts`, key in `DATA_ENCRYPTION_KEY`).
 - Public API keys are stored hashed, never in plain text. Rate-limit `/api/v1/*` and AI routes per key / per user.
+- API keys are 256-bit random tokens hashed with SHA-256 on purpose (fast lookup by hash); CodeQL's `js/insufficient-password-hash` alert on `lib/api/keys.ts` is a known false positive and is dismissed.
 - API keys only in `.env.local` (git-ignored). Add any new variable to `.env.example` with a fake value.
 - Production and preview share AUTH_SECRET (needed for preview login through the production URL); each environment has its own DATA_ENCRYPTION_KEY. Production and preview values are set only in Vercel; development uses the values in .env.local.
 - Local development uses a non-production database (Neon dev or a local Postgres); never point .env.local at production.
@@ -233,13 +249,6 @@ A task is done when: the acceptance criteria are all met, `npm run typecheck` an
 ## Changelog
 <!-- Record each change to this file and why. This is the evidence of iteration for HW3. -->
 - v1 (10/30/2026): first version.
-- v3.2 (11/10/2026): after Sprint 1.
-  - The integration-test rule now describes what we actually do: `prisma migrate deploy` once, then truncate tables before each test, on `DATABASE_URL_TEST` only. Prisma blocks `migrate reset --force` when an AI agent runs it, and resetting isn't needed for a clean state.
-  - Added "local development uses a non-production database". `.env.local` had pointed at production, because Vercel shares one `DATABASE_URL` across environments.
-  - Clarified the secrets rule: production and preview share `AUTH_SECRET` for preview login, but each environment has its own `DATA_ENCRYPTION_KEY`, because preview databases are copies of production.
-  - Added "previews never migrate production". PR #35's preview ran `prisma migrate deploy` on the production database, because previews have no Neon branch yet (#20).
-- v3.1 (11/08/2026): re-planned for the Nov 12 deadline: GitHub OAuth only; Vercel and Neon integrations handle previews, production, and per-preview databases.
-- v3 (11/01/2026): P2 approved as ZiweiHub. Added database, auth, roles, public API, and hosting to the stack; added the roles table and auth rules; replaced the tsx-only test rule with a layered strategy (engine tests stay on tsx, new code uses Vitest and Playwright) because P2 requires unit, integration, and E2E tests; added TDD commit order. PRD now points to docs/PRD.md.
 - v2 (10/31/2026): after the first with-rules test run on issue #4. The agent ignored several rules, so v2 makes them concrete and checkable:
   - Route files may export only route fields (the agent exported a test helper from `route.ts`). Note: we first believed this breaks `next build`, but we tested it and the build passed on Next 16, so the rule is kept as an architecture convention, not a build requirement.
   - Keep the route thin; logic goes in `lib/ai/` (the agent put everything in `route.ts`).
@@ -248,3 +257,15 @@ A task is done when: the acceptance criteria are all met, `npm run typecheck` an
   - Test snippet and "no `node:assert`" (both runs used `node:assert`).
   - Don't delete existing `.env.example` entries; no hardcoded dated model ID (both runs did this).
   - Required end-of-task summary with acceptance criteria, branch, commit, and `Closes #N`.
+- v3 (11/01/2026): P2 approved as ZiweiHub. Added database, auth, roles, public API, and hosting to the stack; added the roles table and auth rules; replaced the tsx-only test rule with a layered strategy (engine tests stay on tsx, new code uses Vitest and Playwright) because P2 requires unit, integration, and E2E tests; added TDD commit order. PRD now points to docs/PRD.md.
+- v3.1 (11/08/2026): re-planned for the Nov 12 deadline: GitHub OAuth only; Vercel and Neon integrations handle previews, production, and per-preview databases.
+- v3.2 (11/10/2026): after Sprint 1.
+  - The integration-test rule now describes what we actually do: `prisma migrate deploy` once, then truncate tables before each test, on `DATABASE_URL_TEST` only. Prisma blocks `migrate reset --force` when an AI agent runs it, and resetting isn't needed for a clean state.
+  - Added "local development uses a non-production database". `.env.local` had pointed at production, because Vercel shares one `DATABASE_URL` across environments.
+  - Clarified the secrets rule: production and preview share `AUTH_SECRET` for preview login, but each environment has its own `DATA_ENCRYPTION_KEY`, because preview databases are copies of production.
+  - Added "previews never migrate production". PR #35's preview ran `prisma migrate deploy` on the production database, because previews have no Neon branch yet (#20).
+- v3.2 (11/10/2026): GitHub login (#15). `/api/interpret` now returns 401 for guests (2.3, 2.4). Previews sign in through the production URL (`AUTH_REDIRECT_PROXY_URL`), which works because production and preview share one `AUTH_SECRET` (#31).
+- v3.3 (11/11/2026): documented that API keys are hashed with SHA-256 on purpose. CodeQL flagged it as a weak password hash (alerts #2–#4 on PRs #42 and #45); the keys are random 256-bit tokens, not passwords, and lookup by hash needs a fast, deterministic hash, so the alerts were dismissed as false positives.
+- v3.5 (11/11/2026): new design system (#57). Section 2.2 now describes it: Polestar-style calm, gold only for chart meaning, Chinese type after Apple's China site. The old rule pointed at CSS variables and a `card-glass` class that were never defined, so most component colors fell back to browser defaults.
+- v3.6 (11/11/2026): English version (#59). next-intl is in the stack table, the language switch in 2.2 and 2.4, and the translation rules under "Do".
+- v3.7 (11/12/2026): request limits by role (#105). One English reading is about 5,500 characters, and the old 2,000-character cap on every message made each follow-up fail with 400. A visitor still types at most 2,000; the model's replies may be 20,000, with 100,000 in all.
