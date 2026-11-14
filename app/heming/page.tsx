@@ -196,19 +196,11 @@ export default function HemingPage() {
           </div>
 
           {/* 状态分支 */}
+          {/* /api/heming isn't built yet (#124), so say so up front instead of offering a button that answers nothing. */}
           {!analysis && !analyzing && (
-            <div style={{ textAlign: 'center', padding: '32px 0' }}>
-              <div style={{ color: 'var(--tx-2)', marginBottom: '24px' }}>
-                {t.rich('emptyState', { br: () => <br /> })}
-              </div>
-              <button type="button" className="btn-primary" onClick={() => runAnalysis()}>
-                {t('start')} <span aria-hidden="true">→</span>
-              </button>
-              {formError && (
-                <div role="alert" style={{ marginTop: '20px', fontSize: '13px', color: 'var(--ji)' }}>
-                  {formError}
-                </div>
-              )}
+            <div role="status" style={{ textAlign: 'center', padding: '32px 0' }}>
+              <p style={{ color: 'var(--tx-1)', marginBottom: '8px' }}>{t('comingSoon')}</p>
+              <p style={{ color: 'var(--tx-2)', fontSize: 'var(--fs-small)' }}>{t('comingSoonHint')}</p>
             </div>
           )}
 
