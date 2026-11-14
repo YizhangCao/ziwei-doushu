@@ -90,7 +90,10 @@ model Message {
   conversationId String
   conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
   role           MessageRole
+  /// Encrypted at rest with DATA_ENCRYPTION_KEY (lib/crypto.ts): a visitor's questions are personal.
   content        String
+  /// A reading prompt the panel sent for a topic button (#22): sent back as context, never shown as the visitor's words.
+  hidden         Boolean      @default(false)
   createdAt      DateTime     @default(now())
 
   @@index([conversationId, createdAt])

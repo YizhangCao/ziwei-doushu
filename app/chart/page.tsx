@@ -22,13 +22,16 @@ export default function ChartPage() {
   // The form's own input (with birthplace and clock time), which is what gets saved.
   const [birthInfo, setBirthInfo] = useState<BirthInfo | null>(null);
   const [savedName, setSavedName] = useState<string | undefined>(undefined);
+  // The saved chart's id, once there is one: the reading panel keeps its conversation there (#22).
+  const [chartId, setChartId] = useState<string | undefined>(undefined);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [selectedPalace, setSelectedPalace] = useState<Palace | null>(null);
   const t = useTranslations('chart');
 
-  const show = (info: BirthInfo, name?: string) => {
+  const show = (info: BirthInfo, name?: string, id?: string) => {
     setBirthInfo(info);
     setSavedName(name);
+    setChartId(id);
     setChart(generateChart(info));
   };
 
@@ -43,7 +46,7 @@ export default function ChartPage() {
         const res = await fetch(`/api/charts/${encodeURIComponent(id)}`);
         if (!res.ok) throw new Error(String(res.status));
         const { chart: saved } = (await res.json()) as { chart: { name: string; birthInfo: BirthInfo } };
-        if (!cancelled) show(saved.birthInfo, saved.name);
+        if (!cancelled) show(saved.birthInfo, saved.name, id);
       } catch {
         if (!cancelled) setLoadError(t('loadError'));
       }
@@ -73,18 +76,18 @@ export default function ChartPage() {
       <button
         type="button"
         className="btn-ghost btn-sm"
-        onClick={() => { setChart(null); setBirthInfo(null); setSavedName(undefined); setSelectedPalace(null); }}
+        onClick={() => { setChart(null); setBirthInfo(null); setSavedName(undefined); setChartId(undefined); setSelectedPalace(null); }}
         style={{ marginBottom: 24 }}
       >
         <span aria-hidden="true">←</span> {t('rebuild')}
       </button>
 
-      <SaveChartPanel key={savedName ?? 'new'} birthInfo={birthInfo} savedName={savedName} />
+      <SaveChartPanel key={savedName ?? 'new'} birthInfo={birthInfo} savedName={savedName} onSaved={setChartId} />
 
       <div className="chart-layout">
         <ChartBoard chart={chart} onPalaceSelect={setSelectedPalace} />
         <div style={{ display: 'grid', gap: 24, alignContent: 'start' }}>
-          <AiReadingSection chart={chart} selectedPalace={selectedPalace} />
+          <AiReadingSection chart={chart} selectedPalace={selectedPalace} chartId={chartId} />
           <RuleBasedReading chart={chart} />
         </div>
       </div>

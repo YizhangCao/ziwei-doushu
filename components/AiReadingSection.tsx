@@ -9,8 +9,14 @@ import type { Palace, ZiweiChart } from '@/lib/ziwei/types';
  * The AI tier (#118): members get the personalized reading and follow-up questions; a guest
  * gets a short prompt to sign in and the chart never goes to the AI. The free reading below
  * this section renders either way.
+ *
+ * `chartId` is set for a saved chart, so the panel keeps that chart's conversation (#22).
  */
-export default function AiReadingSection({ chart, selectedPalace }: { chart: ZiweiChart; selectedPalace: Palace | null }) {
+export default function AiReadingSection({ chart, selectedPalace, chartId }: {
+  chart: ZiweiChart;
+  selectedPalace: Palace | null;
+  chartId?: string;
+}) {
   const t = useTranslations('reading');
   const { status } = useSession();
 
@@ -19,7 +25,7 @@ export default function AiReadingSection({ chart, selectedPalace }: { chart: Ziw
       <h2 id="ai-reading-title" style={{ fontSize: 'var(--fs-body)', fontWeight: 600, color: 'var(--t-text)' }}>
         {t('aiTitle')}
       </h2>
-      {status === 'authenticated' && <InsightPanel chart={chart} selectedPalace={selectedPalace} />}
+      {status === 'authenticated' && <InsightPanel chart={chart} selectedPalace={selectedPalace} chartId={chartId} />}
       {status === 'unauthenticated' && (
         <div className="card-glass" style={{ padding: 20, display: 'grid', gap: 16, justifyItems: 'start' }}>
           <p style={{ fontSize: 'var(--fs-small)', color: 'var(--t-text2)' }}>{t('signInPrompt')}</p>

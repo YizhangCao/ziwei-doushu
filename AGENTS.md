@@ -165,7 +165,7 @@ The frontend already calls these endpoints. **Do not change the frontend to fit 
 ### 2.4 User flows the agent should follow
 
 1. **Chart + reading:** user fills `BirthForm` → `generateChart()` runs in the browser → chart renders with the free rule-based reading (`RuleBasedReading`, no request) → for a signed-in member, `InsightPanel` above it posts to `/api/interpret` → text streams in. Guests see a sign-in prompt in the AI area instead, and no request is made (#118). When the AI fails (500) or the daily limit is used up (429), the AI area says so and the free reading stays.
-2. **Follow-up question:** user types in `ChatPanel` → the full message history plus the chart is posted → answer streams in below the history.
+2. **Follow-up question:** user types in `ChatPanel` → the full message history plus the chart is posted → answer streams in below the history. On a saved chart, each finished exchange is then appended with `POST /api/charts/[id]/conversation` (owner only, encrypted at rest), and reopening the chart at `/chart?id=…` shows the conversation again without a new reading (#22).
 3. **Compatibility:** user enters two people on `/heming` → both charts build in the browser → page posts to `/api/heming` → analysis streams in.
 4. **Language:** user taps EN / 中文 in `SiteNav` → `setLocale` stores `NEXT_LOCALE` → the page re-renders in that language → `/api/interpret` answers in it too (the server reads the cookie; the request body is unchanged).
 
