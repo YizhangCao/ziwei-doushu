@@ -40,10 +40,14 @@ afterAll(() => prisma.$disconnect());
 
 type Role = 'member' | 'practitioner' | 'admin';
 
-/** Creates a user and returns its id and a session cookie for it. */
-async function signedIn(role: Role, githubId: string, name = `${role} ${githubId}`) {
+/**
+ * Creates a user and returns its id and a session cookie for it. With `fresh`, the token says
+ * its role was just read from the database, so the session trusts it for ROLE_REFRESH_MS.
+ */
+async function signedIn(role: Role, githubId: string, name = `${role} ${githubId}`, { fresh = false } = {}) {
   const { id } = await prisma.user.create({ data: { githubId, role, name, email: `${githubId}@example.test` }, select: { id: true } });
-  const value = await encode({ token: { sub: id, role }, secret: process.env.AUTH_SECRET!, salt: SESSION_COOKIE });
+  const token = fresh ? { sub: id, role, roleCheckedAt: Date.now() } : { sub: id, role };
+  const value = await encode({ token, secret: process.env.AUTH_SECRET!, salt: SESSION_COOKIE });
   return { id, cookie: `${SESSION_COOKIE}=${value}` };
 }
 
@@ -139,6 +143,32 @@ describe('PATCH /api/admin/users/:id', () => {
     expect(res.status).toBe(400);
     expect(await res.json()).toEqual({ error: expect.any(String) });
     expect(await prisma.user.findUniqueOrThrow({ where: { id: admin.id }, select: { role: true } })).toEqual({ role: 'admin' });
+  });
+
+  it('refuses a demoted admin whose session still says admin, so the other admin stays', async () => {
+    // Both sessions had their role checked just now, so it is trusted for ROLE_REFRESH_MS.
+    const first = await signedIn('admin', '6025', undefined, { fresh: true });
+    const second = await signedIn('admin', '6026', undefined, { fresh: true });
+    expect((await changeRole(second.id, first.cookie, { role: 'member' })).status).toBe(200);
+
+    const res = await changeRole(first.id, second.cookie, { role: 'member' });
+
+    expect(res.status).toBe(403);
+    expect(await res.json()).toEqual({ error: expect.any(String) });
+    expect(await prisma.user.findUniqueOrThrow({ where: { id: first.id }, select: { role: true } })).toEqual({ role: 'admin' });
+  });
+
+  it('keeps one admin when two admins demote each other at the same time', async () => {
+    const first = await signedIn('admin', '6027', undefined, { fresh: true });
+    const second = await signedIn('admin', '6028', undefined, { fresh: true });
+
+    const results = await Promise.all([
+      changeRole(second.id, first.cookie, { role: 'member' }),
+      changeRole(first.id, second.cookie, { role: 'member' }),
+    ]);
+
+    expect(results.map((res) => res.status).sort()).toEqual([200, 403]);
+    expect(await prisma.user.count({ where: { role: 'admin', id: { in: [first.id, second.id] } } })).toBe(1);
   });
 
   it('returns 404 for an unknown user and 400 for an invalid body', async () => {
