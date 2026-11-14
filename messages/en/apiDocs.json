@@ -1,0 +1,7 @@
+{
+  "metaTitle": "API docs · Ziwei Natal Chart",
+  "metaDescription": "The ZiweiHub public API: build a Ziwei Doushu chart as JSON from birth data.",
+  "title": "API docs",
+  "intro": "Build a Ziwei Doushu chart as JSON from a birth date, birth hour and gender. Every request needs an <code>Authorization</code> header with<code> Bearer </code>and your API key. You create keys on the settings page after signing in, and each key is shown only once. Try it with made-up birth data.",
+  "spec": "Spec file: <link>openapi.yaml</link> (OpenAPI 3.1)"
+}
