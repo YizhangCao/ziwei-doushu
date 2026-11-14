@@ -38,14 +38,26 @@
     "daxian": "Decade",
     "liunian": "Year"
   },
-  "loading": "Reading your chart…",
   "replyLabel": "Chart reading",
   "retry": "Try again",
-  "inputPlaceholder": "Ask a follow-up, e.g. Is this a good year to change jobs?",
+  "inputPlaceholder": "Ask a follow-up, e.g. My Life Palace has no main star. How do I read it?",
   "inputLabel": "Ask a follow-up",
   "send": "Ask",
   "errors": {
-    "apiMissing": "The open-source version has no AI reading endpoint (/api/interpret). You need to add one yourself; see “Quick start” in the README. Building a chart needs no API key.",
-    "failed": "The reading failed. Please try again in a moment."
-  }
+    "failed": "The reading didn’t finish. Please try again in a moment.",
+    "rateLimited": "You’ve used today’s readings. You can continue tomorrow.",
+    "network": "The connection dropped, so the reading didn’t finish.",
+    "tooLong": "Keep your question under 2,000 characters.",
+    "tooMany": "This conversation is already long. Build the chart again to start over.",
+    "apiMissing": "Readings aren’t available yet. Your chart still works.",
+    "apiMissingDev": "(Developer note: the open-source version has no AI reading endpoint at /api/interpret; add your own, see “Quick start” in the README. Building a chart needs no API key.)"
+  },
+  "reading": {
+    "overview": "Reading the Life Palace and its sanfang sizheng…",
+    "topic": "{topic, select, love {Reading your love life…} career {Reading your career…} wealth {Reading your wealth…} health {Reading your health…} personality {Reading your personality…} other {Reading your chart…}}",
+    "palace": "Reading the {palace} Palace…",
+    "sihua": "Reading {star} {sihua}…",
+    "answer": "Answering…"
+  },
+  "charsLeft": "{n, plural, one {# character} other {# characters}} left"
 }

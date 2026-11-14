@@ -1,12 +1,12 @@
 {
   "meta": {
-    "title": "Ziwei Doushu Knowledge Base · 14 Main Stars × 13 palaces · Ni Haixia’s system",
-    "description": "A Ziwei Doushu knowledge base built on Ni Haixia’s Tian Ji system and the classics Ziwei doushu quanji and Gusui fu. It reads each of the 14 Main Stars in each of the 13 palaces: a one-line verdict, the core reading, the basis in the chart and the classical source.",
+    "title": "Ziwei Doushu Knowledge Base · 14 Main Stars × 12 palaces · Ni Haixia’s system",
+    "description": "A Ziwei Doushu knowledge base built on Ni Haixia’s Tian Ji system and the classics Ziwei doushu quanji and Gusui fu. It reads each of the 14 Main Stars in each of the 12 palaces: a one-line verdict, the core reading, the basis in the chart and the classical source.",
     "keywords": "Ziwei Doushu,Purple Star Astrology,Ni Haixia,Ziwei doushu quanji,Ziwei doushu quanshu,14 Main Stars,12 palaces"
   },
   "kicker": "Ni Haixia’s Tian Ji system · With classical sources",
   "title": "Ziwei Doushu Knowledge Base",
-  "progress": "14 Main Stars × 13 palaces: {available} of {total} topics are live.",
+  "progress": "{available} of {total} topics are live.",
   "preparing": "Topics are still being written. Start with the original classics: <link>Classics Library</link>",
   "starsHeading": "The 14 Main Stars",
   "topicsLabel": "Main star topics",

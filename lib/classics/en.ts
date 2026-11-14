@@ -104,11 +104,11 @@ export const CHAPTER_EN: Record<string, ChapterEn> = {
   'quanji/0': { title: 'Volume One: General Discussion', subtitle: 'The basic rules of Ziwei Doushu' },
   'quanji/1': { title: 'Volume Two: On Ziwei', subtitle: 'The honor of the throne' },
   'quanji/2': {
-    title: 'Volume Three: On the Six Stars of the Southern Dipper',
+    title: 'Volume Three: On Six Stars, Part One',
     subtitle: 'Tianfu, Taiyin (the Moon), Tanlang (Greedy Wolf), Jumen (Huge Gate), Tianxiang and Tianliang',
   },
   'quanji/3': {
-    title: 'Volume Four: On the Six Stars of the Northern Dipper',
+    title: 'Volume Four: On Six Stars, Part Two',
     subtitle:
       'Ziwei, Tianji, Taiyang (the Sun), Wuqu (Military Corner), Lianzhen (Pure Virtue) and Pojun (Destroyer of the Army)',
   },
@@ -228,7 +228,7 @@ export const PARAGRAPH_EN: Record<string, string> = {
   'qj-1-1':
     'Ziwei Doushu was handed down by the founding master Chen Tuan. From the start it made Ziwei the throne, ruling over the hundred stars. Each star governs its own matters, each has its grades of miao, wang, li and xian, and each brings good or ill depending on how the stars meet and shine on one another. To read a fate, one must first place the stars; second, fix the minggong and shengong; third, look at the good and ill of the twelve palaces; and fourth, consult the feihua of the daxian and liunian.',
   'qj-1-2':
-    'The method of placing the stars: first use the birth year’s tiangan to place Ziwei. Once the palace where Ziwei sits is fixed, all the other stars are set out among the twelve palaces by their rules. The fourteen main stars each take their place, and the six auspicious and six baleful stars go along to assist them. Once a chart is set, everything in it comes into view.',
+    'The method of placing the stars: first use the wuxingju and the lunar birth day to find the palace where Ziwei sits. Once Ziwei is fixed, all the other stars are set out among the twelve palaces by their rules. The fourteen main stars each take their place, and the six auspicious and six baleful stars go along to assist them. Once a chart is set, everything in it comes into view.',
   'qj-1-3':
     'The minggong is the root and governs the geju of one’s whole life; the shengong is the helper and governs where one turns after thirty. Only when the minggong and shengong are clear can one know a person’s advances and retreats. Only from how the stars meet and shine from the sanfang sizheng can one know where a person’s strength can be used. Each of the twelve palaces governs its own matters, and only then can one see the whole map of a life.',
   'qj-2-1':
@@ -285,7 +285,7 @@ export const PARAGRAPH_EN: Record<string, string> = {
 
   // Quanshu
   'qs-1-1':
-    'The minggong is the root of one’s whole life and the hinge on which all matters turn. Once the minggong is fixed, the geju of one’s whole life is fixed. To read the minggong, look first at its main stars, then at the supporting and baleful stars, and then at the sihua and at the stars that meet and shine on it from the sanfang sizheng.',
+    'The minggong is the root of one’s whole life and the hinge on which all matters turn. To read the minggong, look first at its main stars, then at the supporting and baleful stars, and then at the sihua and at the stars that meet and shine on it from the sanfang sizheng.',
   'qs-1-2':
     'When the main star of the minggong is miao or wang, it means an inborn advantage, and one gets twice the result for half the effort. When it falls to xian, it means an inborn disadvantage, yet on the contrary it can mean great success: a person whose star is xian is driven by two words, ‘not content’, and can break out in a comeback that a miao or wang chart cannot achieve.',
   'qs-1-3':

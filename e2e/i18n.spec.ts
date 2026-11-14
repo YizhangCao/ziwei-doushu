@@ -44,6 +44,7 @@ async function buildChartInEnglish(page: Page) {
   await selects.nth(0).selectOption('1990');
   await selects.nth(1).selectOption('6');
   await selects.nth(2).selectOption('15');
+  await page.locator('#bf-hour').selectOption('10');
   await page.getByRole('button', { name: 'Female' }).click();
   await page.getByRole('button', { name: 'Build chart', exact: true }).click();
   await expect(page.getByRole('region', { name: 'Natal chart' })).toBeVisible();

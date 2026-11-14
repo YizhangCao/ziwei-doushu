@@ -30,25 +30,20 @@ export default async function PrivacyPage() {
       <ul style={{ paddingLeft: 24 }}>
         <li>{t.rich('privacy.collect.chart', { strong })}</li>
         <li>{t.rich('privacy.collect.account', { strong })}</li>
-        <li>{t.rich('privacy.collect.interaction', { strong })}</li>
-        <li>{t.rich('privacy.collect.feedback', { strong })}</li>
-        <li>{t.rich('privacy.collect.payment', { strong })}</li>
+        <li>{t.rich('privacy.collect.questions', { strong })}</li>
+        <li>{t.rich('privacy.collect.analytics', { strong })}</li>
       </ul>
 
       <h2 style={{ fontSize: 18, marginTop: 32, marginBottom: 12 }}>{t('privacy.use.heading')}</h2>
       <ul style={{ paddingLeft: 24 }}>
         <li>{t('privacy.use.chart')}</li>
-        <li>{t('privacy.use.phone')}</li>
-        <li>{t('privacy.use.feedback')}</li>
-        <li>{t('privacy.use.aggregate')}</li>
+        <li>{t('privacy.use.analytics')}</li>
       </ul>
 
       <h2 style={{ fontSize: 18, marginTop: 32, marginBottom: 12 }}>{t('privacy.sharing.heading')}</h2>
       <p>{t('privacy.sharing.intro')}</p>
       <ul style={{ paddingLeft: 24 }}>
-        <li>{t('privacy.sharing.payment')}</li>
-        <li>{t('privacy.sharing.sms')}</li>
-        <li>{t('privacy.sharing.cloud')}</li>
+        <li>{t('privacy.sharing.hosting')}</li>
         <li>{t('privacy.sharing.ai')}</li>
         <li>{t('privacy.sharing.authorities')}</li>
       </ul>
@@ -58,9 +53,8 @@ export default async function PrivacyPage() {
 
       <h2 style={{ fontSize: 18, marginTop: 32, marginBottom: 12 }}>{t('privacy.rights.heading')}</h2>
       <ul style={{ paddingLeft: 24 }}>
-        <li>{t.rich('privacy.rights.access', { strong })}</li>
-        <li>{t.rich('privacy.rights.deletion', { strong })}</li>
-        <li>{t.rich('privacy.rights.export', { strong })}</li>
+        <li>{t.rich('privacy.rights.local', { strong })}</li>
+        <li>{t.rich('privacy.rights.server', { strong })}</li>
       </ul>
 
       <h2 style={{ fontSize: 18, marginTop: 32, marginBottom: 12 }}>{t('privacy.cookies.heading')}</h2>

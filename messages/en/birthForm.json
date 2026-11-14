@@ -4,7 +4,9 @@
     "yearRange": "Choose a year from 1900 to 2026",
     "monthRequired": "Choose a month",
     "dayRequired": "Choose a day",
-    "noSuchDay": "That month has no day {day} (month {month})"
+    "noSuchDay": "That month has no day {day} (month {month})",
+    "hourRequired": "Choose your time of birth, or tick “I don’t know my time of birth”.",
+    "genderRequired": "Choose a gender"
   },
   "summary": {
     "date": "{month, select, 1 {January} 2 {February} 3 {March} 4 {April} 5 {May} 6 {June} 7 {July} 8 {August} 9 {September} 10 {October} 11 {November} 12 {December} other {Month {month}}} {day}, {year}",
@@ -43,7 +45,8 @@
     "trueSolar": "True solar time → ",
     "branchHour": "{branch} double hour",
     "range": "({range})",
-    "unknown": "I don’t know my time of birth. Use the Zi double hour (23:00–01:00)."
+    "unknown": "I don’t know my time of birth. Use the Zi double hour (23:00–01:00).",
+    "hourPlaceholder": "Hour"
   },
   "gender": {
     "label": "Gender",
