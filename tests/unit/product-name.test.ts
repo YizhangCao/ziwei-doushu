@@ -30,7 +30,8 @@ const THIS_FILE = join('tests', 'unit', 'product-name.test.ts');
 function filesUnder(dir: string): string[] {
   return readdirSync(dir).flatMap((name) => {
     const path = join(dir, name);
-    if (statSync(path).isDirectory()) return name === 'node_modules' ? [] : filesUnder(path);
+    // Skip installed packages and the git-ignored Prisma client, which is generated from the schema.
+    if (statSync(path).isDirectory()) return name === 'node_modules' || name === 'generated' ? [] : filesUnder(path);
     return TEXT.test(name) ? [path] : [];
   });
 }

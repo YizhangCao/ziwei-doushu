@@ -1,6 +1,6 @@
 <div align="center">
 
-# ZiweiHub
+# Ziwei Natal Chart
 
 **English** · [简体中文](README.zh-CN.md)
 
@@ -41,7 +41,7 @@ Ziwei Doushu is the first tradition on it. The next one only brings its own engi
 
 ### 1.3 How we're different
 
-A charting library gives you an engine. A fortune-telling site gives you one website. ZiweiHub gives you a platform: open from end to end, private by design, open to developers, global from day one in Chinese and English under California law, and with a market where what people know is traded as skills.
+A charting library gives you an engine. A fortune-telling site gives you one website. Ziwei Natal Chart gives you a platform: open from end to end, private by design, open to developers, global from day one in Chinese and English under California law, and with a market where what people know is traded as skills.
 
 ### 1.4 Build it with us
 
@@ -69,7 +69,7 @@ Every skill published makes the platform more useful to every member. Every memb
 - **Build with it.** `POST /api/v1/charts` returns a chart as JSON.
 - **Trust how it's run.** Member, practitioner and admin roles, a daily AI limit, and a note under every reading: for reference only.
 
-<img src="docs/screenshots/home-en.png" alt="The ZiweiHub home page in English" width="720">
+<img src="docs/screenshots/home-en.png" alt="The Ziwei Natal Chart home page in English" width="720">
 
 ### 2.2 Where we're headed
 

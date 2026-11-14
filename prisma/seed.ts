@@ -44,7 +44,7 @@ export function e2eApiKeyFromEnv(env: Record<string, string | undefined>): strin
   if (!value) return undefined;
   // Neither message repeats the key or the database URL.
   if (!e2eKeySchema.safeParse(value).success) {
-    throw new Error('E2E_API_KEY must look like a ZiweiHub API key: "zwk_" followed by 43 base64url characters');
+    throw new Error('E2E_API_KEY must look like a Ziwei Natal Chart API key: "zwk_" followed by 43 base64url characters');
   }
   if (!isLocalDatabase(env.DATABASE_URL)) {
     throw new Error('Refusing to seed E2E_API_KEY: only into a localhost database');
