@@ -1,6 +1,8 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
+import { getDailyAiLimit } from '@/lib/admin/settings';
+import { prisma } from '@/lib/db';
 import {
   createAnthropicStream,
   encodeInterpretationStream,
@@ -19,8 +21,8 @@ export const runtime = 'nodejs';
 
 /**
  * Streams an AI reading of the posted chart as server-sent events. Members only:
- * without a valid session it returns 401, and over the hourly limit 429, both
- * before reading the body.
+ * without a valid session it returns 401, and over the hourly or the admin-set
+ * daily limit 429, both before reading the body.
  */
 export const POST = auth(async function POST(request) {
   let user: SessionUser;
@@ -31,7 +33,8 @@ export const POST = auth(async function POST(request) {
     throw error;
   }
 
-  const limit = await limitAiRequest(getRateLimitStore(), { userId: user.id, ip: clientIp(request.headers) }, Date.now());
+  const dailyLimit = await getDailyAiLimit(prisma);
+  const limit = await limitAiRequest(getRateLimitStore(), { userId: user.id, ip: clientIp(request.headers), dailyLimit }, Date.now());
   if (!limit.allowed) return tooManyRequests(limit);
 
   let body: unknown;
