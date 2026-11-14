@@ -98,7 +98,7 @@ npm run dev                   # http://localhost:3000
 
 Saving charts needs PostgreSQL and `DATA_ENCRYPTION_KEY`, signing in needs a GitHub OAuth app, and readings need an Anthropic API key. [docs/deployment.md](docs/deployment.md) walks through each one.
 
-> **Course demo:** the Anthropic API key for the demo is attached as a comment on our Canvas submission. It is for demo use only and expires 30 days after submission.
+> **Grading:** use the [live site](https://ziwei-doushu-seven-omega.vercel.app) and sign in with GitHub to get AI readings. Running it locally needs your own Anthropic API key.
 
 #### 3.1.2 Run the tests
 
