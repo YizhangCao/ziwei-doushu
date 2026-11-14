@@ -315,7 +315,7 @@ a.rounded-full,
 
 /* 触屏：所有控件至少 44px 高（Apple HIG）；Polestar 的 52px 已经满足 */
 @media (pointer: coarse) {
-  .btn-primary, .btn-ghost, .btn-sm, .input-base, select { min-height: 44px; }
+  .btn-primary, .btn-ghost, .btn-sm, .input-base, select, .chip { min-height: 44px; }
 }
 
 /* ─── 四化徽章：颜色 + 汉字，12px，2px 小圆角 ───────────────── */

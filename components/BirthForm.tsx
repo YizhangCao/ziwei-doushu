@@ -379,8 +379,9 @@ export default function BirthForm({ onSubmit, loading, initialData, onFormSave, 
             )}
           </div>}
         </div>
-        <label style={{ display: 'flex', alignItems: 'center', gap: '7px', marginTop: '8px', cursor: 'pointer' }}>
+        <label htmlFor="bf-unknown-time" style={{ display: 'flex', alignItems: 'center', gap: '7px', marginTop: '8px', cursor: 'pointer' }}>
           <input
+            id="bf-unknown-time"
             type="checkbox"
             checked={form.unknownTime}
             onChange={e => setForm({ ...form, unknownTime: e.target.checked })}

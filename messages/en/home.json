@@ -1,9 +1,8 @@
 {
   "hero": {
-    "eyebrow": "Ziwei Doushu (Purple Star Astrology) · Ni Haixia’s method",
     "title": "Ziwei Natal Chart",
     "claim": "<phrase>Enter the date and hour of your birth</phrase> <phrase>to build your Ziwei natal chart.</phrase>",
-    "subclaim": "<phrase>Charted by Ni Haixia’s method,</phrase> <phrase>read by AI palace by palace.</phrase>",
+    "subclaim": "<phrase>Charted by Ni Haixia’s method,</phrase> <phrase>analyzed by AI.</phrase>",
     "cta": "Build your chart"
   },
   "outlook": {
@@ -254,34 +253,13 @@
     "attribution": "— as taught by Ni Haixia"
   },
   "ni": {
-    "eyebrow": "Master · 1954 – 2012",
-    "title": "Ni Haixia",
-    "intro": "One of the most influential masters of Chinese medicine and the divination arts in the modern Chinese-speaking world<br></br>Founder of the Hantang College of Chinese Medicine in the US · His Ren Ji and Tian Ji teaching series live on",
-    "stats": [
-      {
-        "label": "Born",
-        "value": "1954",
-        "sub": "Taiwan"
-      },
-      {
-        "label": "Died",
-        "value": "2012",
-        "sub": "January 31 · aged 58"
-      },
-      {
-        "label": "Legacy",
-        "value": "Ziwei Doushu",
-        "sub": "Classical formula medicine · Yijing (Book of Changes)"
-      }
-    ],
-    "bio": {
-      "life": "<label>Life and career</label>: Ni Haixia (1954–2012) was born in Taiwan. As a young man he studied under several noted doctors of Chinese medicine and specialized in the Jingfang (classical formula) school, the tradition of the Shanghan lun (Treatise on Cold Damage). In midlife he moved to the United States to practice medicine and founded the <strong>Hantang College of Chinese Medicine</strong>, where for more than twenty years he taught Chinese medicine and the traditional divination arts in a systematic way. He died of liver cancer in Taiwan on January 31, 2012, at the age of 58.",
-      "teaching": "<label>Teaching</label>: Ni Haixia organized everything he had learned into two public teaching series. <strong>Ren Ji</strong> covers the Zhenjiu dacheng (Great Compendium of Acupuncture and Moxibustion), the Shennong bencao jing (Divine Farmer’s Classic of Materia Medica), the Huangdi neijing (Inner Classic of the Yellow Emperor), the Shanghan lun (Treatise on Cold Damage) and the Jingui yaolüe (Essentials from the Golden Cabinet). It is the “principles of humankind,” a complete path for learning Chinese medicine. <strong>Tian Ji</strong> covers Ziwei Doushu and the Yijing (Book of Changes). It is the “principles of heaven,” his systematic work on the divination arts. Together they are the most complete legacy Ni Haixia left to later generations.",
-      "stance": "<label>On Ziwei</label>: In Ziwei Doushu, Ni Haixia belonged to the <strong>Southern Sanhe (Three Harmonies) school</strong>. He read the Life Palace as the root and the sanfang sizheng as its use, and he used only the birth-year Four Transformations, not feihua (transformations flown from palace stems).",
-      "approach": "<label>Approach to learning</label>: Ni Haixia was against memorizing formulas by rote; he put understanding the principles and sound logic first. This attitude helped Ziwei Doushu move from secrets passed from master to student toward knowledge anyone can study systematically.",
-      "influence": "<label>Influence today</label>: Ni Haixia’s lecture videos are widely shared on Bilibili, YouTube and other major platforms, and a new generation of fate-reading and Chinese medicine fans sees them as required viewing for beginners. He was not only an heir to Ziwei Doushu but also one of the key figures who brought traditional fate reading and Chinese medicine into modern knowledge."
-    },
-    "disclaimer": "All readings on this site draw on Ni Haixia’s public Tian Ji lecture notes, the Ming edition of the Ziwei doushu quanshu (Complete Book of Ziwei Doushu) and classic texts of the traditional Sanhe school. They are for cultural interest and personal growth only. Ni Haixia himself has no commercial connection with this site.",
+    "eyebrow": "About Ni Haixia",
+    "title": "Ni Haixia (1954–2012)",
+    "intro": "One of the most influential masters of Chinese medicine and the divination arts in the modern Chinese-speaking world<br></br>His Tian Ji and Ren Ji lectures are widely shared.",
+    "stance": "<label>On Ziwei</label>: Ni Haixia used the birth-year Four Transformations and not feihua (transformations flown from palace stems). Once placed, the Four Transformations stay in their palaces; what moves each year is the annual chart, not the transformations.",
+    "source": "Source: Tian Ji, lecture 3 (part 1), from 00:01:17",
+    "disclaimer": "Readings draw on Ni Haixia’s public Tian Ji lectures and Ming-dynasty classics, for cultural interest and personal growth only. This site has no commercial connection with Ni Haixia, his family or his institutions.",
+    "more": "His life, lectures and approach",
     "teachings": [
       {
         "title": "The minggong is the root from whence we start;\nThe sanfang is the use that plays its part.",
