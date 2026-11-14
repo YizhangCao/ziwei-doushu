@@ -30,6 +30,23 @@ test.describe('signed in', () => {
     await signInAsE2eMember(context, baseURL!);
   });
 
+  // Chart.name is stored in plaintext; the birth form's name is part of the encrypted birth data.
+  // So the chart name starts empty instead of copying the person's name out of it.
+  test('the chart name starts empty, even when the birth form has a name', async ({ page }) => {
+    await page.goto('/chart');
+    await page.locator('#bf-name').fill('测试姓名');
+    const selects = page.locator('form select');
+    await selects.nth(0).selectOption('1992');
+    await selects.nth(1).selectOption('3');
+    await selects.nth(2).selectOption('8');
+    await page.locator('#bf-hour').selectOption('9');
+    await page.getByRole('button', { name: '男', exact: true }).click();
+    await page.getByRole('button', { name: '起盘', exact: true }).click();
+    await expect(page.getByText('仆役', { exact: true }).first()).toBeVisible();
+
+    await expect(page.getByLabel('命盘名称')).toHaveValue('');
+  });
+
   test('save → list → open → rename → delete', async ({ page }) => {
     // Save from /chart.
     await buildChart(page);

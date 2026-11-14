@@ -20,6 +20,16 @@ beforeEach(resetDatabase);
 afterAll(() => prisma.$disconnect());
 
 describe('upsertUserFromProfile(db, profile)', () => {
+  // Two tabs, or a double-click on the OAuth consent, sign the same new account in at once.
+  it('creates one user when the same new account signs in several times at once', async () => {
+    const profile = { githubId: '1010', email: 'twice@example.test', name: 'Twice', image: null };
+
+    const users = await Promise.all(Array.from({ length: 5 }, () => upsertUserFromProfile(prisma, profile)));
+
+    expect(new Set(users.map((u) => u.id)).size).toBe(1);
+    expect(await prisma.user.count({ where: { githubId: '1010' } })).toBe(1);
+  });
+
   it('creates a new user with the member role, keyed by GitHub id', async () => {
     const user = await upsertUserFromProfile(prisma, {
       githubId: '1001',
