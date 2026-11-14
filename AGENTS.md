@@ -1,4 +1,4 @@
-# AGENTS.md — ZiweiHub (Ziwei Doushu P2)
+# AGENTS.md — Ziwei Natal Chart (Ziwei Doushu P2)
 
 <!--
   AGENTS: read this entire file before starting any task.
@@ -16,7 +16,7 @@ This repo is our fork of the open-source Zi Wei Dou Shu (紫微斗数) charting 
 (upstream: https://github.com/Renhuai123/ziwei-doushu, MIT). The engine turns a birth
 date, birth hour, and gender into a 12-palace astrology chart, entirely in the browser.
 
-The upstream snapshot ships **without any backend**. **Our P2, ZiweiHub, turns it into a
+The upstream snapshot ships **without any backend**. **Our P2, Ziwei Natal Chart, turns it into a
 full-stack app:** accounts, saved charts, AI readings with saved conversations, compatibility,
 real-time practitioner consultations, an admin area, and a documented public API.
 The chart and reading UI that already exists calls `/api/interpret` and `/api/heming`; keep
@@ -271,3 +271,4 @@ A task is done when: the acceptance criteria are all met, `npm run typecheck` an
 - v3.6 (11/11/2026): English version (#59). next-intl is in the stack table, the language switch in 2.2 and 2.4, and the translation rules under "Do".
 - v3.7 (11/12/2026): request limits by role (#105). One English reading is about 5,500 characters, and the old 2,000-character cap on every message made each follow-up fail with 400. A visitor still types at most 2,000; the model's replies may be 20,000, with 100,000 in all.
 - v3.8 (11/13/2026): two-tier reading (#118). Everyone gets a free rule-based reading built in the browser; members get the AI reading on top. Added the rule that the free reading always renders, and updated flow 1 in 2.4.
+- v3.9 (11/13/2026): one English name (#120). The product is Ziwei Natal Chart in English, as the site already said; the working name from v3 is gone from the docs and code. The Chinese name doesn't change.

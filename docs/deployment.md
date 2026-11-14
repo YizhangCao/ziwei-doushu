@@ -1,6 +1,6 @@
 # Setup and deployment
 
-ZiweiHub runs in three environments. Each has its own database, and each takes its settings from environment variables.
+Ziwei Natal Chart runs in three environments. Each has its own database, and each takes its settings from environment variables.
 
 | Environment | Runs on | Database | Settings from |
 |---|---|---|---|
@@ -29,7 +29,7 @@ Copy `.env.example` to `.env.local` and fill it in. Never commit real values.
 Notes:
 
 - **`DATA_ENCRYPTION_KEY` isn't in `.env.example` yet.** Add it to your `.env.local` by hand. Without it, saving a chart fails.
-- **`AI_PROVIDER` and `DEEPSEEK_API_KEY`** in `.env.example` come from the upstream project. ZiweiHub doesn't read them.
+- **`AI_PROVIDER` and `DEEPSEEK_API_KEY`** in `.env.example` come from the upstream project. Ziwei Natal Chart doesn't read them.
 
 ## Run it locally
 

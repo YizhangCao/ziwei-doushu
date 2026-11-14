@@ -1,6 +1,6 @@
 import { createHash, randomBytes, timingSafeEqual } from 'node:crypto';
 
-/** Every ZiweiHub API key starts with this, so leaked keys are easy to recognise and scan for. */
+/** Every Ziwei Natal Chart API key starts with this, so leaked keys are easy to recognise and scan for. */
 export const API_KEY_PREFIX = 'zwk_';
 
 // Characters of the plain key kept as `prefix`: enough to tell keys apart in a list,

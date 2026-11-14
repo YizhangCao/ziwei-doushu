@@ -1,6 +1,6 @@
 <div align="center">
 
-# 紫微命盘 · ZiweiHub
+# 紫微命盘 · Ziwei Natal Chart
 
 [English](README.md) · **简体中文**
 

@@ -10,7 +10,7 @@ describe('e2eApiKeyFromEnv — which API key the seed creates for E2E', () => {
     expect(e2eApiKeyFromEnv({ E2E_API_KEY: '' })).toBeUndefined();
   });
 
-  it('returns the key when it looks like a ZiweiHub API key and the database is on this machine', () => {
+  it('returns the key when it looks like a Ziwei Natal Chart API key and the database is on this machine', () => {
     expect(e2eApiKeyFromEnv({ E2E_API_KEY: FAKE_KEY, DATABASE_URL: 'postgresql://postgres:postgres@localhost:5432/ziwei_test' })).toBe(
       FAKE_KEY,
     );
