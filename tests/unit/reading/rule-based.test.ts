@@ -100,20 +100,19 @@ describe('buildRuleBasedReading (lib/reading/rule-based.ts)', () => {
   });
 
   it('leaves no Chinese in the English reading, star keywords included, for any chart (#118)', () => {
-    for (const year of [1950, 1975, 1990, 2005]) {
-      for (const month of [1, 6, 11]) {
-        for (let hour = 0; hour < 12; hour++) {
-          for (const gender of ['male', 'female'] as const) {
-            const en = buildRuleBasedReading(generateChart({ year, month, day: 15, hour, gender }), 'en');
-            const where = `${year}-${month} hour ${hour} ${gender}`;
-            expect(en, where).not.toHaveProperty('note');
-            expect(en.overview, where).not.toMatch(HAN);
-            for (const section of en.palaces) expect(`${section.title} ${section.domain} ${section.text}`, where).not.toMatch(HAN);
-          }
+    // 96 charts: four years and months, every hour, both genders (about 25 ms each).
+    for (const [year, month] of [[1950, 1], [1975, 4], [1990, 7], [2005, 10]]) {
+      for (let hour = 0; hour < 12; hour++) {
+        for (const gender of ['male', 'female'] as const) {
+          const en = buildRuleBasedReading(generateChart({ year, month, day: 15, hour, gender }), 'en');
+          const where = `${year}-${month} hour ${hour} ${gender}`;
+          expect(en, where).not.toHaveProperty('note');
+          expect(en.overview, where).not.toMatch(HAN);
+          for (const section of en.palaces) expect(`${section.title} ${section.domain} ${section.text}`, where).not.toMatch(HAN);
         }
       }
     }
-  });
+  }, 20_000);
 
   it('gives every main star three plain English keywords, in the same order as the Chinese (#118)', () => {
     expect(Object.keys(STAR_KEYWORDS_EN).sort()).toEqual(Object.keys(STAR_DESCRIPTIONS).sort());

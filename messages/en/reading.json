@@ -1,7 +1,6 @@
 {
   "freeTitle": "Basic reading (rule-based)",
   "freeLead": "Built from the chart’s main stars, their brightness and sihua by fixed rules. No AI is involved.",
-  "note": "Star keywords are shown in Chinese for now; English versions are still being written.",
   "aiTitle": "Personalized AI reading",
   "signInPrompt": "Sign in for a personalized AI reading and follow-up questions.",
   "signIn": "Sign in",

@@ -2,7 +2,7 @@ import { createTranslator } from 'next-intl';
 import { formatList } from '@/lib/i18n/format';
 import { termLabel, withGloss } from '@/lib/i18n/glossary';
 import type { Locale } from '@/lib/i18n/locale';
-import { STAR_BRIEF_EN } from '@/lib/i18n/knowledge-en';
+import { STAR_BRIEF_EN, STAR_KEYWORDS_EN } from '@/lib/i18n/knowledge-en';
 import { STAR_BRIEF_SEO } from '@/lib/seo/knowledge';
 import { STAR_DESCRIPTIONS } from '@/lib/ziwei/constants';
 import type { Palace, Star, ZiweiChart } from '@/lib/ziwei/types';
@@ -21,8 +21,7 @@ import enInsight from '@/messages/en/insight.json';
  *
  * Sources: palace domains are the reading panel's palace roles (messages/*\/insight.json);
  * the life-palace briefs are the knowledge index's (STAR_BRIEF_SEO, STAR_BRIEF_EN); star
- * keywords are STAR_DESCRIPTIONS, which exist only in Chinese, so the English reading keeps
- * them in Chinese and says so in `note` instead of inventing translations.
+ * keywords are STAR_DESCRIPTIONS in Chinese and STAR_KEYWORDS_EN in English.
  */
 
 export interface RuleStar {
@@ -44,8 +43,6 @@ export interface RulePalaceReading {
 export interface RuleBasedReading {
   overview: string;
   palaces: RulePalaceReading[];
-  /** Set when some text stays in Chinese (English only). */
-  note?: string;
 }
 
 const MESSAGES = {
@@ -68,6 +65,9 @@ export function buildRuleBasedReading(chart: ZiweiChart, locale: Locale): RuleBa
   const term = (zh: string) => termLabel(zh, locale);
   const starName = (zh: string) => (locale === 'en' ? withGloss(zh) : zh);
   const list = (items: string[]) => formatList(items, locale);
+  // Each star's phrase lists its keywords with commas, so the stars themselves are separated
+  // with a semicolon; otherwise the next star reads like one more keyword (#118).
+  const starList = (phrases: string[]) => phrases.join(locale === 'en' ? '; ' : '；');
 
   const palaceTitle = (name: string) => {
     if (locale === 'en') return `${term(bare(name) === '命' ? '命宫' : bare(name))} Palace`;
@@ -78,7 +78,9 @@ export function buildRuleBasedReading(chart: ZiweiChart, locale: Locale): RuleBa
     const details = [star.brightnessRaw && term(star.brightnessRaw), star.siHua && term(`化${star.siHua}`)].filter(
       (d): d is string => Boolean(d),
     );
-    const keywords = STAR_DESCRIPTIONS[star.name]?.keywords.split('·').join(locale === 'en' ? ', ' : '、') ?? '';
+    const keywords = locale === 'en'
+      ? (STAR_KEYWORDS_EN[star.name] ?? []).join(', ')
+      : (STAR_DESCRIPTIONS[star.name]?.keywords.split('·') ?? []).join('、');
     return details.length
       ? t('star.withDetails', { star: starName(star.name), details: details.join(locale === 'en' ? ', ' : '，'), keywords })
       : t('star.plain', { star: starName(star.name), keywords });
@@ -99,10 +101,10 @@ export function buildRuleBasedReading(chart: ZiweiChart, locale: Locale): RuleBa
 
     let text: string;
     if (majors.length) {
-      text = t('palace.withStars', { palace: title, domain, stars: list(majors.map(starPhrase)) });
+      text = t('palace.withStars', { palace: title, domain, stars: starList(majors.map(starPhrase)) });
     } else if (borrowedStars(palace).length && opposite) {
       text = t('palace.borrowed', {
-        palace: title, domain, opposite: palaceTitle(opposite.name), stars: list(borrowedStars(palace).map(starPhrase)),
+        palace: title, domain, opposite: palaceTitle(opposite.name), stars: starList(borrowedStars(palace).map(starPhrase)),
       });
     } else {
       text = t('palace.none', { palace: title, domain });
@@ -128,5 +130,5 @@ export function buildRuleBasedReading(chart: ZiweiChart, locale: Locale): RuleBa
     : '';
   const overview = [opening, ...briefs, basics].filter(Boolean).join(locale === 'en' ? ' ' : '');
 
-  return { overview, palaces, ...(locale === 'en' ? { note: t('note') } : {}) };
+  return { overview, palaces };
 }

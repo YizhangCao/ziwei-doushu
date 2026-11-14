@@ -1,7 +1,8 @@
 /**
  * Author: Yikang (Richard) Liu, M.S. Candidate in Computer Science, Khoury College of Computer Sciences, Northeastern University
- * Version: 1.0
+ * Version: 1.1
  * Created: November 11, 2026 · San Francisco, California, USA
+ * Last Edited: November 13, 2026 · San Francisco, California, USA
  */
 
 /**
@@ -10,6 +11,12 @@
  */
 
 import { consume, type RateLimitResult, type RateLimitRule, type RateLimitStore } from './limiter';
+import type { AiLimitReason } from './message';
+
+/** A limit check's result; a refusal also says which limit refused it (#118). */
+export interface AiLimitResult extends RateLimitResult {
+  reason?: AiLimitReason;
+}
 
 /** AI requests allowed per hour for each user. */
 export const AI_HOURLY_LIMIT = 20;
@@ -38,21 +45,21 @@ const ALLOWED: RateLimitResult = { allowed: true, limit: AI_HOURLY_LIMIT, remain
  *
  * @param caller.dailyLimit The admin-set requests per user per day; omit to skip it.
  * @param now The current time in epoch milliseconds.
- * @return The first limit that refused the request, or an allowed result.
+ * @return The first limit that refused the request, with its reason, or an allowed result.
  */
 export async function limitAiRequest(
   store: RateLimitStore,
   caller: { userId: string; ip: string; dailyLimit?: number },
   now: number,
-): Promise<RateLimitResult> {
+): Promise<AiLimitResult> {
   try {
     const byIp = await consume(store, PER_IP, caller.ip, now);
-    if (!byIp.allowed) return byIp;
+    if (!byIp.allowed) return { ...byIp, reason: 'hourly' };
     const byUser = await consume(store, PER_USER, caller.userId, now);
-    if (!byUser.allowed) return byUser;
+    if (!byUser.allowed) return { ...byUser, reason: 'hourly' };
     if (caller.dailyLimit !== undefined) {
       const daily = await consume(store, { name: 'ai-daily', limit: caller.dailyLimit, windowMs: DAY_MS }, caller.userId, now);
-      if (!daily.allowed) return daily;
+      if (!daily.allowed) return { ...daily, reason: caller.dailyLimit === 0 ? 'paused' : 'daily' };
     }
     return { ...byUser, remaining: Math.min(byIp.remaining, byUser.remaining) };
   } catch {
@@ -60,10 +67,14 @@ export async function limitAiRequest(
   }
 }
 
-/** The 429 response for a refused request, with Retry-After in seconds. */
-export function tooManyRequests(result: RateLimitResult): Response {
+/**
+ * The 429 response for a refused request, with Retry-After in seconds. The body names the
+ * limit, because Retry-After alone can't tell them apart: in the last hour of the UTC day the
+ * daily limit's wait is under an hour too (#118).
+ */
+export function tooManyRequests(result: AiLimitResult): Response {
   return Response.json(
-    { error: 'Too many AI requests. Try again later.' },
+    { error: 'Too many AI requests. Try again later.', reason: result.reason ?? 'hourly' },
     { status: 429, headers: { 'Retry-After': String(result.retryAfterSeconds) } },
   );
 }
