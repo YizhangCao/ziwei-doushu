@@ -29,6 +29,7 @@ import zhLibrary from './zh/library.json';
 import zhMeta from './zh/meta.json';
 import zhNav from './zh/nav.json';
 import zhNotFound from './zh/notFound.json';
+import zhSettings from './zh/settings.json';
 import zhTimeNav from './zh/timeNav.json';
 import enAbout from './en/about.json';
 import enAdmin from './en/admin.json';
@@ -48,6 +49,7 @@ import enLibrary from './en/library.json';
 import enMeta from './en/meta.json';
 import enNav from './en/nav.json';
 import enNotFound from './en/notFound.json';
+import enSettings from './en/settings.json';
 import enTimeNav from './en/timeNav.json';
 import type { Locale } from '@/lib/i18n/locale';
 
@@ -70,6 +72,7 @@ const zh = {
   meta: zhMeta,
   nav: zhNav,
   notFound: zhNotFound,
+  settings: zhSettings,
   timeNav: zhTimeNav,
 };
 
@@ -94,6 +97,7 @@ const en: Messages = {
   meta: enMeta,
   nav: enNav,
   notFound: enNotFound,
+  settings: enSettings,
   timeNav: enTimeNav,
 };
 

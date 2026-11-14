@@ -40,6 +40,9 @@ export default function UserMenu() {
       <span className="hidden sm:inline max-w-[8rem] truncate" style={{ fontSize: 'var(--fs-small)', color: 'var(--tx-2)' }}>
         {session.user.name ?? t('signedIn')}
       </span>
+      <Link href="/settings" style={{ color: 'var(--tx-0)' }}>
+        {t('settings')}
+      </Link>
       <button
         type="button"
         onClick={() => signOut({ redirectTo: '/' })}
