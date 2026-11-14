@@ -5,10 +5,12 @@ import type { ChartRecord, SessionUser } from '@/lib/auth/types';
 import { prisma } from '@/lib/db';
 import {
   ConsultationInputError,
+  type ChartShare,
   type ConsultationMessage,
   type MessagePage,
   type SharedChartSummary,
   type ShareSummary,
+  type ThreadSummary,
 } from './types';
 
 // Sharing and consultation threads (#21). Every function takes the user from the server session
@@ -109,6 +111,38 @@ export async function revokeShare(sessionUser: SessionUser | null, shareId: stri
   // Revoking twice keeps the first revocation time.
   if (share.revokedAt) return share;
   return prisma.share.update({ where: { id: share.id }, data: { revokedAt: new Date() }, select: SHARE_SELECT });
+}
+
+/** The owner's active shares of one chart, newest first. Others get 404; its practitioner 403. */
+export async function listChartShares(sessionUser: SessionUser | null, chartId: string): Promise<ChartShare[]> {
+  const user = requireUser(sessionUser);
+  const chart = await prisma.chart.findUnique({
+    where: { id: chartId },
+    select: { id: true, ownerId: true, shares: { select: { chartId: true, practitionerId: true, revokedAt: true } } },
+  });
+  requireChartAccess(user, chart, chart?.shares ?? []);
+  if (!canModifyChart(user, chart as ChartRecord)) throw new AuthError(403, 'Only the owner can see who this chart is shared with');
+
+  const rows = await prisma.share.findMany({
+    where: { chartId, revokedAt: null },
+    orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+    select: { id: true, createdAt: true, practitioner: { select: { email: true } } },
+  });
+  // A practitioner is found by email to be shared with, so the email is there; '' is only a type guard.
+  return rows.map((row) => ({ id: row.id, practitionerEmail: row.practitioner.email ?? '', createdAt: row.createdAt }));
+}
+
+/** The thread page header: chart name, who is reading, and whether it is closed. */
+export async function getThread(sessionUser: SessionUser | null, shareId: string): Promise<ThreadSummary> {
+  const user = requireUser(sessionUser);
+  const { share, chart } = await loadThread(user, shareId);
+  const row = await prisma.chart.findUniqueOrThrow({ where: { id: chart.id }, select: { name: true } });
+  return {
+    shareId: share.id,
+    chartName: row.name,
+    viewerRole: chart.ownerId === user.id ? 'owner' : 'practitioner',
+    closed: share.revokedAt !== null,
+  };
 }
 
 /** Active shares with the signed-in practitioner, newest first. */

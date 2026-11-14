@@ -30,6 +30,8 @@ const CORE = [
   'components/TimeNav.tsx',
   'components/InsightPanel.tsx',
   'components/AiContent.tsx',
+  'components/AiReadingSection.tsx',
+  'components/RuleBasedReading.tsx',
   // Library and knowledge (reading pages one click from home)
   'app/library/page.tsx',
   'app/library/LibrarySearch.tsx',

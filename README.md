@@ -61,7 +61,8 @@ Every skill published makes the platform more useful to every member. Every memb
 ### 2.1 What you can do today
 
 - **Build a chart in seconds.** Enter the date, hour and place of birth, and your twelve palaces are laid out with true solar time, by Ni Haixia's method, right in your browser.
-- **Talk to your reading.** The AI reads from the Life Palace out (character, career, love, wealth, health), writes as you watch, and answers your follow-up questions.
+- **Get a reading right away.** Every chart comes with a basic reading built by fixed rules from its stars, their brightness and sihua. It's worked out in your browser, with no sign-in and no AI.
+- **Talk to your reading.** Sign in and a personalized AI reading appears above it: it reads from the Life Palace out (character, career, love, wealth, health), writes as you watch, and answers your follow-up questions. If the AI is down or today's limit is used up, the basic reading stays.
 - **Keep it private.** Sign in with GitHub and save charts for yourself and the people you love. Each chart keeps its conversation beside it.
 - **Read it in Chinese or English.** One tap to switch, with academic English for every term.
 - **Go to the source.** A library of the classical texts, and a knowledge base of the stars.
@@ -97,7 +98,7 @@ npm run dev                   # http://localhost:3000
 
 Saving charts needs PostgreSQL and `DATA_ENCRYPTION_KEY`, signing in needs a GitHub OAuth app, and readings need an Anthropic API key. [docs/deployment.md](docs/deployment.md) walks through each one.
 
-> **Course demo:** the Anthropic API key for the demo is attached as a comment on our Canvas submission. It is for demo use only and expires 30 days after submission.
+> **Grading:** use the [live site](https://ziwei-doushu-seven-omega.vercel.app) and sign in with GitHub to get AI readings. Running it locally needs your own Anthropic API key.
 
 #### 3.1.2 Run the tests
 

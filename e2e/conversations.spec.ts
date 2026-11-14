@@ -1,7 +1,8 @@
 /**
  * Author: Yikang (Richard) Liu, M.S. Candidate in Computer Science, Khoury College of Computer Sciences, Northeastern University
- * Version: 1.0
+ * Version: 1.1
  * Created: November 12, 2026 · San Francisco, California, USA
+ * Last Edited: November 14, 2026 · San Francisco, California, USA
  */
 
 /**
@@ -42,13 +43,15 @@ async function mockReadings(page: Page) {
   return calls;
 }
 
-test('a guest’s reading is not saved anywhere', async ({ page }) => {
+test('a guest’s chart is never read by the AI, so nothing is saved', async ({ page }) => {
+  // Since #118 a guest gets the free reading and a sign-in prompt in place of the AI panel.
   const saves: string[] = [];
   page.on('request', (req) => { if (req.url().includes('/conversation')) saves.push(req.url()); });
-  await mockReadings(page);
+  const calls = await mockReadings(page);
 
   await buildChart(page);
-  await expect(page.getByText(READING)).toBeVisible();
+  await expect(page.getByText('登录后可获得 AI 个性化解读，并能继续追问。')).toBeVisible();
+  expect(calls.count).toBe(0);
   expect(saves).toEqual([]);
 });
 

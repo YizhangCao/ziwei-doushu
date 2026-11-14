@@ -3,6 +3,8 @@ import { AuthError } from '@/lib/auth/guards';
 import type { AuthErrorStatus, Role, SessionUser } from '@/lib/auth/types';
 import { createChart, getChart } from '@/lib/charts/service';
 import {
+  getThread,
+  listChartShares,
   listMessages,
   listMessagesSince,
   listSharedWithMe,
@@ -168,6 +170,52 @@ describe('revokeShare', () => {
     expect(await statusOf(() => revokeShare(w.stranger, share.id))).toBe(404);
     expect(await statusOf(() => revokeShare(w.owner, 'no-such-share'))).toBe(404);
     expect((await prisma.share.findUniqueOrThrow({ where: { id: share.id } })).revokedAt).toBeNull();
+  });
+});
+
+describe('listChartShares — the owner sees who a chart is shared with', () => {
+  it('lists active shares with the practitioner email the owner typed, newest first, without revoked ones', async () => {
+    const w = await world();
+    const first = await shareChart(w.owner, w.chartId, 'prac@example.test');
+    const second = await shareChart(w.owner, w.chartId, 'prac2@example.test');
+    await revokeShare(w.owner, first.id);
+
+    const shares = await listChartShares(w.owner, w.chartId);
+    expect(shares).toEqual([{ id: second.id, practitionerEmail: 'prac2@example.test', createdAt: second.createdAt }]);
+  });
+
+  it('returns 404 for anyone but the owner who cannot see the chart, and 403 for its practitioner', async () => {
+    const w = await world();
+    await shareChart(w.owner, w.chartId, 'prac@example.test');
+
+    expect(await statusOf(() => listChartShares(w.stranger, w.chartId))).toBe(404);
+    expect(await statusOf(() => listChartShares(w.practitioner, w.chartId))).toBe(403);
+    expect(await statusOf(() => listChartShares(null, w.chartId))).toBe(401);
+  });
+});
+
+describe('getThread — what the thread page shows above the messages', () => {
+  it('gives the chart name, who is reading, and whether the thread is closed', async () => {
+    const w = await world();
+    const share = await shareChart(w.owner, w.chartId, 'prac@example.test');
+
+    expect(await getThread(w.owner, share.id)).toEqual({ shareId: share.id, chartName: 'Mum', viewerRole: 'owner', closed: false });
+    expect(await getThread(w.practitioner, share.id)).toEqual({
+      shareId: share.id,
+      chartName: 'Mum',
+      viewerRole: 'practitioner',
+      closed: false,
+    });
+  });
+
+  it('stays open to the owner as closed after a revoke, and is gone for the practitioner', async () => {
+    const w = await world();
+    const share = await shareChart(w.owner, w.chartId, 'prac@example.test');
+    await revokeShare(w.owner, share.id);
+
+    expect(await getThread(w.owner, share.id)).toMatchObject({ closed: true, viewerRole: 'owner' });
+    expect(await statusOf(() => getThread(w.practitioner, share.id))).toBe(404);
+    expect(await statusOf(() => getThread(w.stranger, share.id))).toBe(404);
   });
 });
 

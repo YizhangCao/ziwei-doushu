@@ -2,6 +2,7 @@ import Anthropic from '@anthropic-ai/sdk';
 import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { getDailyAiLimit } from '@/lib/admin/settings';
+import { AI_NOT_CONFIGURED } from '@/lib/ai/interpret-errors';
 import { prisma } from '@/lib/db';
 import {
   createAnthropicStream,
@@ -53,7 +54,7 @@ export const POST = auth(async function POST(request) {
   const model = process.env.ANTHROPIC_MODEL;
   const effort = parseAnthropicEffort(process.env.ANTHROPIC_EFFORT);
   if (!apiKey || !model || !effort.ok) {
-    return NextResponse.json({ error: 'AI service is not configured' }, { status: 500 });
+    return NextResponse.json({ error: AI_NOT_CONFIGURED }, { status: 500 });
   }
 
   // The reading's language comes from the visitor's saved choice or browser (#59), never

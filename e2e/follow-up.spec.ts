@@ -12,6 +12,10 @@
  */
 
 import { test, expect, type Page } from '@playwright/test';
+import { stubMemberSession } from './helpers/session';
+
+// The AI reading panel is for members (#118); the session is stubbed, like /api/interpret.
+test.beforeEach(async ({ page }) => { await stubMemberSession(page); });
 
 interface SentBody {
   messages: { role: 'user' | 'assistant'; content: string }[];
@@ -57,7 +61,7 @@ test('a failure message stays on screen and is never sent to the model', async (
   await page.route('**/api/interpret', async (route) => {
     bodies.push(route.request().postDataJSON() as SentBody);
     if (bodies.length === 1) {
-      await route.fulfill({ status: 500, contentType: 'application/json', body: '{"error":"failed"}' });
+      await route.fulfill({ status: 500, contentType: 'application/json', body: '{"error":"AI service request failed"}' });
     } else {
       await route.fulfill({ status: 200, contentType: 'text/event-stream', body: stream('这次读完了。') });
     }

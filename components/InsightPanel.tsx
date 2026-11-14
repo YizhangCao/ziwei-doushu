@@ -1,7 +1,8 @@
 'use client';
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { rateLimitWait } from '@/lib/rate-limit/message';
+import { aiLimitReason, rateLimitWait } from '@/lib/rate-limit/message';
+import { isAiNotConfigured } from '@/lib/ai/interpret-errors';
 import type { ZiweiChart, Palace } from '@/lib/ziwei/types';
 import type { TimeView } from './TimeNav';
 import AiContent from './AiContent';
@@ -22,10 +23,15 @@ interface Message {
 
 /**
  * Each cause has its own message, so a used-up limit never reads like a bug (#63). A refused
- * request (400) is not retryable: sending the same request again gets the same answer.
+ * request (400) is not retryable: sending the same request again gets the same answer. Nor is
+ * a missing AI setup (#118), a 500 that a retry won't fix; other 500s (an Anthropic outage, a
+ * database timeout) can pass, so they keep the retry. The free reading below stays either way.
  */
-type ReadingError = 'network' | 'apiMissing' | 'loginRequired' | 'rateLimited' | 'rejected' | 'failed';
+type ReadingError = 'network' | 'apiMissing' | 'loginRequired' | 'rateLimited' | 'rejected' | 'unavailable' | 'failed';
 const RETRYABLE: ReadonlySet<ReadingError> = new Set(['network', 'failed']);
+
+/** Seconds in an hour, for the daily limit's wait in whole hours. */
+const HOUR_SECONDS = 3600;
 
 /** The character counter appears once a question gets this long. */
 const COUNTER_FROM = 1800;
@@ -210,15 +216,22 @@ export default function InsightPanel({ chart, selectedPalace, selectedSiHua, cha
       if (res.status === 404) return fail('apiMissing');
       if (res.status === 401) return fail('loginRequired'); // AI readings are for members (#15)
       if (res.status === 429) {
-        // With Retry-After (the hourly limit, #9) the reply says how long to wait;
-        // without it, the plain used-up message (#63)
-        const wait = rateLimitWait(Number(res.headers.get('retry-after') ?? ''));
-        if (!wait) return fail('rateLimited');
-        const content = 'minutes' in wait ? t('errors.rateLimitedMinutes', wait) : t('errors.rateLimitedHours', wait);
+        // The body names the limit (#118): Retry-After alone can't, since in the last hour of
+        // the UTC day the daily limit's wait is under an hour too. Retry-After gives the wait
+        // (#9); without one, the plain used-up message (#63).
+        const reason = aiLimitReason(await res.json().catch(() => null));
+        const retryAfter = Number(res.headers.get('retry-after') ?? '');
+        const wait = rateLimitWait(retryAfter);
+        let content: string | null = null;
+        if (reason === 'paused') content = t('errors.aiPaused');
+        else if (wait && reason === 'daily') content = t('errors.dailyLimitHours', { hours: Math.ceil(retryAfter / HOUR_SECONDS) });
+        else if (wait) content = 'minutes' in wait ? t('errors.rateLimitedMinutes', wait) : t('errors.rateLimitedHours', wait);
+        if (!content) return fail('rateLimited');
         setMessages(prev => [...prev, { role: 'assistant', content, error: 'rateLimited' }]);
         return;
       }
       if (res.status === 400) return fail('rejected');
+      if (res.status === 500) return fail(isAiNotConfigured(await res.json().catch(() => null)) ? 'unavailable' : 'failed');
       if (!res.ok || !res.body) return fail('failed');
 
       const reader = res.body.getReader();
