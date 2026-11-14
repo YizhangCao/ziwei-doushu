@@ -6,6 +6,7 @@ import {
   parseAnthropicEffort,
   validateInterpretRequest,
 } from '@/lib/ai/interpret';
+import { localeFromRequest } from '@/lib/i18n/locale';
 
 export const runtime = 'nodejs';
 
@@ -29,9 +30,14 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'AI service is not configured' }, { status: 500 });
   }
 
+  // The reading's language comes from the visitor's saved choice or browser (#59), never
+  // from the body, so the 2.3 request contract stays { chart, messages }. Resolved outside
+  // the try below, so a locale problem can't pass for an AI outage.
+  const locale = localeFromRequest(request);
+
   try {
     const anthropic = new Anthropic({ apiKey });
-    const stream = await createAnthropicStream(anthropic, input, model, { effort: effort.effort });
+    const stream = await createAnthropicStream(anthropic, input, model, locale, { effort: effort.effort });
     return new Response(encodeInterpretationStream(stream), {
       headers: {
         'Cache-Control': 'no-cache, no-transform',

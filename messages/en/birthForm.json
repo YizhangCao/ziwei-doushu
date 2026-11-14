@@ -1,0 +1,55 @@
+{
+  "errors": {
+    "yearRequired": "Choose your year of birth",
+    "yearRange": "Choose a year from 1900 to 2026",
+    "monthRequired": "Choose a month",
+    "dayRequired": "Choose a day",
+    "noSuchDay": "That month has no day {day} (month {month})"
+  },
+  "summary": {
+    "date": "{month, select, 1 {January} 2 {February} 3 {March} 4 {April} 5 {May} 6 {June} 7 {July} 8 {August} 9 {September} 10 {October} 11 {November} 12 {December} other {Month {month}}} {day}, {year}",
+    "unknownHour": "Hour unknown",
+    "hour": "{branch} double hour"
+  },
+  "name": {
+    "label": "Name (optional)",
+    "placeholder": "Your name"
+  },
+  "date": {
+    "label": "Date of birth (Gregorian calendar)",
+    "year": "Year",
+    "month": "Month",
+    "monthAria": "Month of birth",
+    "monthOption": "{month, select, 1 {January} 2 {February} 3 {March} 4 {April} 5 {May} 6 {June} 7 {July} 8 {August} 9 {September} 10 {October} 11 {November} 12 {December} other {Month {month}}}",
+    "day": "Day",
+    "dayAria": "Day of birth",
+    "dayOption": "{day}"
+  },
+  "place": {
+    "label": "Place of birth (optional, corrects the hour to true solar time)",
+    "province": "Province / municipality",
+    "city": "City",
+    "cityAria": "City of birth",
+    "pickProvince": "Choose a province first",
+    "pickCity": "(choose a city)",
+    "info": "{city} · longitude {longitude}°E · {offset} min from Beijing time",
+    "hint": "* Ni Haixia read charts by true solar time. Add your place of birth and the hour is corrected for you."
+  },
+  "time": {
+    "label": "Time of birth (Beijing time)",
+    "hourOption": "{hour} h",
+    "minuteAria": "Minute of birth",
+    "minuteOption": "{minute} min",
+    "trueSolar": "True solar time → ",
+    "branchHour": "{branch} double hour",
+    "range": "({range})",
+    "unknown": "I don’t know my time of birth. Use the Zi double hour (23:00–01:00)."
+  },
+  "gender": {
+    "label": "Gender",
+    "male": "Male",
+    "female": "Female"
+  },
+  "submit": "Build chart",
+  "submitting": "Building…"
+}

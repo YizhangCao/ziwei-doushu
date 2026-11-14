@@ -39,7 +39,7 @@ describe('createAnthropicStream leaves room to answer after thinking (#103)', ()
 
   it('sends the configured effort as output_config.effort', async () => {
     const { client, params } = recordingClient();
-    await createAnthropicStream(client, request, 'test-model', { effort: 'low' });
+    await createAnthropicStream(client, request, 'test-model', 'zh', { effort: 'low' });
     expect(params().output_config).toEqual({ effort: 'low' });
   });
 

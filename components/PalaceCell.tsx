@@ -1,7 +1,9 @@
 'use client';
 import { motion } from 'framer-motion';
+import { useLocale, useTranslations } from 'next-intl';
 import type { Palace, Star } from '@/lib/ziwei/types';
-import { STEMS, BRANCHES } from '@/lib/ziwei/constants';
+import { ganzhiLabel, termLabel } from '@/lib/i18n/glossary';
+import { formatList } from '@/lib/i18n/format';
 
 /**
  * 一个宫位（#57）：宫名 14、干支 / 年龄 / 辅星 12、主星 16，任何文字都不小于 12px。
@@ -38,11 +40,16 @@ function SiHuaBadge({ siHua, overlay, label, onClick }: {
   label?: string;
   onClick?: (e: React.MouseEvent) => void;
 }) {
+  const locale = useLocale();
   const style = { color: SIHUA_COLOR[siHua] ?? 'var(--tx-2)', borderStyle: overlay ? 'dashed' : 'solid' } as const;
-  const text = `${overlay && label ? label : ''}${siHua}`;
+  // English badges stay short ("Lu"): the dashed border and the time tabs already say which layer it is (#59)
+  const text = locale === 'en' ? termLabel(siHua, locale) : `${overlay && label ? label : ''}${siHua}`;
+  const aria = locale === 'en'
+    ? [label, termLabel(`化${siHua}`, locale)].filter(Boolean).join(' ')
+    : `${label ?? ''}化${siHua}`;
   // 只有真的能点时才是按钮；否则就是一个标签，点击会落到宫位上
   return onClick ? (
-    <button type="button" className="sihua-badge ml-1 flex-shrink-0" style={style} onClick={onClick} aria-label={`${label ?? ''}化${siHua}`}>
+    <button type="button" className="sihua-badge ml-1 flex-shrink-0" style={style} onClick={onClick} aria-label={aria}>
       {text}
     </button>
   ) : (
@@ -55,7 +62,10 @@ export default function PalaceCell({
   overlayStarSiHua, overlayLabel, onSiHuaClick,
 }: PalaceCellProps) {
   const { branch, stem, name, stars, daXianAge, isCurrentDaXian, isMingGong, isShenGong } = palace;
-  const ganzhi = `${STEMS[stem]}${BRANCHES[branch]}`;
+  const t = useTranslations('board.palace');
+  const locale = useLocale();
+  const term = (zh: string) => termLabel(zh, locale);
+  const ganzhi = ganzhiLabel(stem, branch, locale);
 
   const majorStars = stars.filter(s => s.type === 'major');
   const auxStars = stars.filter(s => s.type === 'lucky' || s.type === 'sha');
@@ -72,7 +82,7 @@ export default function PalaceCell({
       role="button"
       tabIndex={0}
       aria-pressed={!!isSelected}
-      aria-label={`${name}，${majorStars.length ? majorStars.map(s => s.name).join('、') : '空宫'}`}
+      aria-label={t('aria', { name: term(name), stars: majorStars.length ? formatList(majorStars.map(s => term(s.name)), locale) : t('empty') })}
       onKeyDown={e => {
         if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick?.(); }
       }}
@@ -100,9 +110,10 @@ export default function PalaceCell({
       {/* 宫名 + 命 / 身 + 大限年龄 */}
       <div className="flex flex-wrap items-baseline justify-between gap-x-1">
         <span className="flex items-center gap-1 whitespace-nowrap" style={{ fontSize: 'var(--fs-small)', lineHeight: '18px', color: isMingGong ? 'var(--ac)' : 'var(--tx-0)' }}>
-          {name}
-          {isMingGong && <span className="sihua-badge" style={{ color: 'var(--ac)' }}>命</span>}
-          {isShenGong && <span className="sihua-badge" style={{ color: 'var(--tx-0)' }}>身</span>}
+          {term(name)}
+          {/* In English the palace is already named "Life" (and gold), so a "Life" badge would repeat it */}
+          {isMingGong && locale !== 'en' && <span className="sihua-badge" style={{ color: 'var(--ac)' }}>{t('lifeBadge')}</span>}
+          {isShenGong && <span className="sihua-badge" style={{ color: 'var(--tx-0)' }}>{t('bodyBadge')}</span>}
         </span>
         {daXianAge && (
           <span className="tabular-nums flex-shrink-0" style={{ fontSize: 'var(--fs-caption)', color: isCurrentDaXian ? 'var(--ac)' : 'var(--tx-2)' }}>
@@ -118,13 +129,15 @@ export default function PalaceCell({
       <div className="flex flex-col gap-1 flex-1">
         {majorStars.length === 0 && (
           <span style={{ fontSize: 'var(--fs-caption)', color: 'var(--tx-2)' }}>
-            空宫{palace.borrowedStars?.length ? `（借${palace.borrowedStars.join('、')}）` : ''}
+            {palace.borrowedStars?.length
+              ? t('emptyBorrowed', { stars: formatList(palace.borrowedStars.map(term), locale) })
+              : t('empty')}
           </span>
         )}
         {majorStars.map((star) => {
           const overlaySiHua = overlayStarSiHua?.[star.name];
           const starName = (
-            <span style={{ fontSize: 'var(--fs-body)', lineHeight: '20px', color: 'var(--ac)' }}>{star.name}</span>
+            <span style={{ fontSize: 'var(--fs-body)', lineHeight: '20px', color: 'var(--ac)' }}>{term(star.name)}</span>
           );
           return (
             <div key={star.name} className="flex items-center flex-wrap">
@@ -134,7 +147,7 @@ export default function PalaceCell({
                 </button>
               ) : starName}
               {star.brightnessRaw && (
-                <span className="ml-1" style={{ fontSize: 'var(--fs-caption)', color: 'var(--tx-2)' }}>{star.brightnessRaw}</span>
+                <span className="ml-1" style={{ fontSize: 'var(--fs-caption)', color: 'var(--tx-2)' }}>{term(star.brightnessRaw)}</span>
               )}
               {star.siHua && <SiHuaBadge siHua={star.siHua} />}
               {overlaySiHua && (
@@ -152,7 +165,7 @@ export default function PalaceCell({
             const overlaySiHua = overlayStarSiHua?.[s.name];
             return (
               <span key={s.name} className="inline-flex items-center">
-                {s.name}
+                {term(s.name)}
                 {s.siHua && <SiHuaBadge siHua={s.siHua} />}
                 {overlaySiHua && (
                   <SiHuaBadge siHua={overlaySiHua} overlay label={overlayLabel} onClick={overlayClick(s.name, overlaySiHua)} />

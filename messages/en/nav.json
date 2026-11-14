@@ -1,0 +1,11 @@
+{
+  "label": "Main navigation",
+  "brand": "Ziwei Natal Chart",
+  "chart": "Chart",
+  "heming": "Compatibility",
+  "theme": {
+    "toggle": "Switch between day and night",
+    "night": "Night",
+    "day": "Day"
+  }
+}

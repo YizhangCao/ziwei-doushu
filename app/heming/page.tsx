@@ -1,6 +1,7 @@
 'use client';
 import { useState, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import BirthForm, { type BirthFormState } from '@/components/BirthForm';
 import AiContent from '@/components/AiContent';
 import { formToBirthInfo } from '@/lib/ziwei/share';
@@ -9,8 +10,12 @@ import type { BirthInfo, ZiweiChart } from '@/lib/ziwei/types';
 
 // ─── AiContent 渲染器（与 InsightPanel 一致）────────────────
 
+// Keys, not a JSON array, so next-intl keeps checking every heming.* key (#59).
+const QUICK_QUESTIONS = ['q1', 'q2', 'q3', 'q4', 'q5'] as const;
+
 export default function HemingPage() {
   const router = useRouter();
+  const t = useTranslations('heming');
 
   // ─── 双方命盘状态 ─────────────────────────────────────────
   const [chartA, setChartA] = useState<ZiweiChart | null>(null);
@@ -47,7 +52,7 @@ export default function HemingPage() {
   const runAnalysis = useCallback(async (q?: string) => {
     setFormError(null);
     if (!isFormReady(formA) || !isFormReady(formB)) {
-      setFormError('请先填写双方完整出生信息');
+      setFormError(t('errors.formIncomplete'));
       return;
     }
     setAnalyzing(true);
@@ -106,7 +111,7 @@ export default function HemingPage() {
     } finally {
       setAnalyzing(false);
     }
-  }, [chartA, chartB, formA, formB, generateChart]);
+  }, [chartA, chartB, formA, formB, generateChart, t]);
 
   // 设计系统（#57）：颜色和形状都来自 app/globals.css 的 token
   const cardStyle = {
@@ -129,9 +134,9 @@ export default function HemingPage() {
 
         {/* 标题 */}
         <div style={{ maxWidth: 720, marginBottom: 32 }}>
-          <h1 style={{ fontSize: 'var(--fs-headline)', lineHeight: 1.25, color: 'var(--tx-0)' }}>合盘</h1>
+          <h1 style={{ fontSize: 'var(--fs-headline)', lineHeight: 1.25, color: 'var(--tx-0)' }}>{t('title')}</h1>
           <p style={{ marginTop: 8, color: 'var(--tx-2)' }}>
-            输入两个人的出生信息，AI 按倪海厦体系对照双方命盘：缘分、相处与感情走向。
+            {t('lead')}
           </p>
         </div>
 
@@ -139,7 +144,7 @@ export default function HemingPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
           {/* 甲方 */}
           <div style={cardStyle}>
-            <span style={labelStyle}>甲方 — A</span>
+            <span style={labelStyle}>{t('personA')}</span>
             <BirthForm
               bare
               hideSubmit
@@ -150,7 +155,7 @@ export default function HemingPage() {
 
           {/* 乙方 */}
           <div style={cardStyle}>
-            <span style={labelStyle}>乙方 — B</span>
+            <span style={labelStyle}>{t('personB')}</span>
             <BirthForm
               bare
               hideSubmit
@@ -171,18 +176,17 @@ export default function HemingPage() {
         }}>
           {/* 区块标题 */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: (analysis || analyzing) ? '20px' : '24px' }}>
-            <h2 style={{ fontSize: 'var(--fs-small)', color: 'var(--tx-2)' }}>合盘分析</h2>
+            <h2 style={{ fontSize: 'var(--fs-small)', color: 'var(--tx-2)' }}>{t('analysisTitle')}</h2>
           </div>
 
           {/* 状态分支 */}
           {!analysis && !analyzing && (
             <div style={{ textAlign: 'center', padding: '32px 0' }}>
               <div style={{ color: 'var(--tx-2)', marginBottom: '24px' }}>
-                填好双方出生信息后，点击下方按钮<br />
-                AI 将基于倪海厦体系深度分析两人缘分匹配度
+                {t.rich('emptyState', { br: () => <br /> })}
               </div>
               <button type="button" className="btn-primary" onClick={() => runAnalysis()}>
-                开始合盘 <span aria-hidden="true">→</span>
+                {t('start')} <span aria-hidden="true">→</span>
               </button>
               {formError && (
                 <div role="alert" style={{ marginTop: '20px', fontSize: '13px', color: 'var(--ji)' }}>
@@ -195,7 +199,7 @@ export default function HemingPage() {
           {analyzing && !analysis && (
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', padding: '40px 0', color: 'var(--tx-2)', fontSize: 'var(--fs-small)' }}>
               <span aria-hidden="true" className="pole-mark animate-breathe" />
-              正在对比双方命盘…
+              {t('loading')}
             </div>
           )}
 
@@ -203,9 +207,7 @@ export default function HemingPage() {
 
           {analysisError && (
             <div style={{ padding: '12px 16px', border: '1px solid var(--bdr)', fontSize: 'var(--fs-small)', color: 'var(--tx-2)', marginTop: '12px' }}>
-              {apiMissing
-                ? '开源版不含合盘 AI 分析接口（/api/heming），需要你自己实现后才能用。两人的命盘可以分别到「排盘」页（/chart）查看。'
-                : '分析暂时不可用，请重试。'}
+              {apiMissing ? t('errors.apiMissing') : t('errors.failed')}
             </div>
           )}
         </div>
@@ -214,18 +216,12 @@ export default function HemingPage() {
         {analysis && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '16px' }}>
             <div style={{ fontSize: 'var(--fs-small)', color: 'var(--tx-2)', marginBottom: '4px' }}>
-              针对此次合盘继续追问
+              {t('followUpTitle')}
             </div>
 
             {/* 快捷问题 */}
             <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-              {[
-                '感情匹配度如何？',
-                '适合合伙创业吗？',
-                '两人结婚是否合适？',
-                '哪方面最容易产生矛盾？',
-                '财运是否互补？',
-              ].map(q => (
+              {QUICK_QUESTIONS.map(key => t(`quickQuestions.${key}`)).map(q => (
                 <button
                   type="button"
                   key={q}
@@ -245,9 +241,9 @@ export default function HemingPage() {
                 value={question}
                 onChange={e => setQuestion(e.target.value)}
                 onKeyDown={e => { if (e.key === 'Enter' && !analyzing) runAnalysis(question || undefined); }}
-                placeholder="继续追问，如：哪几年是两人感情关键期？"
+                placeholder={t('inputPlaceholder')}
                 disabled={analyzing}
-                aria-label="继续追问"
+                aria-label={t('inputLabel')}
                 className="input-base"
                 style={{ flex: 1 }}
               />
@@ -257,7 +253,7 @@ export default function HemingPage() {
                 onClick={() => runAnalysis(question || undefined)}
                 disabled={analyzing}
               >
-                {analyzing ? '分析中…' : '继续追问'}
+                {analyzing ? t('sending') : t('send')}
               </button>
             </div>
           </div>

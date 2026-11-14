@@ -1,0 +1,30 @@
+{
+  "title": "Your natal chart",
+  "titleNamed": "{name}’s natal chart",
+  "lead": "Your Life Palace is in {branch}, {desc}.",
+  "withStars": "with {stars}",
+  "empty": "an empty palace that borrows from the opposite palace",
+  "emptyBorrowed": "an empty palace that borrows {stars} from the opposite palace",
+  "hint": "Click any palace to see its sanfang sizheng (the trine and opposition palaces).",
+  "region": "Natal chart",
+  "summary": {
+    "life": "Life Palace",
+    "body": "Body Palace",
+    "ju": "Five Phases",
+    "currentDecade": "Current Decade",
+    "ages": "Ages {start}–{end}",
+    "lunar": "Lunisolar: {year}, {leap}month {month}, day {day}",
+    "leap": "leap "
+  },
+  "overlay": {
+    "daxian": "Decade",
+    "liunian": "Year"
+  },
+  "palace": {
+    "aria": "{name}: {stars}",
+    "empty": "Empty palace",
+    "emptyBorrowed": "Empty palace (borrows {stars})",
+    "lifeBadge": "Life",
+    "bodyBadge": "Body"
+  }
+}
