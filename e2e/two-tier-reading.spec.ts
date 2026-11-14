@@ -4,7 +4,8 @@
  * isn't available, the free reading stays and the AI area says why in plain words.
  *
  * The session and /api/interpret are stubbed with page.route, so no database and no
- * AI is involved: a 500 stands in for CI's missing key, a 429 for the daily limit.
+ * AI is involved: 500s stand in for a missing key and for an Anthropic outage, 429s for
+ * the daily limit and for AI readings paused by an admin.
  * Uses made-up birth data.
  */
 
@@ -12,14 +13,15 @@ import { test, expect, type Page } from '@playwright/test';
 import { stubMemberSession } from './helpers/session';
 
 const FREE_TITLE = '基础解读（依星曜规则生成）';
+const HAN = /[\u3400-\u9fff\uf900-\ufaff]/;
 const AI_TITLE = 'AI 个性化解读';
 
-/** Answers every /api/interpret call with the given status and records how many were made. */
-async function stubInterpret(page: Page, status: number, headers: Record<string, string> = {}) {
+/** Answers every /api/interpret call with the given status and body, and records how many were made. */
+async function stubInterpret(page: Page, status: number, headers: Record<string, string> = {}, json: object = { error: 'stubbed' }) {
   const calls = { count: 0 };
   await page.route('**/api/interpret', (route) => {
     calls.count += 1;
-    return route.fulfill({ status, headers, json: { error: 'stubbed' } });
+    return route.fulfill({ status, headers, json });
   });
   return calls;
 }
@@ -55,9 +57,9 @@ test('signed out: the free reading shows, with a prompt to sign in for the AI re
   expect(calls.count).toBe(0);
 });
 
-test('signed in, AI failing: the free reading stays and the AI area says so, with no retry', async ({ page }) => {
+test('signed in, AI not set up: the free reading stays and the AI area says so, with no retry', async ({ page }) => {
   await stubMemberSession(page);
-  const calls = await stubInterpret(page, 500);
+  const calls = await stubInterpret(page, 500, {}, { error: 'AI service is not configured' });
   await buildChart(page);
 
   const ai = page.getByRole('region', { name: AI_TITLE });
@@ -67,14 +69,40 @@ test('signed in, AI failing: the free reading stays and the AI area says so, wit
   expect(calls.count).toBe(1);
 });
 
-test('signed in, daily limit used up: a "daily limit reached" message while the free reading stays', async ({ page }) => {
+test('signed in, AI request failing: the free reading stays and the AI area offers a retry', async ({ page }) => {
+  // An Anthropic outage or a database timeout also answers 500, and those can pass.
   await stubMemberSession(page);
-  // The daily window resets at 00:00 UTC, so its Retry-After runs past the hourly limit's hour.
-  await stubInterpret(page, 429, { 'Retry-After': String(5 * 3600) });
+  await stubInterpret(page, 500, {}, { error: 'AI service request failed' });
   await buildChart(page);
 
   const ai = page.getByRole('region', { name: AI_TITLE });
-  await expect(ai.getByText(/今天的 AI 解读次数已用完/)).toBeVisible();
+  await expect(ai.getByText('解读没有完成，请稍后重试。')).toBeVisible();
+  await expect(ai.getByRole('button', { name: '重试' })).toBeVisible();
+  await expectFreeReading(page);
+});
+
+// The body names the limit. In the last hour of the UTC day the daily limit's Retry-After is
+// under an hour, so the wait alone can't tell it from the hourly limit.
+for (const { retryAfter, hours } of [{ retryAfter: 2400, hours: 1 }, { retryAfter: 5 * 3600, hours: 5 }]) {
+  test(`signed in, daily limit used up with ${retryAfter} s left: a "daily limit reached" message while the free reading stays`, async ({ page }) => {
+    await stubMemberSession(page);
+    await stubInterpret(page, 429, { 'Retry-After': String(retryAfter) }, { error: 'Too many AI requests. Try again later.', reason: 'daily' });
+    await buildChart(page);
+
+    const ai = page.getByRole('region', { name: AI_TITLE });
+    await expect(ai.getByText(`今天的 AI 解读次数已用完，约 ${hours} 小时后可以继续。下方的基础解读不受影响。`)).toBeVisible();
+    await expect(ai.getByRole('button', { name: '重试' })).toHaveCount(0);
+    await expectFreeReading(page);
+  });
+}
+
+test('signed in, AI readings paused (a daily limit of 0): the AI area says so, with no wait', async ({ page }) => {
+  await stubMemberSession(page);
+  await stubInterpret(page, 429, { 'Retry-After': '2400' }, { error: 'Too many AI requests. Try again later.', reason: 'paused' });
+  await buildChart(page);
+
+  const ai = page.getByRole('region', { name: AI_TITLE });
+  await expect(ai.getByText('AI 解读目前已暂停。下方的基础解读不受影响。')).toBeVisible();
   await expect(ai.getByRole('button', { name: '重试' })).toHaveCount(0);
   await expectFreeReading(page);
 });
@@ -92,7 +120,11 @@ test.describe('in English', () => {
     await page.getByRole('button', { name: 'Female' }).click();
     await page.getByRole('button', { name: 'Build chart', exact: true }).click();
 
-    await expect(page.getByRole('region', { name: 'Basic reading (rule-based)' })).toBeVisible();
+    const free = page.getByRole('region', { name: 'Basic reading (rule-based)' });
+    await expect(free).toBeVisible();
     await expect(page.getByRole('region', { name: 'Personalized AI reading' })).toBeVisible();
+    // Star keywords are in English too, so no Chinese is left (#118).
+    await expect(free.getByRole('heading', { level: 3 })).toHaveCount(12);
+    await expect(free).not.toContainText(HAN);
   });
 });

@@ -2,6 +2,8 @@ import { describe, it, expect, vi, afterEach } from 'vitest';
 import { buildRuleBasedReading } from '@/lib/reading/rule-based';
 import { generateChart } from '@/lib/ziwei/algorithm';
 import { boardLabel } from '@/lib/i18n/glossary';
+import { STAR_KEYWORDS_EN } from '@/lib/i18n/knowledge-en';
+import { STAR_DESCRIPTIONS } from '@/lib/ziwei/constants';
 import type { BirthInfo, ZiweiChart } from '@/lib/ziwei/types';
 
 // Synthetic person. The name and birthplace are made-up markers we can search for in the output.
@@ -10,6 +12,8 @@ const BIRTH: BirthInfo = {
   name: '测试姓名甲', province: '测试省乙', city: '测试市丙',
 };
 const chart: ZiweiChart = generateChart(BIRTH);
+
+const HAN = /[\u3400-\u9fff\uf900-\ufaff]/;
 
 const majors = (branch: number) =>
   chart.palaces.find((p) => p.branch === branch)!.stars.filter((s) => s.type === 'major');
@@ -81,7 +85,7 @@ describe('buildRuleBasedReading (lib/reading/rule-based.ts)', () => {
     expect(buildRuleBasedReading(other, 'zh')).toEqual(reading);
   });
 
-  it('works in English: English palace names, pinyin star names, and a note on the Chinese meanings', () => {
+  it('works in English: English palace names and pinyin star names', () => {
     const zh = buildRuleBasedReading(chart, 'zh');
     const en = buildRuleBasedReading(chart, 'en');
     expect(en.palaces).toHaveLength(12);
@@ -93,7 +97,54 @@ describe('buildRuleBasedReading (lib/reading/rule-based.ts)', () => {
       expect(section.domain).not.toMatch(/[一-鿿]/);
     }
     expect(en.overview).not.toEqual(zh.overview);
-    expect(en.note).toBeTruthy();
-    expect(zh.note).toBeUndefined();
+  });
+
+  it('leaves no Chinese in the English reading, star keywords included, for any chart (#118)', () => {
+    for (const year of [1950, 1975, 1990, 2005]) {
+      for (const month of [1, 6, 11]) {
+        for (let hour = 0; hour < 12; hour++) {
+          for (const gender of ['male', 'female'] as const) {
+            const en = buildRuleBasedReading(generateChart({ year, month, day: 15, hour, gender }), 'en');
+            const where = `${year}-${month} hour ${hour} ${gender}`;
+            expect(en, where).not.toHaveProperty('note');
+            expect(en.overview, where).not.toMatch(HAN);
+            for (const section of en.palaces) expect(`${section.title} ${section.domain} ${section.text}`, where).not.toMatch(HAN);
+          }
+        }
+      }
+    }
+  });
+
+  it('gives every main star three plain English keywords, in the same order as the Chinese (#118)', () => {
+    expect(Object.keys(STAR_KEYWORDS_EN).sort()).toEqual(Object.keys(STAR_DESCRIPTIONS).sort());
+    for (const [star, { keywords }] of Object.entries(STAR_DESCRIPTIONS)) {
+      expect(STAR_KEYWORDS_EN[star], star).toHaveLength(keywords.split('·').length);
+      for (const word of STAR_KEYWORDS_EN[star]) expect(word, star).toMatch(/^[a-z][a-z ()’-]*$/);
+    }
+
+    const en = buildRuleBasedReading(chart, 'en');
+    for (const section of en.palaces) {
+      for (const star of majors(section.branch)) expect(section.text).toContain(STAR_KEYWORDS_EN[star.name].join(', '));
+    }
+  });
+
+  it('separates stars with a semicolon, so one star’s keywords never run into the next star (#118)', () => {
+    // The first palace with two or more main stars, across a spread of charts.
+    let found: { chart: ZiweiChart; branch: number; names: string[] } | undefined;
+    for (let hour = 0; hour < 12 && !found; hour++) {
+      const c = generateChart({ year: 1990, month: 6, day: 15, hour, gender: 'female' });
+      const p = c.palaces.find((x) => x.stars.filter((s) => s.type === 'major').length >= 2);
+      if (p) found = { chart: c, branch: p.branch, names: p.stars.filter((s) => s.type === 'major').map((s) => s.name) };
+    }
+    expect(found).toBeDefined();
+    const { chart: c, branch, names } = found!;
+
+    const zh = buildRuleBasedReading(c, 'zh').palaces.find((p) => p.branch === branch)!.text;
+    const en = buildRuleBasedReading(c, 'en').palaces.find((p) => p.branch === branch)!.text;
+    for (const name of names.slice(1)) {
+      expect(zh).toContain(`；${name}`);
+      expect(zh).not.toContain(`、${name}`);
+      expect(en).toContain(`; ${boardLabel(name)}`);
+    }
   });
 });

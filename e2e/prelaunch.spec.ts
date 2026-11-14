@@ -51,7 +51,8 @@ test('the reading panel says what it is reading while it waits', async ({ page }
 for (const { name, respond, message } of [
   { name: 'a used-up daily limit', respond: { status: 429, body: '{"error":"rate limited"}' }, message: '今天的 AI 解读次数已用完，明天可以继续。下方的基础解读不受影响。' },
   { name: 'a missing AI route', respond: { status: 404, body: 'not found' }, message: '解读暂未开放。命盘可以正常查看。' },
-  { name: 'a server failure', respond: { status: 500, body: '{"error":"failed"}' }, message: 'AI 解读暂时不可用。下方的基础解读不受影响。' },
+  { name: 'an AI that is not set up', respond: { status: 500, body: '{"error":"AI service is not configured"}' }, message: 'AI 解读暂时不可用。下方的基础解读不受影响。' },
+  { name: 'a server failure', respond: { status: 500, body: '{"error":"AI service request failed"}' }, message: '解读没有完成，请稍后重试。' },
 ]) {
   test(`the reading panel explains ${name}`, async ({ page }) => {
     await page.route('**/api/interpret', (route) => route.fulfill({ status: respond.status, contentType: 'application/json', body: respond.body }));

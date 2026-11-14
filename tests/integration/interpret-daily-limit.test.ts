@@ -54,5 +54,17 @@ describe('POST /api/interpret daily limit', () => {
     const res = await post(cookie);
     expect(res.status).toBe(429);
     expect(Number(res.headers.get('retry-after'))).toBeGreaterThan(0);
+    // The body names the daily limit, so the panel never mistakes it for the hourly one (#118).
+    expect(await res.json()).toEqual({ error: expect.any(String), reason: 'daily' });
+  });
+
+  it('says AI readings are paused when the daily limit is 0 (#118)', async () => {
+    const { id } = await prisma.user.create({ data: { githubId: '7002' }, select: { id: true } });
+    const cookie = `${SESSION_COOKIE}=${await encode({ token: { sub: id, role: 'member' }, secret: process.env.AUTH_SECRET!, salt: SESSION_COOKIE })}`;
+    await setDailyAiLimit(prisma, 0);
+
+    const res = await post(cookie);
+    expect(res.status).toBe(429);
+    expect(await res.json()).toEqual({ error: expect.any(String), reason: 'paused' });
   });
 });

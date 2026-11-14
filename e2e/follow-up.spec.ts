@@ -61,18 +61,18 @@ test('a failure message stays on screen and is never sent to the model', async (
   await page.route('**/api/interpret', async (route) => {
     bodies.push(route.request().postDataJSON() as SentBody);
     if (bodies.length === 1) {
-      await route.fulfill({ status: 500, contentType: 'application/json', body: '{"error":"failed"}' });
+      await route.fulfill({ status: 500, contentType: 'application/json', body: '{"error":"AI service request failed"}' });
     } else {
       await route.fulfill({ status: 200, contentType: 'text/event-stream', body: stream('这次读完了。') });
     }
   });
 
   await buildChart(page);
-  await expect(page.getByText('AI 解读暂时不可用。下方的基础解读不受影响。')).toBeVisible();
+  await expect(page.getByText('解读没有完成，请稍后重试。')).toBeVisible();
   await ask(page, '再说说命宫');
 
   await expect(page.getByText('这次读完了。')).toBeVisible();
-  expect(JSON.stringify(bodies[1].messages)).not.toContain('暂时不可用');
+  expect(JSON.stringify(bodies[1].messages)).not.toContain('解读没有完成');
 });
 
 test('a refused request says so, with no retry', async ({ page }) => {
