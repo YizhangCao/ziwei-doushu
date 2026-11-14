@@ -15,6 +15,22 @@ export interface SharedChartSummary {
   sharedAt: Date;
 }
 
+/** One active share of a chart, as its owner sees it: the email the owner typed to share it. */
+export interface ChartShare {
+  id: string;
+  practitionerEmail: string;
+  createdAt: Date;
+}
+
+/** What the thread page shows above the messages. */
+export interface ThreadSummary {
+  shareId: string;
+  chartName: string;
+  viewerRole: 'owner' | 'practitioner';
+  /** Revoked: the owner can still read it, nobody can post. */
+  closed: boolean;
+}
+
 /** A consultation message. Authors are identified by role in the thread, never by email. */
 export interface ConsultationMessage {
   id: string;

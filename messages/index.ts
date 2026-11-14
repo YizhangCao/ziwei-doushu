@@ -19,6 +19,7 @@ import zhBirthForm from './zh/birthForm.json';
 import zhBoard from './zh/board.json';
 import zhChart from './zh/chart.json';
 import zhCharts from './zh/charts.json';
+import zhConsultations from './zh/consultations.json';
 import zhForbidden from './zh/forbidden.json';
 import zhHeming from './zh/heming.json';
 import zhHome from './zh/home.json';
@@ -40,6 +41,7 @@ import enBirthForm from './en/birthForm.json';
 import enBoard from './en/board.json';
 import enChart from './en/chart.json';
 import enCharts from './en/charts.json';
+import enConsultations from './en/consultations.json';
 import enForbidden from './en/forbidden.json';
 import enHeming from './en/heming.json';
 import enHome from './en/home.json';
@@ -64,6 +66,7 @@ const zh = {
   board: zhBoard,
   chart: zhChart,
   charts: zhCharts,
+  consultations: zhConsultations,
   forbidden: zhForbidden,
   heming: zhHeming,
   home: zhHome,
@@ -90,6 +93,7 @@ const en: Messages = {
   board: enBoard,
   chart: enChart,
   charts: enCharts,
+  consultations: enConsultations,
   forbidden: enForbidden,
   heming: enHeming,
   home: enHome,
