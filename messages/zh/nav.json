@@ -2,7 +2,6 @@
   "label": "主导航",
   "brand": "紫微命盘",
   "chart": "起盘",
-  "heming": "合盘",
   "theme": {
     "toggle": "切换日间 / 夜间主题",
     "night": "夜间",

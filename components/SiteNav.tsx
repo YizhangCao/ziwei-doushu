@@ -22,7 +22,7 @@ import UserMenu from '@/components/UserMenu';
 
 const LINKS = [
   { href: '/chart', key: 'chart' },
-  { href: '/heming', key: 'heming' },
+  // /heming stays out of the menu until its AI analysis is built (#124).
 ] as const;
 
 /**
