@@ -46,6 +46,7 @@
   "errors": {
     "failed": "The reading didn’t finish. Please try again in a moment.",
     "rateLimited": "You’ve used today’s readings. You can continue tomorrow.",
+    "rejected": "This conversation can’t continue. Build the chart again to start over.",
     "network": "The connection dropped, so the reading didn’t finish.",
     "tooLong": "Keep your question under 2,000 characters.",
     "tooMany": "This conversation is already long. Build the chart again to start over.",
