@@ -23,7 +23,10 @@ enum MessageRole {
 
 model User {
   id             String           @id @default(cuid())
-  email          String           @unique
+  /// GitHub account id; sign-in looks users up by it. Null for seeded demo accounts.
+  githubId       String?          @unique
+  /// Only if GitHub shares it; never used to match a sign-in to an account.
+  email          String?          @unique
   name           String?
   image          String?
   role           Role             @default(member)
@@ -56,7 +59,8 @@ model Share {
   chartId         String
   chart           Chart            @relation(fields: [chartId], references: [id], onDelete: Cascade)
   practitionerId  String
-  practitioner    User             @relation("SharePractitioner", fields: [practitionerId], references: [id], onDelete: Cascade)
+  /// Restrict: deleting a user must not silently remove consultation history (no user deletion this release).
+  practitioner    User             @relation("SharePractitioner", fields: [practitionerId], references: [id], onDelete: Restrict)
   createdAt       DateTime         @default(now())
   /// Set when the owner revokes the share; access checks treat a revoked share as no share.
   revokedAt       DateTime?
@@ -97,7 +101,8 @@ model ConsultMessage {
   shareId   String
   share     Share    @relation(fields: [shareId], references: [id], onDelete: Cascade)
   authorId  String
-  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  /// Restrict, like Share.practitioner: a user with consultation messages can't be deleted.
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Restrict)
   body      String
   createdAt DateTime @default(now())
 

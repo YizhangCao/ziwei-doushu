@@ -22,7 +22,7 @@ interface Message {
  * Each cause has its own message, so a used-up limit never reads like a bug (#63). A refused
  * request (400) is not retryable: sending the same request again gets the same answer.
  */
-type ReadingError = 'network' | 'apiMissing' | 'rateLimited' | 'rejected' | 'failed';
+type ReadingError = 'network' | 'apiMissing' | 'loginRequired' | 'rateLimited' | 'rejected' | 'failed';
 const RETRYABLE: ReadonlySet<ReadingError> = new Set(['network', 'failed']);
 
 /** The character counter appears once a question gets this long. */
@@ -155,6 +155,7 @@ export default function InsightPanel({ chart, selectedPalace, selectedSiHua }: I
         return fail('network'); // fetch rejects only when no answer came back
       }
       if (res.status === 404) return fail('apiMissing');
+      if (res.status === 401) return fail('loginRequired'); // AI readings are for members (#15)
       if (res.status === 429) return fail('rateLimited');
       if (res.status === 400) return fail('rejected');
       if (!res.ok || !res.body) return fail('failed');

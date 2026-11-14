@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
+import { SessionProvider } from 'next-auth/react';
 import { NextIntlClientProvider } from 'next-intl';
 import { getLocale, getMessages, getTranslations } from 'next-intl/server';
 import { ThemeProvider } from '@/components/ThemeProvider';
@@ -13,7 +14,7 @@ import type { Messages } from '@/messages';
 
 // Only what client components read is serialized into the page (#59); the legal,
 // knowledge and metadata text stay on the server.
-const CLIENT_NAMESPACES = ['nav', 'home', 'chart', 'birthForm', 'board', 'timeNav', 'insight', 'heming', 'library'] as const;
+const CLIENT_NAMESPACES = ['nav', 'auth', 'home', 'chart', 'birthForm', 'board', 'timeNav', 'insight', 'heming', 'library'] as const;
 
 // Title, description and Open Graph follow the visitor's language (#59).
 export async function generateMetadata(): Promise<Metadata> {
@@ -62,11 +63,13 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body className="min-h-screen">
         <NextIntlClientProvider messages={clientMessages}>
           <ThemeProvider>
-            <MotionProvider>
-              {/* 全站唯一的导航（#57） */}
-              <SiteNav />
-              {children}
-            </MotionProvider>
+            <SessionProvider>
+              <MotionProvider>
+                {/* 全站唯一的导航（#57）；账号入口 UserMenu 在导航里（#15） */}
+                <SiteNav />
+                {children}
+              </MotionProvider>
+            </SessionProvider>
           </ThemeProvider>
         </NextIntlClientProvider>
         <Analytics />

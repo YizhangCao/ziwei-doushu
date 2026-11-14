@@ -155,7 +155,7 @@ The frontend already calls these endpoints. **Do not change the frontend to fit 
 `POST /api/interpret`
 - Request JSON: `{ chart: ZiweiChart, messages: { role: 'user' | 'assistant', content: string }[] }`
 - Response: `text/event-stream`. Each chunk is a line `data: {"delta":{"text":"..."}}`, and the stream ends with `data: [DONE]`.
-- Errors: 400 for an invalid body, 500 with a short JSON `{ error }` for server failures. Never 404 (the UI shows 404 as "API not implemented").
+- Errors: 401 `{ error }` when not logged in (readings are member-only; checked before the body), 400 for an invalid body, 500 with a short JSON `{ error }` for server failures. Never 404 (the UI shows 404 as "API not implemented").
 
 `POST /api/heming`
 - Request JSON: `{ chartA: ZiweiChart, chartB: ZiweiChart, question?: string }`
@@ -163,7 +163,7 @@ The frontend already calls these endpoints. **Do not change the frontend to fit 
 
 ### 2.4 User flows the agent should follow
 
-1. **Chart + reading:** user fills `BirthForm` → `generateChart()` runs in the browser → chart renders → user opens the reading → `InsightPanel` posts to `/api/interpret` → text streams in.
+1. **Chart + reading:** user fills `BirthForm` → `generateChart()` runs in the browser → chart renders → user opens the reading → `InsightPanel` posts to `/api/interpret` → text streams in. Guests can build charts, but a reading needs login: the panel shows a login prompt on 401.
 2. **Follow-up question:** user types in `ChatPanel` → the full message history plus the chart is posted → answer streams in below the history.
 3. **Compatibility:** user enters two people on `/heming` → both charts build in the browser → page posts to `/api/heming` → analysis streams in.
 4. **Language:** user taps EN / 中文 in `SiteNav` → `setLocale` stores `NEXT_LOCALE` → the page re-renders in that language → `/api/interpret` answers in it too (the server reads the cookie; the request body is unchanged).
@@ -247,6 +247,7 @@ A task is done when: the acceptance criteria are all met, `npm run typecheck` an
 ## Changelog
 <!-- Record each change to this file and why. This is the evidence of iteration for HW3. -->
 - v1 (10/30/2026): first version.
+- v3.2 (11/10/2026): GitHub login (#15). `/api/interpret` now returns 401 for guests (2.3, 2.4). Previews sign in through the production URL (`AUTH_REDIRECT_PROXY_URL`), which works because production and preview share one `AUTH_SECRET` (#31).
 - v3.1 (11/08/2026): re-planned for the Nov 12 deadline: GitHub OAuth only; Vercel and Neon integrations handle previews, production, and per-preview databases.
 - v3 (11/01/2026): P2 approved as ZiweiHub. Added database, auth, roles, public API, and hosting to the stack; added the roles table and auth rules; replaced the tsx-only test rule with a layered strategy (engine tests stay on tsx, new code uses Vitest and Playwright) because P2 requires unit, integration, and E2E tests; added TDD commit order. PRD now points to docs/PRD.md.
 - v2 (10/31/2026): after the first with-rules test run on issue #4. The agent ignored several rules, so v2 makes them concrete and checkable:

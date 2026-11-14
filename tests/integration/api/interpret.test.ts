@@ -7,12 +7,21 @@
 /**
  * @fileoverview POST /api/interpret with a model that thinks first (#103). Only the Anthropic
  * client is mocked (AGENTS.md); the route, the request validator and the stream encoder are real.
- * The route touches no database, so these tests leave the test database alone.
+ * The route needs a session (#15), so each test signs in as a member of the test database.
  */
 
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { NextRequest } from 'next/server';
+import { encode } from 'next-auth/jwt';
 import { POST } from '@/app/api/interpret/route';
+import { prisma } from '@/lib/db';
 import { generateChart } from '@/lib/ziwei/algorithm';
+import { resetDatabase } from '../helpers/reset';
+
+// Fallbacks so the suite also runs without a configured environment.
+process.env.AUTH_SECRET ??= 'integration-test-auth-secret-not-real';
+process.env.AUTH_TRUST_HOST ??= 'true';
+const SESSION_COOKIE = 'authjs.session-token';
 
 const { create } = vi.hoisted(() => ({ create: vi.fn() }));
 vi.mock('@anthropic-ai/sdk', () => ({
@@ -21,18 +30,24 @@ vi.mock('@anthropic-ai/sdk', () => ({
   },
 }));
 
+let session = '';
+
 // Synthetic birth data, not a real person.
-const post = () =>
-  POST(
-    new Request('http://localhost/api/interpret', {
+async function post(): Promise<Response> {
+  const res = await POST(
+    new NextRequest('http://localhost:3000/api/interpret', {
       method: 'POST',
-      headers: { 'content-type': 'application/json' },
+      headers: { 'content-type': 'application/json', host: 'localhost:3000', 'x-forwarded-proto': 'http', cookie: session },
       body: JSON.stringify({
         chart: generateChart({ year: 1990, month: 6, day: 15, hour: 6, gender: 'female' }),
         messages: [{ role: 'user', content: '请生成命格总览' }],
       }),
     }),
+    { params: Promise.resolve({}) },
   );
+  if (!(res instanceof Response)) throw new Error('route returned no Response');
+  return res;
+}
 
 /** The event shape a thinking model streams: a thinking block, then the text. */
 async function* thinkingThenText() {
@@ -47,7 +62,11 @@ async function* thinkingThenText() {
   yield { type: 'message_stop' };
 }
 
-beforeEach(() => {
+beforeEach(async () => {
+  await resetDatabase();
+  const { id } = await prisma.user.create({ data: { githubId: '4103' }, select: { id: true } });
+  const value = await encode({ token: { sub: id, role: 'member' }, secret: process.env.AUTH_SECRET!, salt: SESSION_COOKIE });
+  session = `${SESSION_COOKIE}=${value}`;
   create.mockReset();
   vi.stubEnv('ANTHROPIC_API_KEY', 'test-key');
   vi.stubEnv('ANTHROPIC_MODEL', 'test-model');
@@ -56,6 +75,8 @@ beforeEach(() => {
 afterEach(() => {
   vi.unstubAllEnvs();
 });
+
+afterAll(() => prisma.$disconnect());
 
 describe('POST /api/interpret with a thinking model (#103)', () => {
   it('streams the text that follows the thinking block, with room and the configured effort', async () => {
