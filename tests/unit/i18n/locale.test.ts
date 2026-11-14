@@ -62,6 +62,15 @@ describe('readCookie and localeFromRequest', () => {
     expect(localeFromRequest(request({}))).toBe('zh');
   });
 
+  it('treats a malformed cookie value as unset, so the browser language decides', () => {
+    // %E4 is half a UTF-8 character: decodeURIComponent throws a URIError on it.
+    expect(readCookie(`a=1; ${LOCALE_COOKIE}=%E4`, LOCALE_COOKIE)).toBeUndefined();
+    const request = new Request('http://localhost/api/interpret', {
+      headers: { cookie: `${LOCALE_COOKIE}=%E4`, 'accept-language': 'en-US' },
+    });
+    expect(localeFromRequest(request)).toBe('en');
+  });
+
   it('maps each locale to its html lang value', () => {
     expect(HTML_LANG).toEqual({ zh: 'zh-CN', en: 'en' });
   });
