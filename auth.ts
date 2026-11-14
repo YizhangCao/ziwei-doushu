@@ -1,6 +1,6 @@
 /**
  * Author: Yikang (Richard) Liu, M.S. Candidate in Computer Science, Khoury College of Computer Sciences, Northeastern University
- * Version: 1.3
+ * Version: 1.4
  * Created: November 10, 2026 · San Francisco, California, USA
  * Last Edited: November 11, 2026 · San Francisco, California, USA
  */
@@ -13,7 +13,7 @@
 import NextAuth from 'next-auth';
 import GitHub from 'next-auth/providers/github';
 import { prisma } from '@/lib/db';
-import { refreshTokenRole, toSessionUser, upsertUserFromProfile } from '@/lib/auth/session';
+import { resolveToken, toSessionUser } from '@/lib/auth/session';
 
 /**
  * Auth.js entry points: the `/api/auth/*` route `handlers`, `auth()` for reading
@@ -24,25 +24,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   session: { strategy: 'jwt' },
   pages: { signIn: '/login', error: '/login' },
   callbacks: {
-    async jwt({ token, user, account }) {
-      // `account` is set only on sign-in. Resolve the GitHub account to our User row once,
-      // then carry our own user id and role in the token.
-      if (account?.provider === 'github' && user) {
-        const dbUser = await upsertUserFromProfile(prisma, {
-          githubId: account.providerAccountId,
-          email: user.email,
-          name: user.name,
-          image: user.image,
-        });
-        token.sub = dbUser.id;
-        token.role = dbUser.role;
-        token.roleCheckedAt = Date.now();
-        return token;
-      }
-      // Every later session read: re-read a stale role, and end the session if the
-      // user no longer exists.
-      return refreshTokenRole(prisma, token, Date.now());
-    },
+    // Sign-in resolves the GitHub account to our User row; every later read refreshes a
+    // stale role and ends the session if the user no longer exists.
+    jwt: ({ token, user, account }) => resolveToken(prisma, { token, user, account }, Date.now()),
     session({ session, token }) {
       // Expose only a validated id and role; a malformed token leaves both unset,
       // which the auth guards treat as signed out.
