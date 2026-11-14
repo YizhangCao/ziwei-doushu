@@ -67,7 +67,7 @@ describe('POST /api/interpret rate limit', () => {
     const res = await post(cookie, '203.0.113.10');
     expect(res.status).toBe(429);
     expect(Number(res.headers.get('retry-after'))).toBeGreaterThan(0);
-    expect(await res.json()).toEqual({ error: expect.any(String) });
+    expect(await res.json()).toEqual({ error: expect.any(String), reason: 'hourly' });
   });
 
   it('lets other accounts on a shared IP through, and limits the IP at 100 an hour', async () => {

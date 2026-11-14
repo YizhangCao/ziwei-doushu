@@ -15,6 +15,7 @@ import { NextRequest } from 'next/server';
 import { encode } from 'next-auth/jwt';
 import { POST } from '@/app/api/interpret/route';
 import { prisma } from '@/lib/db';
+import { AI_NOT_CONFIGURED, isAiNotConfigured } from '@/lib/ai/interpret-errors';
 import { generateChart } from '@/lib/ziwei/algorithm';
 import { resetDatabase } from '../helpers/reset';
 
@@ -114,7 +115,27 @@ describe('POST /api/interpret with a thinking model (#103)', () => {
     const response = await post();
 
     expect(response.status).toBe(500);
-    expect(await response.json()).toEqual({ error: expect.any(String) });
+    expect(await response.json()).toEqual({ error: AI_NOT_CONFIGURED });
     expect(create).not.toHaveBeenCalled();
+  });
+});
+
+describe('POST /api/interpret 500s the panel tells apart (#118)', () => {
+  it('says the AI is not configured when the model is missing, which a retry cannot fix', async () => {
+    vi.stubEnv('ANTHROPIC_MODEL', '');
+
+    const response = await post();
+
+    expect(response.status).toBe(500);
+    expect(isAiNotConfigured(await response.json())).toBe(true);
+  });
+
+  it('sends a different 500 when Anthropic fails, so the panel keeps its retry', async () => {
+    create.mockRejectedValue(new Error('529 overloaded'));
+
+    const response = await post();
+
+    expect(response.status).toBe(500);
+    expect(isAiNotConfigured(await response.json())).toBe(false);
   });
 });
