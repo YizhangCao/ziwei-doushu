@@ -54,8 +54,9 @@ describe('the product name (#120)', () => {
   });
 
   it('heads both READMEs with the English name, and the Chinese README keeps its Chinese name', () => {
-    expect(readFileSync('README.md', 'utf8')).toMatch(new RegExp(`^<div align="center">\\n\\n# ${NEW_NAME}\\n`));
-    expect(readFileSync('README.zh-CN.md', 'utf8')).toContain(`# 紫微命盘 · ${NEW_NAME}\n`);
+    const readme = (path: string) => readFileSync(path, 'utf8').replace(/\r\n/g, '\n');
+    expect(readme('README.md')).toMatch(new RegExp(`^<div align="center">\n\n# ${NEW_NAME}\n`));
+    expect(readme('README.zh-CN.md')).toContain(`# 紫微命盘 · ${NEW_NAME}\n`);
   });
 
   it('names the public API after the site, in the spec and on the API docs page', () => {
