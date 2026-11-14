@@ -20,6 +20,14 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 const strong = (chunks: ReactNode) => <strong>{chunks}</strong>;
+
+// The public reference for the life section (the Chinese Wikipedia article on 倪海廈).
+const WIKI_URL = 'https://zh.wikipedia.org/wiki/%E5%80%AA%E6%B5%B7%E5%BB%88';
+const wiki = (chunks: ReactNode) => (
+  <a href={WIKI_URL} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--tx-0)' }}>
+    {chunks}
+  </a>
+);
 const SECTIONS = [
   ['lifeHeading', 'life'],
   ['teachingHeading', 'teaching'],
@@ -45,6 +53,8 @@ export default async function NiHaixiaPage() {
             <p className="mt-3" style={{ color: 'var(--tx-1)', lineHeight: 1.8 }}>{t.rich(body, { strong })}</p>
           </section>
         ))}
+
+        <p style={{ fontSize: 'var(--fs-small)', color: 'var(--tx-2)' }}>{t.rich('sources', { wiki })}</p>
 
         {/* The same disclaimer as the home section, so the two never drift apart */}
         <p style={{ fontSize: 'var(--fs-small)', color: 'var(--tx-2)' }}>{home('ni.disclaimer')}</p>
