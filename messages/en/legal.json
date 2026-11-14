@@ -10,15 +10,15 @@
     "updated": "Last updated: November 2026",
     "overview": {
       "heading": "1. Service Overview",
-      "body": "Ziwei Natal Chart (the “Platform”) provides natal chart calculation and reading services based on the Ziwei Doushu (Purple Star Astrology) system in Ni Haixia’s Tian Ji. All astrological content on the Platform is for reference only and <strong>does not constitute any medical, investment, legal or psychological counseling advice, or advice on major life decisions</strong>."
+      "body": "Ziwei Natal Chart (“this site”) provides natal chart calculation and reading services based on the Ziwei Doushu (Purple Star Astrology) system in Ni Haixia’s Tian Ji. All astrological content on this site is for reference only and <strong>does not constitute any medical, investment, legal or psychological counseling advice, or advice on major life decisions</strong>."
     },
     "conduct": {
       "heading": "2. User Conduct",
-      "intro": "By using the Platform, you agree:",
-      "lawfulUse": "to use the Platform only for lawful, personal reference purposes",
-      "noRedistribution": "not to distribute the Platform’s content for commercial sale, reposting or public release",
-      "noDisruption": "not to engage in any conduct that disrupts the Platform’s normal operation",
-      "truthfulBirthInfo": "that the birth information you submit is true and valid; the Platform is not responsible for inaccurate readings caused by incorrect information"
+      "intro": "By using this site, you agree:",
+      "lawfulUse": "to use this site only for lawful, personal reference purposes",
+      "noRedistribution": "not to distribute this site’s content for commercial sale, reposting or public release",
+      "noDisruption": "not to engage in any conduct that disrupts this site’s normal operation",
+      "truthfulBirthInfo": "that the birth information you submit is true and valid; this site is not responsible for inaccurate readings caused by incorrect information"
     },
     "ip": {
       "heading": "3. Intellectual Property and Restrictions on Use",
@@ -31,20 +31,20 @@
     },
     "disclaimer": {
       "heading": "4. Disclaimer",
-      "accuracy": "The Platform’s astrological content is compiled from knowledge of traditional Ziwei Doushu and Ni Haixia’s system, and <strong>is not guaranteed to be 100% accurate</strong>. Destiny is influenced jointly by the Three Powers of heaven, earth and humanity, and the Platform’s output serves only as a reference for understanding yourself. Users should view it rationally and should not rely too heavily on any single astrological judgment.",
-      "liability": "The Platform bears no legal liability for any consequences arising from the use of its content (including but not limited to mistaken decisions, psychological effects and changes in relationships)."
+      "accuracy": "This site’s astrological content is compiled from knowledge of traditional Ziwei Doushu and Ni Haixia’s system, and <strong>is not guaranteed to be 100% accurate</strong>. Destiny is influenced jointly by the Three Powers of heaven, earth and humanity, and this site’s output serves only as a reference for understanding yourself. Users should view it rationally and should not rely too heavily on any single astrological judgment.",
+      "liability": "This site bears no legal liability for any consequences arising from the use of its content (including but not limited to mistaken decisions, psychological effects and changes in relationships)."
     },
     "changes": {
       "heading": "5. Service Changes and Termination",
-      "body": "The Platform reserves the right to adjust, suspend or terminate some or all of its services at any time. Users will be notified of major changes by on-site announcement or email."
+      "body": "This site reserves the right to adjust, suspend or terminate some or all of its services at any time. Major changes will be announced on this site."
     },
     "law": {
       "heading": "6. Governing Law and Dispute Resolution",
-      "body": "These Terms are governed by the laws of the People’s Republic of China. If a dispute arises, the parties shall negotiate amicably; if negotiation fails, the dispute shall be resolved through litigation in the people’s court with jurisdiction in the place where the Platform’s operating entity is located."
+      "body": "These Terms are governed by the laws of the People’s Republic of China. If a dispute arises, the parties shall first try to settle it amicably; if that fails, either party may bring a lawsuit in a people’s court with jurisdiction."
     },
     "contact": {
       "heading": "7. Contact",
-      "body": "If you have any questions, please contact customer service via the WeChat account / email address published on the Platform."
+      "body": "If you have any questions, contact us on WeChat ({wechat}) or by email at {email}."
     },
     "privacyLink": "Privacy Policy"
   },
@@ -92,11 +92,11 @@
     },
     "minors": {
       "heading": "7. Minors",
-      "body": "The Platform’s astrological content is intended for adult users aged 18 and over. Minors should use it with their guardian’s consent and must not use readings for major life decisions."
+      "body": "This site’s astrological content is intended for adult users aged 18 and over. Minors should use it with their guardian’s consent and must not use readings for major life decisions."
     },
     "changes": {
       "heading": "8. Changes to This Policy",
-      "body": "This policy may be updated from time to time. We will give prominent notice of major changes. Continuing to use the Platform means you agree to the updated version."
+      "body": "This policy may be updated from time to time. We will give prominent notice of major changes. Continuing to use this site means you agree to the updated version."
     },
     "termsLink": "Terms of Service"
   }

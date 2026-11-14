@@ -4,5 +4,11 @@
  */
 export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000').replace(/\/+$/, '');
 
+/**
+ * How visitors reach the site's owner (#90). The terms and the classics library both show
+ * these, so they live in one place; the message files only hold {wechat} and {email}.
+ */
+export const CONTACT = { wechat: 'lyk1121762110', email: 'liu.yika@northeastern.edu' } as const;
+
 /** 只取域名部分，用于界面上展示（如分享卡底部） */
 export const SITE_HOST = SITE_URL.replace(/^https?:\/\//, '');

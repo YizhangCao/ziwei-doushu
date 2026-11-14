@@ -20,7 +20,7 @@
   "inputPlaceholder": "Ask a follow-up, e.g. Which stars sit in each of our Marriage Palaces?",
   "inputLabel": "Ask a follow-up",
   "send": "Ask",
-  "sending": "Reading…",
+  "sending": "Answering…",
   "quickQuestions": {
     "q1": "How do our Life Palaces relate?",
     "q2": "Working together, where is each of us strong?",

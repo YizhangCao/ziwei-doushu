@@ -6,9 +6,9 @@
   },
   "kicker": "倪海厦《天纪》体系 · 含古籍引证",
   "title": "紫微斗数知识库",
-  "progress": "已上线 {available} / {total} 项专题。",
+  "progress": "已上线 {available} / {total} 项专题",
   "preparing": "专题内容整理中。先从古籍原典读起：<link>古籍原典库</link>",
-  "starsHeading": "十四主星",
+  "starsHeading": "14 主星",
   "topicsLabel": "主星专题",
   "starHeading": "{star}星",
   "topicLink": "入{palace} · {topic}",
@@ -49,6 +49,6 @@
     "link": "{star}入{palace}",
     "library": "查阅古籍原典库：紫微斗数全集 / 全书 / 骨髓赋",
     "footerSource": "紫微命盘 · 基于倪海厦正宗体系 · 仅供学习参考",
-    "footerAdvice": "本平台不构成任何医疗、投资、法律或重大决策建议"
+    "footerAdvice": "本站不构成任何医疗、投资、法律或重大决策建议"
   }
 }

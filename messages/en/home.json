@@ -2,36 +2,36 @@
   "hero": {
     "eyebrow": "Ziwei Doushu (Purple Star Astrology) · Ni Haixia’s method",
     "title": "Ziwei Natal Chart",
-    "claim": "<phrase>Enter the date and hour of your birth</phrase> <phrase>to build your Ziwei natal chart.</phrase>",
-    "subclaim": "<phrase>Charted by Ni Haixia’s method,</phrase> <phrase>read by AI palace by palace.</phrase>",
+    "claim": "<phrase>Enter the date and hour of your birth</phrase> <phrase>to build your Ziwei natal chart</phrase>",
+    "subclaim": "<phrase>Charted by Ni Haixia’s method,</phrase> <phrase>read by AI palace by palace</phrase>",
     "cta": "Build your chart"
   },
   "walkthrough": {
     "title": "Four steps from a chart to your life",
     "lead": "In the order Ni Haixia read a chart: first the Life Palace, then its sanfang sizheng (the trine and opposition palaces), then the Four Transformations, and last, the part of life you are in now.",
-    "note": "Sample chart: a made-up birthday, worked out by the charting engine in your browser.",
+    "note": "Sample chart: a made-up birthday, worked out by the charting engine in your browser",
     "steps": {
       "ming": {
         "label": "Step 1 · Life Palace",
-        "title": "First, who you are",
+        "title": "Your character, at a glance",
         "body": "The Life Palace is in Zi and holds Wuqu and Tianfu, with Wuqu taking Huaquan. You have strong views; managing money and making decisions are your strengths, and you do best when you call the shots.",
         "basis": "Basis: the Life Palace’s main stars and Huaquan"
       },
       "sanfang": {
         "label": "Step 2 · Sanfang sizheng",
-        "title": "Then, where you put your effort",
+        "title": "Know where your effort goes",
         "body": "The Office Palace holds Ziwei and Tianxiang: you suit a senior role in a large organization. The opposite Travel Palace holds Qisha: a lot of travel and change. The Wealth Palace holds Lianzhen: money comes from professional skill.",
         "basis": "Basis: read the Life Palace together with the Wealth, Office and Travel palaces (paraphrased from Ni Haixia, Tian Ji lecture 2, part 1, 00:12:58)"
       },
       "sihua": {
         "label": "Step 3 · Four Transformations",
-        "title": "Where the weight falls",
+        "title": "What flows, what sticks",
         "body": "Taiyang takes Hualu and Taiyin takes Huake in the Parents Palace: close ties with your elders, and a lot of help from your parents. Tiantong takes Huaji in the Brothers Palace: friction comes easily with siblings and friends.",
         "basis": "Basis: the birth-year Four Transformations (a Geng year: Taiyang Lu, Wuqu Quan, Taiyin Ke, Tiantong Ji)"
       },
       "daxian": {
         "label": "Step 4 · Decade",
-        "title": "Which part of life you’re in",
+        "title": "Ten years at a time: which one is yours",
         "body": "You are {age} now, in the {start}–{end} Decade, in the Children Palace. It has no main star, so read it through the stars of the opposite Estate Palace, Tianji and Jumen: a decade with a lot going on at home, and a good chance of moving house.",
         "basis": "Basis: the Decade, and borrowing stars from the opposite palace"
       }
@@ -52,8 +52,7 @@
     "closing": "and, in the end, to write the story of your own life"
   },
   "roadmap": {
-    "eyebrow": "Curriculum",
-    "title": "Ni Haixia’s method, step by step",
+    "title": "Four courses, one a month",
     "subtitle": "Start with Ziwei, then the Tian Ji / Di Ji / Ren Ji study modules open one by one",
     "sections": [
       {
@@ -103,8 +102,8 @@
     },
     {
       "tag": "AI reading",
-      "title": "A deep reading,\nnot just a calculation",
-      "subtitle": "A knowledge base of Ni Haixia’s method × Claude AI",
+      "title": "Easy to read.\nEasy to ask.",
+      "subtitle": "A knowledge base of Ni Haixia’s method × Claude",
       "points": [
         "Destiny analysis: starting from the Main Stars of your Life Palace and reading them with the sanfang sizheng (the trine and opposition palaces), it gives a full picture of your character and the shape of your life.",
         "Six areas of life: career direction, love and marriage, money patterns, health concerns, family relationships, and your bond with children.",
@@ -115,7 +114,7 @@
     {
       "tag": "Geju detection",
       "title": "Finds the geju\nin your chart",
-      "subtitle": "Geju are fixed combinations of stars, as the old books name them.",
+      "subtitle": "Geju are fixed combinations of stars, as the old books name them",
       "points": [
         "Automatically detects 11 classic geju, such as Zifu tonggong (Ziwei and Tianfu sharing a palace), Shapolang, Jiyue tongliang, Lianzhen–Tianxiang and Wuqu–Qisha.",
         "Precisely spots special geju such as Zuofu and Youbi flanking the Life Palace, or Taiyang and Taiyin (the Sun and the Moon) flanking it, and gives the standard reading from Ni Haixia’s method.",
@@ -264,10 +263,8 @@
     }
   },
   "trinity": {
-    "eyebrow": "Ni Haixia · Philosophy",
     "title": "Heaven · Earth · Humanity",
     "intro": "Ni Haixia’s core view of fate: fate is never the whole of life.<br></br>He divided the forces that shape a life into three equally important parts.",
-    "ofLife": "of life",
     "cards": [
       {
         "glyph": "Heaven",
@@ -285,7 +282,7 @@
         "glyph": "Humanity",
         "label": "Heart and mind",
         "sub": "Will · Choice · Action",
-        "desc": "Your own will, attitude, choices and actions are the most active force for changing fate. Ni Haixia stressed that we learn our chart to become better people, not to sit and wait for fate to decide. Working to improve yourself is the strongest way to break free."
+        "desc": "Your own will, attitude, choices and actions are the most active force for changing fate. Ni Haixia stressed that we learn our chart to become better people, not to sit and wait for fate to decide. The chart sets the base. What you make of it is yours."
       }
     ],
     "quote": "Ni Haixia held that a natal chart is only one third of a life; the other two are where you live and your own choices.",
@@ -340,7 +337,6 @@
     ]
   },
   "heming": {
-    "eyebrow": "Compatibility · Analysis",
     "title": "Ziwei Compatibility",
     "desc": "Enter two people’s birth details. Following Ni Haixia’s method, AI reads their Marriage Palaces side by side and looks at how their Life Palaces and sanfang sizheng fit together, <br></br>to see how the two of you get along and where you complement each other.",
     "tags": [
@@ -352,9 +348,9 @@
     "cta": "Check compatibility"
   },
   "closing": {
-    "eyebrow": "Start your chart journey",
-    "title": "Your Ziwei natal chart<br></br>is waiting to be read",
-    "desc": "Enter the date and hour of your birth to build your own natal chart in seconds,<br></br>then let AI read it in depth by Ni Haixia’s method",
+    "eyebrow": "Ziwei Natal Chart",
+    "title": "Twelve palaces.<br></br>One clear chart.",
+    "desc": "Enter the date and hour of your birth, and all twelve palaces are laid out in seconds.<br></br>AI then reads them from the Life Palace out: character, career, love, wealth and health.",
     "cta": "Build your chart",
     "knowledge": "Ziwei Doushu knowledge base",
     "library": "Classics library"
