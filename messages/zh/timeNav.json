@@ -1,0 +1,11 @@
+{
+  "natal": "本命",
+  "decade": "大限",
+  "decadeAges": "大限 {start}–{end}",
+  "year": "流年",
+  "prevYear": "上一年",
+  "nextYear": "下一年",
+  "overlayDecade": "大限·{stem}年四化：",
+  "overlayYear": "{year}·{stem}年四化：",
+  "transform": "{star}{sihua}"
+}

@@ -18,6 +18,9 @@ export default defineConfig({
   use: {
     baseURL: BASE_URL,
     trace: 'on-first-retry',
+    // The site follows the browser language when no choice is saved (#59). Pin Chinese so
+    // the existing specs read the Chinese UI; e2e/i18n.spec.ts opts into en-US.
+    locale: 'zh-CN',
   },
   projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
   webServer: {

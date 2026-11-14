@@ -1,12 +1,37 @@
-import { describe, it, expect, beforeEach, afterAll } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { describe, it, expect, beforeEach, afterEach, afterAll, vi } from 'vitest';
+import { parse } from 'yaml';
 import { POST } from '@/app/api/v1/charts/route';
 import { generateApiKey } from '@/lib/api/keys';
 import { prisma } from '@/lib/db';
+import { generateChart } from '@/lib/ziwei/algorithm';
 import type { ZiweiChart } from '@/lib/ziwei/types';
 import { resetDatabase } from '../helpers/reset';
 
+// The real engine, wrapped so one test can make it fail.
+vi.mock('@/lib/ziwei/algorithm', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/lib/ziwei/algorithm')>();
+  return { ...actual, generateChart: vi.fn(actual.generateChart) };
+});
+
 // Fake birth data only (AGENTS.md: no real people's birth data in tests).
 const VALID_BODY = { date: '1990-06-15', hour: 6, gender: 'female' };
+
+interface DocumentedResponses {
+  paths: Record<
+    string,
+    { post: { responses: Record<string, { content: Record<string, { examples: Record<string, { value: unknown }> }> }> } }
+  >;
+}
+
+const spec = parse(
+  readFileSync(fileURLToPath(new URL('../../../docs/openapi.yaml', import.meta.url)), 'utf8'),
+) as DocumentedResponses;
+
+/** The body docs/openapi.yaml shows for one example of a POST /api/v1/charts response. */
+const documented = (status: string, example: string) =>
+  spec.paths['/api/v1/charts'].post.responses[status].content['application/json'].examples[example].value;
 
 interface StoredKey {
   id: string;
@@ -45,6 +70,7 @@ async function errorOf(response: Response): Promise<string> {
 }
 
 beforeEach(resetDatabase);
+afterEach(() => vi.restoreAllMocks());
 afterAll(() => prisma.$disconnect());
 
 describe('POST /api/v1/charts — API key', () => {
@@ -71,6 +97,14 @@ describe('POST /api/v1/charts — API key', () => {
     const { plainKey } = await createKey({ revoked: true });
     const response = await POST(request(VALID_BODY, bearer(plainKey)));
     expect(response.status).toBe(401);
+  });
+
+  it('accepts the auth scheme in any case (RFC 9110: "bearer", "BEARER")', async () => {
+    const { plainKey } = await createKey();
+    for (const scheme of ['bearer', 'BEARER', 'BeArEr']) {
+      const response = await POST(request(VALID_BODY, { Authorization: `${scheme} ${plainKey}` }));
+      expect(response.status, scheme).toBe(200);
+    }
   });
 
   it('checks the key before the body: no key and a bad body is still 401', async () => {
@@ -121,5 +155,82 @@ describe('POST /api/v1/charts — success', () => {
     await POST(request(VALID_BODY, bearer(plainKey)));
     const row = await prisma.apiKey.findUniqueOrThrow({ where: { id } });
     expect(row.lastUsedAt).toBeInstanceOf(Date);
+  });
+});
+
+describe('POST /api/v1/charts — per-key limit (#9)', () => {
+  it('allows each key 60 requests a minute: the 61st gets 429 with Retry-After, and another key still works', async () => {
+    // Freeze the clock inside one minute, so the loop never crosses into the next window.
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(new Date(Date.UTC(2026, 10, 12, 12, 0, 30)));
+    try {
+      const key = await createKey();
+      const other = await createKey();
+      for (let i = 0; i < 60; i++) expect((await POST(request(VALID_BODY, bearer(key.plainKey)))).status).toBe(200);
+
+      const refused = await POST(request(VALID_BODY, bearer(key.plainKey)));
+      expect(refused.status).toBe(429);
+      expect(refused.headers.get('Retry-After')).toBe('30');
+      await errorOf(refused);
+
+      expect((await POST(request(VALID_BODY, bearer(other.plainKey)))).status).toBe(200);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('checks the key before counting: requests without a valid key are 401 and use up nothing', async () => {
+    const key = await createKey();
+    for (let i = 0; i < 70; i++) expect((await POST(request(VALID_BODY, bearer('zw_not_a_real_key')))).status).toBe(401);
+    expect((await POST(request(VALID_BODY, bearer(key.plainKey)))).status).toBe(200);
+  });
+});
+
+describe('POST /api/v1/charts — server errors', () => {
+  it('returns 500 with a JSON { error } when the key lookup fails, without leaking the key or the cause', async () => {
+    const { plainKey, keyHash } = await createKey();
+    vi.spyOn(prisma.apiKey, 'findUnique').mockRejectedValueOnce(new Error('connection to db-internal-host timed out'));
+
+    const response = await POST(request(VALID_BODY, bearer(plainKey)));
+    expect(response.status).toBe(500);
+    expect(response.headers.get('content-type')).toMatch(/application\/json/);
+    const text = await response.text();
+    expect(JSON.parse(text)).toEqual({ error: expect.any(String) });
+    for (const secret of [plainKey, keyHash, 'db-internal-host', 'timed out']) expect(text).not.toContain(secret);
+  });
+});
+
+// The 400 validation messages are checked against the docs in tests/unit/openapi.test.ts.
+// These come from the route itself, so they're checked here, by calling it.
+describe('POST /api/v1/charts — error bodies match docs/openapi.yaml', () => {
+  it('401 missingOrInvalidKey: no Authorization header', async () => {
+    const response = await POST(request(VALID_BODY));
+    expect(response.status).toBe(401);
+    expect(await response.json()).toEqual(documented('401', 'missingOrInvalidKey'));
+  });
+
+  it('400 notJson: a body that is not JSON', async () => {
+    const { plainKey } = await createKey();
+    const response = await POST(request('{not json', bearer(plainKey)));
+    expect(response.status).toBe(400);
+    expect(await response.json()).toEqual(documented('400', 'notJson'));
+  });
+
+  it('500 keyLookupFailed: the database fails during the key lookup', async () => {
+    const { plainKey } = await createKey();
+    vi.spyOn(prisma.apiKey, 'findUnique').mockRejectedValueOnce(new Error('connection timed out'));
+    const response = await POST(request(VALID_BODY, bearer(plainKey)));
+    expect(response.status).toBe(500);
+    expect(await response.json()).toEqual(documented('500', 'keyLookupFailed'));
+  });
+
+  it('500 engineFailed: the charting engine throws', async () => {
+    const { plainKey } = await createKey();
+    vi.mocked(generateChart).mockImplementationOnce(() => {
+      throw new Error('engine failed');
+    });
+    const response = await POST(request(VALID_BODY, bearer(plainKey)));
+    expect(response.status).toBe(500);
+    expect(await response.json()).toEqual(documented('500', 'engineFailed'));
   });
 });
