@@ -17,7 +17,7 @@ interface Message {
 }
 
 /** Each cause has its own message, so a used-up limit never reads like a bug (#63). */
-type ReadingError = 'network' | 'apiMissing' | 'rateLimited' | 'failed';
+type ReadingError = 'network' | 'apiMissing' | 'loginRequired' | 'rateLimited' | 'failed';
 const RETRYABLE: ReadonlySet<ReadingError> = new Set(['network', 'failed']);
 
 // The limits the server enforces (lib/ai/interpret.ts, #5). Checking them here lets the
@@ -154,6 +154,7 @@ export default function InsightPanel({ chart, selectedPalace, selectedSiHua }: I
         return fail('network'); // fetch rejects only when no answer came back
       }
       if (res.status === 404) return fail('apiMissing');
+      if (res.status === 401) return fail('loginRequired'); // AI readings are for members (#15)
       if (res.status === 429) return fail('rateLimited');
       if (!res.ok || !res.body) return fail('failed');
 
