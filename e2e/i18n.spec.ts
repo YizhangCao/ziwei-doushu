@@ -81,7 +81,7 @@ test('a classical passage shows the original, then which means', async ({ page }
   await expect(page.getByText(/^which means: [“"]/).first()).toBeVisible();
 });
 
-for (const path of ['/', '/heming', '/library', '/library/quanshu', '/library/quanshu/0', '/library/search?q=minggong', '/knowledge', '/terms', '/privacy', '/no-such-page']) {
+for (const path of ['/', '/heming', '/library', '/library/quanshu', '/library/quanshu/0', '/library/search?q=minggong', '/knowledge', '/ni-haixia', '/terms', '/privacy', '/no-such-page']) {
   test(`no Chinese outside marked originals on ${path}`, async ({ page }) => {
     await page.goto(path);
     await page.waitForLoadState('networkidle');
