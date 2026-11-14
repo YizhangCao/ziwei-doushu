@@ -33,7 +33,7 @@ A trusted layer for the whole category: one core that any tradition can run on.
 - **A reader that sticks to the source.** It reads from the structure of the chart, and it is built not to invent: no made-up quotes, nothing that isn't in the chart.
 - **A vault for what's personal.** Birth data and conversations are encrypted at rest, and birth details never reach the AI.
 - **An open door for developers.** A public API with keys, rate limits and OpenAPI docs, so anyone can build the engine into their own product.
-- **A home for practitioners** (coming soon). Members share a chart with a practitioner, who reads it and replies.
+- **A home for practitioners**. Members share a chart with a practitioner, who reads it and replies.
 - **A market for skills** (coming soon). What people know becomes something others can use: a practitioner's reading method, a scholar's translation, a developer's engine for a new tradition. Each is packaged as a skill that runs on the core, and its maker is paid when it's used.
 - **Code anyone can read.** The whole stack is open source and tested end to end, so you can check exactly what it does with your data.
 
