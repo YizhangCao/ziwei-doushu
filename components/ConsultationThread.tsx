@@ -1,11 +1,16 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 
 // A consultation thread (#21): messages stream in over SSE from /api/shares/:id/stream, and
 // the form posts to /api/shares/:id/messages. EventSource reconnects by itself and sends
 // Last-Event-ID; every reconnect re-sends a short overlap window, so messages are merged by id
 // and kept in createdAt order.
+//
+// The stream is open only while it can bring something new (#21 review): a hidden tab closes
+// it, so the function and the database can go idle, and a closed thread never opens one. When
+// the stream ends, the page asks for the thread before reconnecting, because a revoke and a
+// failed poll end it the same way.
 
 interface ThreadMessage {
   id: string;
@@ -15,6 +20,8 @@ interface ThreadMessage {
 }
 
 const MAX_LENGTH = 2_000; // the service's limit (#5)
+/** Wait before reopening a stream that ended while the thread is still open. */
+const RECONNECT_MS = 3_000;
 
 /** Adds messages that are new by id, keeping the thread oldest first (ties by id, like the server). */
 function merge(current: ThreadMessage[], incoming: ThreadMessage[]): ThreadMessage[] {
@@ -39,23 +46,85 @@ export default function ConsultationThread({
   const [draft, setDraft] = useState('');
   const [sending, setSending] = useState(false);
   const [status, setStatus] = useState('');
+  const [isClosed, setIsClosed] = useState(closed);
+  // The newest message the page has, so a reopened stream starts after it instead of replaying.
+  const newestId = useRef<string | null>(null);
+  useEffect(() => { newestId.current = messages.at(-1)?.id ?? null; }, [messages]);
+
+  const thread = `/api/shares/${encodeURIComponent(shareId)}`;
+
+  // A closed thread can't change, so one read is enough.
+  useEffect(() => {
+    if (!isClosed) return;
+    let cancelled = false;
+    fetch(`${thread}/messages`)
+      .then((res) => (res.ok ? (res.json() as Promise<{ messages: ThreadMessage[] }>) : null))
+      .then((data) => { if (data && !cancelled) setMessages((current) => merge(current, data.messages)); })
+      .catch(() => { /* The note below still says the thread is closed. */ });
+    return () => { cancelled = true; };
+  }, [isClosed, thread]);
 
   useEffect(() => {
-    const source = new EventSource(`/api/shares/${encodeURIComponent(shareId)}/stream`);
-    source.addEventListener('message', (event) => {
+    if (isClosed) return;
+    let source: EventSource | null = null;
+    let reconnect: ReturnType<typeof setTimeout> | undefined;
+    let stopped = false;
+
+    const close = () => { source?.close(); source = null; };
+
+    const open = () => {
+      if (stopped || source || document.visibilityState === 'hidden') return;
+      const cursor = newestId.current;
+      const es = new EventSource(cursor ? `${thread}/stream?cursor=${encodeURIComponent(cursor)}` : `${thread}/stream`);
+      source = es;
+      es.addEventListener('message', (event) => {
+        try {
+          setMessages((current) => merge(current, [JSON.parse((event as MessageEvent<string>).data) as ThreadMessage]));
+        } catch {
+          // A malformed event is skipped; the next poll or reconnect brings the thread back in sync.
+        }
+      });
+      // The server sends stream-error when a poll fails; EventSource gives up (CLOSED) when a
+      // reconnect is refused. Either way, find out why before trying again.
+      es.addEventListener('stream-error', () => { void ended(); });
+      es.onerror = () => { if (es.readyState === EventSource.CLOSED) void ended(); };
+    };
+
+    const ended = async () => {
+      close();
       try {
-        setMessages((current) => merge(current, [JSON.parse((event as MessageEvent<string>).data) as ThreadMessage]));
+        const res = await fetch(thread);
+        if (stopped) return;
+        if (res.status === 404) return setIsClosed(true); // revoked, for the practitioner
+        if (res.status === 401) return setStatus(t('signedOut'));
+        if (res.ok) {
+          const data = (await res.json()) as { thread: { closed: boolean } };
+          if (data.thread.closed) return setIsClosed(true);
+        }
       } catch {
-        // A malformed event is skipped; the next poll or reconnect brings the thread back in sync.
+        // Offline or a server hiccup: try again below.
       }
-    });
-    // The server ends the stream with this when a poll fails (for example, the share was revoked).
-    source.addEventListener('stream-error', () => {
-      setStatus(t('streamError'));
-      source.close();
-    });
-    return () => source.close();
-  }, [shareId, t]);
+      if (!stopped) reconnect = setTimeout(open, RECONNECT_MS);
+    };
+
+    const onVisibility = () => {
+      if (document.visibilityState === 'hidden') {
+        clearTimeout(reconnect);
+        close();
+      } else {
+        open();
+      }
+    };
+
+    document.addEventListener('visibilitychange', onVisibility);
+    open();
+    return () => {
+      stopped = true;
+      clearTimeout(reconnect);
+      document.removeEventListener('visibilitychange', onVisibility);
+      close();
+    };
+  }, [isClosed, thread, t]);
 
   async function send() {
     const body = draft.trim();
@@ -63,12 +132,15 @@ export default function ConsultationThread({
     setSending(true);
     setStatus('');
     try {
-      const res = await fetch(`/api/shares/${encodeURIComponent(shareId)}/messages`, {
+      const res = await fetch(`${thread}/messages`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ body }),
       });
-      if (!res.ok) return setStatus(res.status === 403 ? t('closed') : t('sendFailed'));
+      // 403: the owner on a revoked share. 404: the practitioner after a revoke, who can no
+      // longer see the thread at all. Both mean the thread is closed, not that sending broke.
+      if (res.status === 403 || res.status === 404) return setIsClosed(true);
+      if (!res.ok) return setStatus(t('sendFailed'));
       const { message } = (await res.json()) as { message: ThreadMessage };
       setMessages((current) => merge(current, [message]));
       setDraft('');
@@ -103,7 +175,7 @@ export default function ConsultationThread({
         ))}
       </ul>
 
-      {closed ? (
+      {isClosed ? (
         <p style={{ color: 'var(--t-faint)' }}>{t('closed')}</p>
       ) : (
         <form

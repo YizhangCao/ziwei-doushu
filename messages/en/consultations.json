@@ -38,6 +38,6 @@
     "sending": "Sending…",
     "sendFailed": "Couldn’t send. Please try again.",
     "closed": "This consultation is closed. No new messages can be sent.",
-    "streamError": "New messages can’t come through right now. Please refresh the page."
+    "signedOut": "Your session has ended. Sign in again to keep following this consultation."
   }
 }
