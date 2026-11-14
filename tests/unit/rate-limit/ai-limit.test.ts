@@ -1,7 +1,8 @@
 /**
  * Author: Yikang (Richard) Liu, M.S. Candidate in Computer Science, Khoury College of Computer Sciences, Northeastern University
- * Version: 1.0
+ * Version: 1.1
  * Created: November 11, 2026 · San Francisco, California, USA
+ * Last Edited: November 13, 2026 · San Francisco, California, USA
  */
 
 /**
@@ -12,7 +13,7 @@
 import { describe, it, expect } from 'vitest';
 import { AI_HOURLY_LIMIT, AI_IP_HOURLY_LIMIT, limitAiRequest, tooManyRequests } from '@/lib/rate-limit/ai-limit';
 import { createMemoryStore, type RateLimitStore } from '@/lib/rate-limit/limiter';
-import { rateLimitWait } from '@/lib/rate-limit/message';
+import { aiLimitReason, rateLimitWait } from '@/lib/rate-limit/message';
 
 const NOW = Date.UTC(2026, 10, 12, 10, 15, 0);
 
@@ -77,6 +78,21 @@ describe('limitAiRequest(store, { userId, ip }, now)', () => {
     expect((await limitAiRequest(store, { userId: 'u1', ip: '203.0.113.1', dailyLimit: 0 }, NOW)).allowed).toBe(false);
   });
 
+  it('says which limit refused a request: hourly, daily, or paused when the daily limit is 0 (#118)', async () => {
+    const store = createMemoryStore(() => NOW);
+    await send(store, { userId: 'u1', ip: '203.0.113.1' }, 20);
+    expect((await limitAiRequest(store, { userId: 'u1', ip: '203.0.113.1' }, NOW)).reason).toBe('hourly');
+
+    for (let u = 2; u < 7; u++) await send(store, { userId: `u${u}`, ip: '203.0.113.2' }, 20);
+    expect((await limitAiRequest(store, { userId: 'u7', ip: '203.0.113.2' }, NOW)).reason).toBe('hourly');
+
+    const daily = { userId: 'u8', ip: '203.0.113.3', dailyLimit: 1 };
+    await limitAiRequest(store, daily, NOW);
+    expect((await limitAiRequest(store, daily, NOW)).reason).toBe('daily');
+
+    expect((await limitAiRequest(store, { userId: 'u9', ip: '203.0.113.4', dailyLimit: 0 }, NOW)).reason).toBe('paused');
+  });
+
   it('lets the request through when the store fails, so a Redis outage does not stop readings', async () => {
     const broken: RateLimitStore = { increment: () => Promise.reject(new Error('connection refused')) };
 
@@ -90,7 +106,30 @@ describe('tooManyRequests(result)', () => {
 
     expect(res.status).toBe(429);
     expect(res.headers.get('retry-after')).toBe('2700');
-    expect(await res.json()).toEqual({ error: expect.stringMatching(/too many/i) });
+    expect(await res.json()).toEqual({ error: expect.stringMatching(/too many/i), reason: 'hourly' });
+  });
+
+  it('names the limit in the body, so the panel can tell the daily limit from the hourly one (#118)', async () => {
+    // 23:20 UTC: the daily limit's wait is under an hour, so Retry-After alone can't tell them apart.
+    const daily = tooManyRequests({ allowed: false, limit: 50, remaining: 0, retryAfterSeconds: 2400, reason: 'daily' });
+    expect(await daily.json()).toEqual({ error: expect.stringMatching(/too many/i), reason: 'daily' });
+
+    const paused = tooManyRequests({ allowed: false, limit: 0, remaining: 0, retryAfterSeconds: 2400, reason: 'paused' });
+    expect(await paused.json()).toEqual({ error: expect.any(String), reason: 'paused' });
+  });
+});
+
+describe('aiLimitReason(body)', () => {
+  it('reads which limit a 429 body names', () => {
+    expect(aiLimitReason({ error: 'x', reason: 'hourly' })).toBe('hourly');
+    expect(aiLimitReason({ error: 'x', reason: 'daily' })).toBe('daily');
+    expect(aiLimitReason({ error: 'x', reason: 'paused' })).toBe('paused');
+  });
+
+  it('treats a body without a known reason as the hourly limit', () => {
+    for (const body of [null, undefined, 'text', { error: 'x' }, { reason: 'weekly' }, { reason: 1 }]) {
+      expect(aiLimitReason(body)).toBe('hourly');
+    }
   });
 });
 

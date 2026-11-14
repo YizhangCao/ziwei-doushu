@@ -45,8 +45,11 @@
   "send": "Ask",
   "errors": {
     "failed": "The reading didn’t finish. Please try again in a moment.",
-    "rateLimited": "You’ve used today’s readings. You can continue tomorrow.",
+    "rateLimited": "You’ve used today’s AI readings. You can continue tomorrow. The basic reading below is unaffected.",
+    "dailyLimitHours": "You’ve used today’s AI readings. You can continue in about {hours, plural, one {# hour} other {# hours}}. The basic reading below is unaffected.",
     "rejected": "This conversation can’t continue. Build the chart again to start over.",
+    "unavailable": "The AI reading isn’t available right now. The basic reading below is unaffected.",
+    "aiPaused": "AI readings are paused for now. The basic reading below is unaffected.",
     "network": "The connection dropped, so the reading didn’t finish.",
     "tooLong": "Keep your question under 2,000 characters.",
     "tooMany": "This conversation is already long. Build the chart again to start over.",

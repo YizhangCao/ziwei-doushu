@@ -7,6 +7,10 @@
  */
 
 import { test, expect, type Page } from '@playwright/test';
+import { stubMemberSession } from './helpers/session';
+
+// The AI reading panel is for members (#118); the session is stubbed, like /api/interpret.
+test.beforeEach(async ({ page }) => { await stubMemberSession(page); });
 
 const QUESTION = '今年适合换工作吗？';
 
