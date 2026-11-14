@@ -15,7 +15,9 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: { params: Promise<{ book: string }> }) {
   const { book: slug } = await params;
   const book = getBookBySlug(slug);
-  if (!book) return {};
+  // notFound() here too, not only in the page: otherwise the client payload carries this
+  // route's metadata instead of the 404's, and the browser swaps in the home title (#65).
+  if (!book) notFound();
   const t = await getTranslations('library.meta');
   const labels = bookLabels(book, await getLocale());
   return {

@@ -12,7 +12,14 @@ import { getTranslations } from 'next-intl/server';
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('notFound');
-  return { title: t('metaTitle'), robots: { index: false } };
+  return {
+    title: t('metaTitle'),
+    robots: { index: false },
+    // A missing address is nobody's canonical URL. Replacing the root's openGraph block
+    // also drops its './' og:url, which would name the missing address (#65).
+    alternates: { canonical: null },
+    openGraph: { title: t('metaTitle') },
+  };
 }
 
 /** Says the page is missing and offers the two ways back. */
