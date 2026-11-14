@@ -6,6 +6,9 @@ import { useTranslations } from 'next-intl';
 import StarField from '@/components/StarField';
 import { useTheme, type Theme } from '@/components/ThemeProvider';
 
+// Tian Ji lecture 3 (part 1) at 00:01:17, where Ni Haixia says the Four Transformations stay put (#69).
+const NI_STANCE_SOURCE = 'https://www.bilibili.com/video/BV1KJsLekEfA?p=5&t=77';
+
 // ─── 滚动入场 wrapper ────────────────────────────────────
 function FadeIn({
   children, delay = 0, y = 12, className = '',
@@ -668,28 +671,23 @@ export default function HomePage() {
             </div>
           </FadeIn>
 
+          {/* The copy review (#69): a short introduction and his cited stance here; his life,
+              teaching series and approach live on the About Ni Haixia page. */}
           <FadeIn delay={0.1}>
             <div className="rounded-2xl p-8 md:p-10 mb-8"
               style={{ border: `1px solid ${c.niBorder}`, background: c.niBg, boxShadow: c.cardShadow }}>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-                {(t.raw('ni.stats') as { label: string; value: string; sub: string }[]).map(item => (
-                  <div key={item.label} className="text-center rounded-xl px-4 py-3"
-                    style={{ border: `1px solid ${c.niDivider}`, background: 'transparent' }}>
-                    <div className="text-[12px] mb-1" style={{ color: c.textFaint }}>{item.label}</div>
-                    <div className="text-2xl font-semibold mb-0.5" style={{ color: c.goldSolid }}>{item.value}</div>
-                    <div className="text-[12px]" style={{ color: c.textMuted }}>{item.sub}</div>
-                  </div>
-                ))}
-              </div>
-              <div className="h-px mb-8" style={{ background: c.niDivider }} />
               <div className="space-y-4 text-sm leading-relaxed max-w-3xl mx-auto" style={{ color: c.textSecond }}>
-                <p>{t.rich('ni.bio.life', bioTags)}</p>
-                <p>{t.rich('ni.bio.teaching', bioTags)}</p>
-                <p>{t.rich('ni.bio.stance', bioTags)}</p>
-                <p>{t.rich('ni.bio.approach', bioTags)}</p>
-                <p>{t.rich('ni.bio.influence', bioTags)}</p>
+                <p>{t.rich('ni.stance', bioTags)}</p>
+                <p className="text-[12px]">
+                  <a href={NI_STANCE_SOURCE} target="_blank" rel="noopener noreferrer" style={{ color: c.textMuted }}>
+                    {t('ni.source')}
+                  </a>
+                </p>
                 <p style={{ fontSize: '12px', color: c.textMuted, fontStyle: 'italic', marginTop: '12px' }}>
                   {t('ni.disclaimer')}
+                </p>
+                <p>
+                  <a href="/ni-haixia" style={{ color: 'var(--tx-0)' }}>{t('ni.more')} <span aria-hidden="true">→</span></a>
                 </p>
               </div>
             </div>
