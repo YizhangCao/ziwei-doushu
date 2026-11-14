@@ -1,0 +1,5 @@
+# Fake, test-only encryption keys in the #18 red commit (later replaced with 'a'.repeat(32) etc.).
+# Each entry is pinned to that commit, file and line, so it can't hide any other finding.
+70d054f3e6ffa773dac988bf30eccba795831b34:tests/integration/charts/service.test.ts:generic-api-key:11
+70d054f3e6ffa773dac988bf30eccba795831b34:tests/unit/crypto.test.ts:generic-api-key:6
+70d054f3e6ffa773dac988bf30eccba795831b34:tests/unit/crypto.test.ts:generic-api-key:7

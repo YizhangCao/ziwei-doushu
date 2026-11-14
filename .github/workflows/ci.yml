@@ -24,7 +24,8 @@ env:
   AUTH_SECRET: ci-only-secret
   # E2E serves `next start` on localhost; Vercel sets this automatically in deployments.
   AUTH_TRUST_HOST: 'true'
-  DATA_ENCRYPTION_KEY: ci-only-32-byte-key-000000000000
+  # Quoted: unquoted, YAML reads 64 zeros as the number 0, which the 64-hex check rejects.
+  DATA_ENCRYPTION_KEY: '0000000000000000000000000000000000000000000000000000000000000000'
 
 jobs:
   static:
