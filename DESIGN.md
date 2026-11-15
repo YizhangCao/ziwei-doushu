@@ -122,7 +122,7 @@ A calm, monochrome night with one fixed point of gold. The brand's only symbol i
 
 Night is the default theme: pure black surfaces, with white text at full or 60% strength. Day mode is the same system on white. Hierarchy comes from size and opacity, never from weight, which is only 400 or 600. Edges are 1px hairlines and corners are square; only the small sihua badges round to 2px. Controls are 52px tall, the nav is 72px, and page gutters grow from 16px to 112px.
 
-Motion is short and quiet: 200ms for interaction and 600ms for reveals, on one easing curve, moving opacity and stroke only. It turns off when the system asks for reduced motion.
+Motion is short and quiet: 200ms for interaction and 600ms for reveals, on one easing curve, moving opacity and stroke only. The one exception is the home page's night sky, which turns slowly around the pole star. All motion turns off when the system asks for reduced motion.
 
 Gold is reserved for chart meaning: the star names, the Life Palace, the current decade, the trine-and-opposition lines and the AI reading headers. Wherever it appears, it says "this matters in your chart". The sihua keep their own four colors, always paired with their character.
 
@@ -133,7 +133,7 @@ The specs were measured after polestar.com's web pages in November 2026. None of
 - Square corners and 1px hairlines; no rounded cards.
 - Hierarchy from size and opacity; two weights only (400, 600).
 - Flat: depth comes from tonal panels, not shadows.
-- Quiet motion: opacity and stroke only, 200ms and 600ms on one curve.
+- Quiet motion: opacity and stroke only, 200ms and 600ms on one curve; the home sky's slow turn around the pole star is the one exception.
 - Night by default; day mode mirrors it on white.
 
 ## Colors
@@ -258,7 +258,15 @@ Square, monochrome and quiet: they press by dimming, never by moving.
 Small inline markers on the board. Each carries its character in its own sihua color, with a 1px border in the same color, 2px corners and 12px type.
 
 ### Pole-Star Mark
-The brand's only symbol: an 18px ring in the 32% gold border with a gold dot in the middle. It appears in the nav and as the reading panel's loading state, where it breathes on a 6s cycle.
+The brand's only symbol: an 18px ring in the 32% gold border with a gold dot in the middle. It appears in the nav and as the reading panel's loading state, where it breathes on a 6s cycle. The home hero shows it at 36px, and the night sky turns around it.
+
+### Night Sky (home)
+The star field behind the home page turns around the pole-star mark in the hero. When the mark scrolls off the top, the centre goes with it, so the stars sweep in arcs like a long-exposure photograph.
+
+**The Turning Sky Rule.** The sky turns slowly at rest. Scrolling through the first screen speeds it up and leaves short trails; past the first screen it settles back to a calm turn. It is the site's only motion that isn't opacity or stroke, it always sits behind the content, and it stops under reduced motion.
+
+### Chart Walkthrough (home)
+A sample chart, worked out in the browser from a made-up birthday, pinned beside four steps that scroll past: the Life Palace, its sanfang sizheng, the birth-year Four Transformations, and the current decade. It reuses the chart page's palace cells and sanfang lines, so it looks exactly like `/chart`. The palaces a step is about stay at full strength and the rest dim to 30%. Below 1024px it stacks, unpinned, with every highlight shown at once.
 
 ### Reading Panel
 Streamed AI text sits in an `aria-live="polite"` region. Section headers are 14px at weight 600 in Pole-Star Gold, and paragraphs are 16px body text. While a reply is on its way, the pole-star mark breathes next to a line that says what is being read.
@@ -280,5 +288,6 @@ Streamed AI text sits in an `aria-live="polite"` region. Section headers are 14p
 - **Don't** add shadows to cards or panels.
 - **Don't** use weights other than 400 and 600, or text smaller than 12px.
 - **Don't** scale or lift elements on hover or press. Pressing dims, nothing moves.
+- **Don't** add a second ambient motion. The turning sky is the only one.
 - **Don't** widen Chinese letter spacing.
 - **Don't** use Polestar's logo, fonts, imagery or copy. Only its measured specs informed this system.
