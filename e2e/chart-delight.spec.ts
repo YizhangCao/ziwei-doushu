@@ -15,6 +15,7 @@
  */
 
 import { test, expect, type Page } from '@playwright/test';
+import { stubMemberSession } from './helpers/session';
 
 declare global {
   interface Window { __reveal?: Record<string, number> }
@@ -60,7 +61,9 @@ async function recordReveal(page: Page) {
 const revealDone = (page: Page) =>
   expect.poll(() => page.evaluate(() => Object.keys(window.__reveal ?? {}).length), { timeout: 10_000 }).toBe(14);
 
+// The reading panel is for members (#118): stub the session, as the AI route is stubbed.
 test.beforeEach(async ({ page }) => {
+  await stubMemberSession(page);
   await page.route('**/api/interpret', () => { /* never answers: the panel keeps waiting */ });
 });
 
