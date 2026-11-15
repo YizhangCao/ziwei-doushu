@@ -196,7 +196,9 @@ describe('L: real details in the legal pages', () => {
   });
 
   it('L3: does not name an operating entity that does not exist', () => {
-    expect(at(zh, 'legal.terms.law.body')).not.toContain('运营主体');
-    expect(at(en, 'legal.terms.law.body')).not.toMatch(/operating entity/i);
+    // Section 6 has several parts since #100; none may name an operating entity
+    const parts = (tree: Record<string, Tree>) => Object.values((tree.legal.terms as Record<string, Record<string, string>>).law).join(' ');
+    expect(parts(zh)).not.toContain('运营主体');
+    expect(parts(en)).not.toMatch(/operating entity/i);
   });
 });

@@ -14,11 +14,16 @@ interface Message {
   hidden?: boolean; // don't show user bubble for auto/topic messages
   /** Why the request failed (#63); the panel offers a retry when trying again can help. */
   error?: ReadingError;
+  /** A reading of the parents, siblings or children palace, which gets the family note (#11). */
+  family?: boolean;
 }
 
 /** Each cause has its own message, so a used-up limit never reads like a bug (#63). */
 type ReadingError = 'network' | 'apiMissing' | 'rateLimited' | 'failed';
 const RETRYABLE: ReadonlySet<ReadingError> = new Set(['network', 'failed']);
+
+/** Palaces whose readings get the family note (#11): Ziwei Doushu is weaker at 六亲, as the README says. */
+const FAMILY_PALACES: ReadonlySet<string> = new Set(['父母', '兄弟', '子女']);
 
 // The limits the server enforces (lib/ai/interpret.ts, #5). Checking them here lets the
 // panel say why a question can't be sent instead of failing with a 400 (#63).
@@ -141,7 +146,7 @@ export default function InsightPanel({ chart, selectedPalace, selectedSiHua }: I
     setMessages(prev => [...prev, { role: 'assistant', content: t(`errors.${cause}`) + devNote, error: cause }]);
   };
 
-  const streamResponse = async (apiMessages: { role: 'user' | 'assistant'; content: string }[]) => {
+  const streamResponse = async (apiMessages: { role: 'user' | 'assistant'; content: string }[], family: boolean) => {
     try {
       let res: Response;
       try {
@@ -161,7 +166,7 @@ export default function InsightPanel({ chart, selectedPalace, selectedSiHua }: I
       const decoder = new TextDecoder();
       let assistantText = '';
 
-      setMessages(prev => [...prev, { role: 'assistant', content: '' }]);
+      setMessages(prev => [...prev, { role: 'assistant', content: '', family }]);
 
       while (true) {
         const { done, value } = await reader.read();
@@ -176,7 +181,7 @@ export default function InsightPanel({ chart, selectedPalace, selectedSiHua }: I
             assistantText += delta;
             setMessages(prev => {
               const updated = [...prev];
-              updated[updated.length - 1] = { role: 'assistant', content: assistantText };
+              updated[updated.length - 1] = { role: 'assistant', content: assistantText, family };
               return updated;
             });
           } catch { /* skip */ }
@@ -213,7 +218,7 @@ export default function InsightPanel({ chart, selectedPalace, selectedSiHua }: I
 
     setMessages(prev => [...prev, userMsg]);
     setInput('');
-    streamResponse(apiMessages);
+    streamResponse(apiMessages, what.kind === 'palace' && FAMILY_PALACES.has(what.palace));
     return true;
   };
 
@@ -346,6 +351,13 @@ export default function InsightPanel({ chart, selectedPalace, selectedSiHua }: I
               >
                 <div className="mb-2" style={{ fontSize: 'var(--fs-caption)', color: 'var(--t-faint)' }}>{t('replyLabel')}</div>
                 <AiContent text={msg.content} streaming={loading && isLastMsg} />
+                {/* Notes under a finished reading: not under a failure message, nor a reply it cut off (#11) */}
+                {!msg.error && !messages[i + 1]?.error && !(loading && isLastMsg) && (
+                  <div className="mt-3" style={{ fontSize: 'var(--fs-caption)', color: 'var(--t-faint)' }}>
+                    {msg.family && <p>{t('note.family')}</p>}
+                    <p>{t('note.reference')}</p>
+                  </div>
+                )}
                 {msg.error && RETRYABLE.has(msg.error) && isLastMsg && !loading && (
                   <button type="button" className="btn-ghost btn-sm mt-3" onClick={retry}>{t('retry')}</button>
                 )}
