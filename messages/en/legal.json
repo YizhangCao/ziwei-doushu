@@ -60,35 +60,35 @@
     "collect": {
       "heading": "1. Information We Collect",
       "intro": "To build your chart and write its reading, this site handles the following information:",
-      "chart": "<strong>Birth details</strong>: a name (optional), date of birth in the Gregorian calendar, time of birth, gender and place of birth. The chart is calculated in your browser.",
-      "account": "<strong>Account</strong>: no sign-up is needed today. We will update this policy before sign-in launches.",
-      "questions": "<strong>Questions</strong>: what you type into the reading panel.",
+      "chart": "<strong>Birth details</strong>: a name (optional), date of birth in the Gregorian calendar, time of birth, gender and place of birth. The chart is calculated in your browser. Only when you save a chart do we store its name and these details on our servers, encrypted.",
+      "account": "<strong>Account</strong>: you sign in with GitHub. We store your GitHub account ID, the name and avatar GitHub shares, your email if GitHub shares it, and your role on the site. If you create an API key, we store only its name, its first few characters and a hash, never the key itself.",
+      "questions": "<strong>Questions and conversations</strong>: what you type into the reading panel. On a saved chart, your conversation with the AI is stored with the chart, encrypted. If you share a chart with a practitioner, the messages you exchange in that consultation are stored on our servers too.",
       "analytics": "<strong>Usage statistics</strong>: Vercel Analytics and Speed Insights record anonymous page views and performance data, without cookies that identify you."
     },
     "use": {
       "heading": "2. How We Use Information",
-      "chart": "Birth details are used only to build your chart and write this reading; the site does not store them on its servers.",
+      "chart": "Birth details are used to build your chart, write its reading, and show a saved chart again when you open it. They are not used for anything else.",
       "analytics": "Anonymous usage statistics are used only to improve the site."
     },
     "sharing": {
       "heading": "3. Information Sharing and Third Parties",
-      "intro": "We do not share your personal information with third parties except in the following cases:",
-      "hosting": "Hosting by Vercel: it serves the site and provides the anonymous usage statistics above.",
+      "intro": "When you choose to share a saved chart with a practitioner, they can see that chart, including its birth details, and your consultation messages until you stop sharing it. Apart from that, we give your information to third parties only in these cases:",
+      "hosting": "Service providers: Vercel serves the site and provides the anonymous usage statistics above, Neon hosts the database that holds saved data, and GitHub handles sign-in. To limit request rates, the site counts requests by account, IP address and API key, and keeps those counts for at most a day.",
       "ai": "AI service Anthropic (Claude): when you ask for a reading, the site sends it the structure of your chart (the stars and Four Transformations in the twelve palaces, the Five Phases Configuration, your current age and decades) and your questions, to write the reading. It does not send your date or time of birth, your gender or your name.",
       "authorities": "Lawful requests from judicial authorities or government departments under laws and regulations"
     },
     "security": {
       "heading": "4. Information Security",
-      "body": "The whole site uses HTTPS. Your birth details and questions are not stored on our servers. No transmission over the internet can be guaranteed to be 100% secure."
+      "body": "The whole site uses HTTPS. Saved birth details and your conversations with the AI are encrypted in our database with AES-256-GCM, and API keys are stored only as hashes. No transmission or storage can be guaranteed to be 100% secure."
     },
     "rights": {
       "heading": "5. Your Rights",
       "local": "<strong>Local preferences</strong>: your theme and language preferences live only in your browser; clearing the site’s data deletes them.",
-      "server": "<strong>Server data</strong>: the site does not store your birth details or questions on its servers, so there is no personal data to access, export or delete."
+      "server": "<strong>Your saved data</strong>: on My charts you can see every chart you saved and delete any of them; deleting a chart also deletes its conversation, its shares and their consultation messages. You can’t delete your account in the app yet; to have it deleted, contact us through the details in section 7 of the Terms of Service."
     },
     "cookies": {
       "heading": "6. Cookies and Local Storage",
-      "body": "The site keeps only two preferences: day or night theme (in your browser’s local storage) and interface language (the NEXT_LOCALE cookie, kept for a year). It uses no tracking cookies. You can clear both in your browser settings, and the site returns to its defaults."
+      "body": "The site uses one sign-in cookie (authjs.session-token) to keep you signed in, for up to 30 days, and keeps two preferences: day or night theme (in your browser’s local storage) and interface language (the NEXT_LOCALE cookie, kept for a year). It uses no tracking cookies. Clearing them signs you out and returns the site to its defaults."
     },
     "minors": {
       "heading": "7. Minors",

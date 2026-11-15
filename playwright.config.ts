@@ -1,4 +1,9 @@
+import { existsSync } from 'node:fs';
 import { defineConfig, devices } from '@playwright/test';
+
+// Locally, specs read E2E_API_KEY from .env.local; in CI it's already in the environment.
+// loadEnvFile never overrides variables that are already set, so CI values win.
+if (existsSync('.env.local')) process.loadEnvFile('.env.local');
 
 const PORT = 3000;
 const BASE_URL = `http://localhost:${PORT}`;

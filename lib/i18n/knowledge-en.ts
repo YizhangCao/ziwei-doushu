@@ -1,7 +1,8 @@
 /**
  * Author: Yikang (Richard) Liu, M.S. Candidate in Computer Science, Khoury College of Computer Sciences, Northeastern University
- * Version: 1.0
+ * Version: 1.1
  * Created: November 11, 2026 · San Francisco, California, USA
+ * Last Edited: November 13, 2026 · San Francisco, California, USA
  */
 
 /**
@@ -26,4 +27,26 @@ export const STAR_BRIEF_EN: Record<string, string> = {
   '天梁': 'Tianliang is the star of the elder, a protector that turns danger into luck, and its huaqi is shelter. In the Life Palace it gives a kind and caring heart, suited to law and medicine.',
   '七杀': 'Qisha is the general’s star. It is solitary, decisive and daring, and its huaqi is severity. In the Life Palace it gives toughness and resolve, suited to the military, the police or starting a business.',
   '破军': 'Pojun (Destroyer of the Army) is the star of breaking and renewal. Ties with close family run thin, and its huaqi is depletion. In the Life Palace it brings pioneering change, suited to technical skills.',
+};
+
+/**
+ * English keywords for each main star (#118), one for each of STAR_DESCRIPTIONS' keywords in
+ * lib/ziwei/constants.ts, in the same order. They are descriptions, not terms, so they are
+ * plain English; taohua stays in pinyin with its gloss, as in the briefs above.
+ */
+export const STAR_KEYWORDS_EN: Record<string, readonly string[]> = {
+  '紫微': ['rulership', 'dignity', 'independence'],
+  '天机': ['wisdom', 'quick thinking', 'strategy'],
+  '太阳': ['boldness', 'official rank', 'generosity'],
+  '武曲': ['wealth', 'toughness', 'decisiveness'],
+  '天同': ['gentleness', 'enjoying life', 'going with the flow'],
+  '廉贞': ['talent', 'trouble with the law', 'taohua (romance)'],
+  '天府': ['a store of wealth', 'steadiness', 'caution'],
+  '太阴': ['grace', 'wealth', 'softness'],
+  '贪狼': ['desire', 'taohua (romance)', 'many talents'],
+  '巨门': ['gossip', 'disputes', 'a gift for argument'],
+  '天相': ['support', 'administration', 'the seal of office'],
+  '天梁': ['protection', 'medicine', 'elders'],
+  '七杀': ['generalship', 'resolve', 'solitude'],
+  '破军': ['pioneering', 'change', 'destruction'],
 };

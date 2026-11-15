@@ -1,4 +1,4 @@
-// ZiweiHub database schema (#14). The connection URL lives in prisma.config.ts (Prisma 7).
+// Ziwei Natal Chart database schema (#14). The connection URL lives in prisma.config.ts (Prisma 7).
 // Change this file only together with a new migration in prisma/migrations/.
 
 generator client {
@@ -23,7 +23,10 @@ enum MessageRole {
 
 model User {
   id             String           @id @default(cuid())
-  email          String           @unique
+  /// GitHub account id; sign-in looks users up by it. Null for seeded demo accounts.
+  githubId       String?          @unique
+  /// Only if GitHub shares it; never used to match a sign-in to an account.
+  email          String?          @unique
   name           String?
   image          String?
   role           Role             @default(member)
@@ -56,7 +59,8 @@ model Share {
   chartId         String
   chart           Chart            @relation(fields: [chartId], references: [id], onDelete: Cascade)
   practitionerId  String
-  practitioner    User             @relation("SharePractitioner", fields: [practitionerId], references: [id], onDelete: Cascade)
+  /// Restrict: deleting a user must not silently remove consultation history (no user deletion this release).
+  practitioner    User             @relation("SharePractitioner", fields: [practitionerId], references: [id], onDelete: Restrict)
   createdAt       DateTime         @default(now())
   /// Set when the owner revokes the share; access checks treat a revoked share as no share.
   revokedAt       DateTime?
@@ -86,7 +90,10 @@ model Message {
   conversationId String
   conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
   role           MessageRole
+  /// Encrypted at rest with DATA_ENCRYPTION_KEY (lib/crypto.ts): a visitor's questions are personal.
   content        String
+  /// A reading prompt the panel sent for a topic button (#22): sent back as context, never shown as the visitor's words.
+  hidden         Boolean      @default(false)
   createdAt      DateTime     @default(now())
 
   @@index([conversationId, createdAt])
@@ -97,7 +104,8 @@ model ConsultMessage {
   shareId   String
   share     Share    @relation(fields: [shareId], references: [id], onDelete: Cascade)
   authorId  String
-  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  /// Restrict, like Share.practitioner: a user with consultation messages can't be deleted.
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Restrict)
   body      String
   createdAt DateTime @default(now())
 

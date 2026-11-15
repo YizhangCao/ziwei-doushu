@@ -18,6 +18,7 @@ import { usePathname } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import { useTheme } from '@/components/ThemeProvider';
 import LanguageToggle from '@/components/LanguageToggle';
+import UserMenu from '@/components/UserMenu';
 
 const LINKS = [
   { href: '/chart', key: 'chart' },
@@ -42,7 +43,7 @@ function ThemeToggle({ compact }: { compact: boolean }) {
       <span className="relative w-10 h-5 rounded-full flex-shrink-0" style={{ background: 'var(--bg-2)' }}>
         <span className="theme-toggle-knob absolute top-1 left-0 w-3.5 h-3.5 rounded-full" style={{ background: 'var(--tx-0)' }} />
       </span>
-      {/* On a phone the English nav is too wide for the word, so only the switch shows (#59) */}
+      {/* On a phone the nav is too wide for the word, so only the switch shows (#59, #15) */}
       <span className={compact ? 'select-none hidden sm:inline' : 'select-none'} style={{ fontSize: 'var(--fs-caption)', color: 'var(--tx-2)' }}>
         <span className="theme-label-night">{t('night')}</span>
         <span className="theme-label-day">{t('day')}</span>
@@ -64,7 +65,8 @@ export default function SiteNav() {
           <span aria-hidden="true" className="pole-mark" />
           <span className={compactBrand ? 'hidden sm:inline' : undefined}>{t('brand')}</span>
         </Link>
-        <div className={`flex items-center ${compactBrand ? 'gap-3' : 'gap-4'} sm:gap-8`} style={{ fontSize: 'var(--fs-body)' }}>
+        {/* Below 380px the row (with the account link, #15) only fits at the 14px label size */}
+        <div className="flex items-center whitespace-nowrap gap-3 sm:gap-8 text-[length:var(--fs-small)] min-[380px]:text-[length:var(--fs-body)]">
           {LINKS.map(({ href, key }) => {
             const current = pathname.startsWith(href);
             return (
@@ -78,8 +80,10 @@ export default function SiteNav() {
               </Link>
             );
           })}
+          <UserMenu />
           <LanguageToggle />
-          <ThemeToggle compact={compactBrand} />
+          {/* With the account link (#15) the row is full on a phone in both languages: the switch drops its word there */}
+          <ThemeToggle compact />
         </div>
       </div>
     </nav>

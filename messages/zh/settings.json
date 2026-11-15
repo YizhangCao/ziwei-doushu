@@ -1,0 +1,26 @@
+{
+  "metaTitle": "设置 · 紫微命盘",
+  "title": "设置",
+  "keys": {
+    "heading": "API key",
+    "intro": "用 API key 调用公开接口 <code>POST /api/v1/charts</code>，详见 <link>API 文档</link>。",
+    "loadFailed": "API key 列表加载失败，请刷新重试。",
+    "createFailed": "创建失败，请稍后重试。",
+    "revokeFailed": "撤销失败，请稍后重试。",
+    "revoked": "已撤销。",
+    "nameLabel": "Key 名称",
+    "namePlaceholder": "例如：我的脚本",
+    "create": "创建 API key",
+    "newKey": "这是你的新 API key，只显示这一次。请现在复制并妥善保存，之后无法再查看。",
+    "copy": "复制",
+    "done": "我已保存",
+    "empty": "还没有 API key。",
+    "dates": "创建于 {created} · 最近使用 {lastUsed}",
+    "never": "从未",
+    "revokedBadge": "已撤销",
+    "confirmText": "撤销后这个 key 立即失效，无法恢复。",
+    "confirm": "确认撤销",
+    "cancel": "取消",
+    "revoke": "撤销"
+  }
+}

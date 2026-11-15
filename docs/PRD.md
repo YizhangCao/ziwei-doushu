@@ -1,4 +1,4 @@
-# ZiweiHub – AI-Assisted Zi Wei Dou Shu Chart Platform (PRD)
+# Ziwei Natal Chart – AI-Assisted Zi Wei Dou Shu Chart Platform (PRD)
 
 Team: Yikang Liu, Yizhang Cao · Approved P2 proposal · Acceptance criteria for each story are in its GitHub Issue.
 

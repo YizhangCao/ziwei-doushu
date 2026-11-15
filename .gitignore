@@ -17,3 +17,6 @@ playwright-report/
 
 # Generated Prisma client (rebuilt by `prisma generate`)
 lib/generated/
+
+# Temporary files, e.g. credential hand-offs (.oauth-prod.tmp); never commit them
+*.tmp

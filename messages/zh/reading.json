@@ -1,0 +1,23 @@
+{
+  "freeTitle": "基础解读（依星曜规则生成）",
+  "freeLead": "按命盘里的主星、亮度和四化，用固定规则生成，不调用 AI。",
+  "aiTitle": "AI 个性化解读",
+  "signInPrompt": "登录后可获得 AI 个性化解读，并能继续追问。",
+  "signIn": "登录",
+  "overview": {
+    "withStars": "命宫主星是{stars}。",
+    "borrowed": "命宫没有主星，按规则借对宫的{stars}来看。",
+    "none": "命宫和对宫都没有主星，以辅星和四化为参考。",
+    "basics": "五行局为{ju}，命主{mingZhu}，身主{shenZhu}。"
+  },
+  "palace": {
+    "withStars": "{palace}主管{domain}。主星：{stars}。",
+    "borrowed": "{palace}主管{domain}。本宫没有主星，按规则借对宫（{opposite}）的主星来看：{stars}。",
+    "none": "{palace}主管{domain}。本宫和对宫都没有主星，以辅星和四化为参考。",
+    "sihua": "本宫四化：{list}。"
+  },
+  "star": {
+    "withDetails": "{star}（{details}），{keywords}",
+    "plain": "{star}，{keywords}"
+  }
+}
