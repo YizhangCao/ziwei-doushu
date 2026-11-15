@@ -418,7 +418,7 @@
       "kind": "button",
       "refersTo": "button-primary",
       "description": "The one primary action on a screen, such as building a chart.",
-      "html": "<button type=\"button\" class=\"ds-btn-primary\">起盘</button>",
+      "html": "<button type=\"button\" class=\"ds-btn-primary\">Build chart</button>",
       "css": ".ds-btn-primary { min-height: var(--control-h, 52px); padding: 16px 24px; background: var(--tx-0, #fff); color: var(--bg-0, #000); border: 1px solid var(--tx-0, #fff); border-radius: 0; font-size: 16px; font-weight: 400; transition: opacity 200ms cubic-bezier(0.15, 1, 0.35, 1); cursor: pointer; } .ds-btn-primary:hover { opacity: 0.8; } .ds-btn-primary:active { opacity: 0.72; } .ds-btn-primary:focus-visible { outline: 2px solid var(--tx-0, #fff); outline-offset: 2px; }"
     },
     {
@@ -426,7 +426,7 @@
       "kind": "button",
       "refersTo": "button-ghost",
       "description": "Secondary actions and toggles; pressed toggles keep a raised fill.",
-      "html": "<button type=\"button\" class=\"ds-btn-ghost\">合盘</button> <button type=\"button\" class=\"ds-btn-ghost\" aria-pressed=\"true\">女</button>",
+      "html": "<button type=\"button\" class=\"ds-btn-ghost\">Compatibility</button> <button type=\"button\" class=\"ds-btn-ghost\" aria-pressed=\"true\">Female</button>",
       "css": ".ds-btn-ghost { min-height: var(--control-h, 52px); padding: 16px 24px; background: transparent; color: var(--tx-0, #fff); border: 1px solid var(--bdr-heavy, #fff); border-radius: 0; font-size: 16px; transition: background-color 200ms cubic-bezier(0.15, 1, 0.35, 1), opacity 200ms cubic-bezier(0.15, 1, 0.35, 1); cursor: pointer; } .ds-btn-ghost:hover, .ds-btn-ghost[aria-pressed=\"true\"] { background: var(--bg-2, #1C232B); } .ds-btn-ghost:active { opacity: 0.72; } .ds-btn-ghost:focus-visible { outline: 2px solid var(--tx-0, #fff); outline-offset: 2px; }"
     },
     {
@@ -434,7 +434,7 @@
       "kind": "button",
       "refersTo": "button-sm",
       "description": "Compact actions inside panels, such as retry or a quick question.",
-      "html": "<button type=\"button\" class=\"ds-btn-sm\">重试</button>",
+      "html": "<button type=\"button\" class=\"ds-btn-sm\">Try again</button>",
       "css": ".ds-btn-sm { min-height: 44px; padding: 10px 16px; background: transparent; color: var(--tx-0, #fff); border: 1px solid var(--bdr-heavy, #fff); border-radius: 0; font-size: 14px; line-height: 18px; cursor: pointer; } .ds-btn-sm:hover { background: var(--bg-2, #1C232B); } .ds-btn-sm:focus-visible { outline: 2px solid var(--tx-0, #fff); outline-offset: 2px; }"
     },
     {
@@ -442,7 +442,7 @@
       "kind": "input",
       "refersTo": "input",
       "description": "Every text field and select: transparent, hairline, square.",
-      "html": "<label class=\"ds-label\" for=\"ds-q\">继续追问</label><input id=\"ds-q\" class=\"ds-input\" placeholder=\"继续追问，如：命宫没有主星，怎么看？\">",
+      "html": "<label class=\"ds-label\" for=\"ds-q\">Ask a follow-up</label><input id=\"ds-q\" class=\"ds-input\" placeholder=\"Ask a follow-up, e.g. My Life Palace has no main star. How do I read it?\">",
       "css": ".ds-label { display: block; margin-bottom: 8px; font-size: 14px; color: var(--tx-2, rgba(255,255,255,0.6)); } .ds-input { width: 100%; min-height: var(--control-h, 52px); padding: 0 16px; background: transparent; border: 1px solid var(--bdr-med, rgba(255,255,255,0.15)); border-radius: 0; font-size: 16px; color: var(--tx-0, #fff); transition: border-color 200ms cubic-bezier(0.15, 1, 0.35, 1); } .ds-input::placeholder { color: var(--tx-2, rgba(255,255,255,0.6)); } .ds-input:hover { border-color: var(--tx-2, rgba(255,255,255,0.6)); } .ds-input:focus { border-color: var(--tx-0, #fff); outline: none; }"
     },
     {
@@ -450,7 +450,7 @@
       "kind": "nav",
       "refersTo": "nav",
       "description": "The one sticky nav: pole-star mark and name on the left, text links and switches on the right.",
-      "html": "<nav class=\"ds-nav\"><span class=\"ds-brand\"><span class=\"ds-mark\"></span>紫微命盘</span><span class=\"ds-links\"><a href=\"#\">起盘</a><a href=\"#\">合盘</a><a href=\"#\" lang=\"en\">EN</a></span></nav>",
+      "html": "<nav class=\"ds-nav\"><span class=\"ds-brand\"><span class=\"ds-mark\"></span>Ziwei Natal Chart</span><span class=\"ds-links\"><a href=\"#\">Chart</a><a href=\"#\">Compatibility</a><a href=\"#\" lang=\"en\">EN</a></span></nav>",
       "css": ".ds-nav { height: var(--nav-h, 72px); display: flex; align-items: center; justify-content: space-between; padding: 0 16px; background: var(--bg-0, #000); color: var(--tx-0, #fff); font-size: 14px; } .ds-brand { display: inline-flex; align-items: center; gap: 8px; } .ds-links { display: flex; gap: 24px; } .ds-links a { color: inherit; text-decoration: none; transition: opacity 200ms cubic-bezier(0.15, 1, 0.35, 1); } .ds-links a:hover { opacity: 0.6; } .ds-links a:focus-visible { outline: 2px solid var(--tx-0, #fff); outline-offset: 2px; } .ds-mark { width: 18px; height: 18px; border: 1px solid var(--ac-bdr, rgba(200,164,100,0.32)); border-radius: 9999px; display: inline-grid; place-items: center; } .ds-mark::after { content: \"\"; width: 4px; height: 4px; border-radius: 9999px; background: var(--ac, #C8A464); }"
     },
     {
@@ -458,7 +458,7 @@
       "kind": "chip",
       "refersTo": "sihua-badge",
       "description": "The four transformation markers, each with its character so color is never the only signal.",
-      "html": "<span class=\"ds-badge ds-lu\">禄</span> <span class=\"ds-badge ds-quan\">权</span> <span class=\"ds-badge ds-ke\">科</span> <span class=\"ds-badge ds-ji\">忌</span>",
+      "html": "<span class=\"ds-badge ds-lu\">Lu</span> <span class=\"ds-badge ds-quan\">Quan</span> <span class=\"ds-badge ds-ke\">Ke</span> <span class=\"ds-badge ds-ji\">Ji</span>",
       "css": ".ds-badge { display: inline-flex; align-items: center; padding: 0 4px; border: 1px solid currentColor; border-radius: 2px; font-size: 12px; line-height: 16px; } .ds-lu { color: var(--lu, #6CC08E); } .ds-quan { color: var(--quan, #86A8F0); } .ds-ke { color: var(--ke, #D58FD0); } .ds-ji { color: var(--ji, #EC7A6E); }"
     },
     {
@@ -466,7 +466,7 @@
       "kind": "custom",
       "refersTo": null,
       "description": "A chart palace: name and branch, gold star names, and a gold 3px edge on the current decade.",
-      "html": "<div class=\"ds-palace ds-current\"><div class=\"ds-palace-head\"><span>命宫</span><span class=\"ds-age\">33–42</span></div><span class=\"ds-star\">太阳</span> <span class=\"ds-badge ds-lu\">禄</span></div>",
+      "html": "<div class=\"ds-palace ds-current\"><div class=\"ds-palace-head\"><span>Life</span><span class=\"ds-age\">33–42</span></div><span class=\"ds-star\">Taiyang</span> <span class=\"ds-badge ds-lu\">Lu</span></div>",
       "css": ".ds-palace { width: 160px; padding: 10px; background: var(--bg-0, #000); border: 1px solid var(--bdr, rgba(255,255,255,0.15)); color: var(--tx-0, #fff); font-size: 14px; } .ds-current { box-shadow: inset 3px 0 0 var(--ac, #C8A464); } .ds-palace-head { display: flex; justify-content: space-between; margin-bottom: 8px; } .ds-age { font-size: 12px; color: var(--ac, #C8A464); font-variant-numeric: tabular-nums; } .ds-star { font-size: 16px; color: var(--ac, #C8A464); } .ds-badge { display: inline-flex; padding: 0 4px; border: 1px solid currentColor; border-radius: 2px; font-size: 12px; } .ds-lu { color: var(--lu, #6CC08E); }"
     },
     {
@@ -474,7 +474,7 @@
       "kind": "card",
       "refersTo": "card",
       "description": "Streamed AI reading: gold 14px headers at weight 600 over 16px body text, in a live region.",
-      "html": "<section class=\"ds-reading\" aria-live=\"polite\"><h3 class=\"ds-reading-head\">命格定性</h3><p>命宫坐太阳，一生看重名声，适合在人前做事。</p></section>",
+      "html": "<section class=\"ds-reading\" aria-live=\"polite\"><h3 class=\"ds-reading-head\">Your Character</h3><p>Taiyang sits in your Life Palace: you care about your name all your life, and you do well working in front of people.</p></section>",
       "css": ".ds-reading { max-width: 420px; padding: 20px; background: var(--bg-card, rgba(16,24,32,0.72)); border: 1px solid var(--bdr, rgba(255,255,255,0.15)); border-radius: 0; color: var(--tx-1, #fff); font-size: 16px; line-height: 1.6; } .ds-reading-head { margin: 0 0 4px; font-size: 14px; font-weight: 600; color: var(--ac, #C8A464); }"
     }
   ],
@@ -497,7 +497,7 @@
       },
       {
         "name": "The Character Pairing Rule",
-        "body": "A sihua color never stands alone. Every marker also carries its character (禄, 权, 科, 忌), so color is never the only signal.",
+        "body": "A sihua color never stands alone. Every marker also carries its character (lu, quan, ke or ji), so color is never the only signal.",
         "section": "colors"
       },
       {
