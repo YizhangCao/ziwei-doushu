@@ -1,0 +1,548 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-12T17:16:43+00:00",
+  "title": "Design System: Ziwei Natal Chart",
+  "extensions": {
+    "colorMeta": {
+      "night-black": {
+        "role": "neutral",
+        "displayName": "Night Black",
+        "canonical": "#000000",
+        "oklch": "oklch(0.0% 0.000 0.0)",
+        "tonalRamp": [
+          "#0B0B0B",
+          "#252525",
+          "#424242",
+          "#616161",
+          "#828282",
+          "#A5A5A5",
+          "#C9C9C9",
+          "#EEEEEE"
+        ]
+      },
+      "graphite": {
+        "role": "neutral",
+        "displayName": "Graphite",
+        "canonical": "#101820",
+        "oklch": "oklch(20.5% 0.020 248.8)",
+        "tonalRamp": [
+          "#0B0B0B",
+          "#222529",
+          "#3C434A",
+          "#59626C",
+          "#79848E",
+          "#9CA6B0",
+          "#C2CAD2",
+          "#EAEFF4"
+        ]
+      },
+      "graphite-raised": {
+        "role": "neutral",
+        "displayName": "Graphite Raised",
+        "canonical": "#1C232B",
+        "oklch": "oklch(25.3% 0.018 252.0)",
+        "tonalRamp": [
+          "#0B0B0B",
+          "#222529",
+          "#3D4349",
+          "#5A626B",
+          "#7B838D",
+          "#9EA6B0",
+          "#C3CAD2",
+          "#EBEFF3"
+        ]
+      },
+      "graphite-glass": {
+        "role": "neutral",
+        "displayName": "Graphite Glass",
+        "canonical": "rgba(16, 24, 32, 0.72)",
+        "note": "Translucent token; it takes its tone from the surface behind it."
+      },
+      "starlight": {
+        "role": "neutral",
+        "displayName": "Starlight",
+        "canonical": "#FFFFFF",
+        "oklch": "oklch(100.0% 0.000 89.9)",
+        "tonalRamp": [
+          "#0B0B0B",
+          "#252525",
+          "#424242",
+          "#616161",
+          "#828282",
+          "#A5A5A5",
+          "#C9C9C9",
+          "#EEEEEE"
+        ]
+      },
+      "starlight-dim": {
+        "role": "neutral",
+        "displayName": "Starlight Dim",
+        "canonical": "rgba(255, 255, 255, 0.6)",
+        "note": "Translucent token; it takes its tone from the surface behind it."
+      },
+      "hairline-night": {
+        "role": "neutral",
+        "displayName": "Hairline Night",
+        "canonical": "rgba(255, 255, 255, 0.15)",
+        "note": "Translucent token; it takes its tone from the surface behind it."
+      },
+      "pole-star-gold": {
+        "role": "primary",
+        "displayName": "Pole-Star Gold",
+        "canonical": "#C8A464",
+        "oklch": "oklch(73.7% 0.093 80.9)",
+        "tonalRamp": [
+          "#0B0B0B",
+          "#2F230C",
+          "#553D0D",
+          "#7B5B1D",
+          "#9F7C3C",
+          "#C1A065",
+          "#E0C598",
+          "#FBEDD4"
+        ]
+      },
+      "pole-star-gold-day": {
+        "role": "primary",
+        "displayName": "Pole-Star Gold (day)",
+        "canonical": "#836425",
+        "oklch": "oklch(52.2% 0.089 82.1)",
+        "tonalRamp": [
+          "#0B0B0B",
+          "#2F230D",
+          "#543E11",
+          "#795C21",
+          "#9D7D40",
+          "#BFA068",
+          "#DEC69A",
+          "#FAEDD5"
+        ]
+      },
+      "day-white": {
+        "role": "neutral",
+        "displayName": "Day White",
+        "canonical": "#FFFFFF",
+        "oklch": "oklch(100.0% 0.000 89.9)",
+        "tonalRamp": [
+          "#0B0B0B",
+          "#252525",
+          "#424242",
+          "#616161",
+          "#828282",
+          "#A5A5A5",
+          "#C9C9C9",
+          "#EEEEEE"
+        ]
+      },
+      "day-mist": {
+        "role": "neutral",
+        "displayName": "Day Mist",
+        "canonical": "#F4F4F4",
+        "oklch": "oklch(96.7% 0.000 89.9)",
+        "tonalRamp": [
+          "#0B0B0B",
+          "#252525",
+          "#424242",
+          "#616161",
+          "#828282",
+          "#A5A5A5",
+          "#C9C9C9",
+          "#EEEEEE"
+        ]
+      },
+      "day-mist-raised": {
+        "role": "neutral",
+        "displayName": "Day Mist Raised",
+        "canonical": "#F0F0F0",
+        "oklch": "oklch(95.5% 0.000 89.9)",
+        "tonalRamp": [
+          "#0B0B0B",
+          "#252525",
+          "#424242",
+          "#616161",
+          "#828282",
+          "#A5A5A5",
+          "#C9C9C9",
+          "#EEEEEE"
+        ]
+      },
+      "day-ink": {
+        "role": "neutral",
+        "displayName": "Day Ink",
+        "canonical": "#000000",
+        "oklch": "oklch(0.0% 0.000 0.0)",
+        "tonalRamp": [
+          "#0B0B0B",
+          "#252525",
+          "#424242",
+          "#616161",
+          "#828282",
+          "#A5A5A5",
+          "#C9C9C9",
+          "#EEEEEE"
+        ]
+      },
+      "day-ink-dim": {
+        "role": "neutral",
+        "displayName": "Day Ink Dim",
+        "canonical": "rgba(0, 0, 0, 0.6)",
+        "note": "Translucent token; it takes its tone from the surface behind it."
+      },
+      "hairline-day": {
+        "role": "neutral",
+        "displayName": "Hairline Day",
+        "canonical": "#D8D8D8",
+        "oklch": "oklch(88.2% 0.000 89.9)",
+        "tonalRamp": [
+          "#0B0B0B",
+          "#252525",
+          "#424242",
+          "#616161",
+          "#828282",
+          "#A5A5A5",
+          "#C9C9C9",
+          "#EEEEEE"
+        ]
+      },
+      "sihua-lu": {
+        "role": "secondary",
+        "displayName": "Sihua Lu Green",
+        "canonical": "#6CC08E",
+        "oklch": "oklch(74.1% 0.110 156.3)",
+        "tonalRamp": [
+          "#0B0B0B",
+          "#0D2C1B",
+          "#0E4F2F",
+          "#207248",
+          "#419666",
+          "#6CB88A",
+          "#9ED9B4",
+          "#D8F8E3"
+        ]
+      },
+      "sihua-quan": {
+        "role": "secondary",
+        "displayName": "Sihua Quan Blue",
+        "canonical": "#86A8F0",
+        "oklch": "oklch(73.5% 0.112 264.5)",
+        "tonalRamp": [
+          "#0B0B0B",
+          "#19243D",
+          "#2B406F",
+          "#435F9D",
+          "#6080C5",
+          "#85A4E6",
+          "#AFC9FF",
+          "#E0EFFF"
+        ]
+      },
+      "sihua-ke": {
+        "role": "secondary",
+        "displayName": "Sihua Ke Violet",
+        "canonical": "#D58FD0",
+        "oklch": "oklch(74.1% 0.120 329.2)",
+        "tonalRamp": [
+          "#0B0B0B",
+          "#331B32",
+          "#5C2E59",
+          "#844780",
+          "#A966A5",
+          "#CC8BC7",
+          "#EAB5E5",
+          "#FFE4FE"
+        ]
+      },
+      "sihua-ji": {
+        "role": "secondary",
+        "displayName": "Sihua Ji Red",
+        "canonical": "#EC7A6E",
+        "oklch": "oklch(70.6% 0.143 27.5)",
+        "tonalRamp": [
+          "#0B0B0B",
+          "#3F1713",
+          "#712520",
+          "#A03C34",
+          "#CA5B51",
+          "#EC8276",
+          "#FFAFA4",
+          "#FFE1DA"
+        ]
+      },
+      "sihua-lu-day": {
+        "role": "secondary",
+        "displayName": "Sihua Lu Green (day)",
+        "canonical": "#2D7A4A",
+        "oklch": "oklch(51.9% 0.107 153.0)",
+        "tonalRamp": [
+          "#0B0B0B",
+          "#102C1A",
+          "#174E2C",
+          "#2A7145",
+          "#499563",
+          "#72B787",
+          "#A3D8B1",
+          "#DAF7E1"
+        ]
+      },
+      "sihua-quan-day": {
+        "role": "secondary",
+        "displayName": "Sihua Quan Blue (day)",
+        "canonical": "#1A56A8",
+        "oklch": "oklch(46.3% 0.145 257.7)",
+        "tonalRamp": [
+          "#0B0B0B",
+          "#0F2544",
+          "#17407B",
+          "#295FAD",
+          "#4682D8",
+          "#6EA6F8",
+          "#9ECBFF",
+          "#D7F1FF"
+        ]
+      },
+      "sihua-ke-day": {
+        "role": "secondary",
+        "displayName": "Sihua Ke Violet (day)",
+        "canonical": "#8C3A8C",
+        "oklch": "oklch(49.1% 0.152 327.6)",
+        "tonalRamp": [
+          "#0B0B0B",
+          "#361736",
+          "#612761",
+          "#8A3E8A",
+          "#B15DB0",
+          "#D483D2",
+          "#F0B0EE",
+          "#FFE1FF"
+        ]
+      },
+      "sihua-ji-day": {
+        "role": "secondary",
+        "displayName": "Sihua Ji Red (day)",
+        "canonical": "#A83228",
+        "oklch": "oklch(49.4% 0.156 28.8)",
+        "tonalRamp": [
+          "#0B0B0B",
+          "#411510",
+          "#742119",
+          "#A4362C",
+          "#CF5649",
+          "#F27E6F",
+          "#FFAD9F",
+          "#FFE0D7"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "The home page title only."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Page titles and section headings."
+      },
+      "read": {
+        "displayName": "Read",
+        "purpose": "Long reading text."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Default text and controls; 16px so iOS does not zoom inputs."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Section labels, small buttons and meta text."
+      },
+      "caption": {
+        "displayName": "Caption",
+        "purpose": "The 12px floor: sihua badges and footnotes."
+      },
+      "mono": {
+        "displayName": "Mono",
+        "purpose": "Code and data only."
+      }
+    },
+    "shadows": [],
+    "motion": [
+      {
+        "name": "ease",
+        "value": "cubic-bezier(0.15, 1, 0.35, 1)",
+        "purpose": "The one easing curve for interactions and reveals."
+      },
+      {
+        "name": "ease-press",
+        "value": "cubic-bezier(0.65, 0, 0, 1)",
+        "purpose": "Press feedback (opacity)."
+      },
+      {
+        "name": "ease-in-out",
+        "value": "cubic-bezier(0.65, 0, 0.35, 1)",
+        "purpose": "The pole-star mark breathing while a reading loads."
+      },
+      {
+        "name": "dur-press",
+        "value": "150ms",
+        "purpose": "Opacity on press."
+      },
+      {
+        "name": "dur-interact",
+        "value": "200ms",
+        "purpose": "Hover, focus and state changes."
+      },
+      {
+        "name": "dur-reveal",
+        "value": "600ms",
+        "purpose": "Entrances and reveals."
+      },
+      {
+        "name": "dur-breath",
+        "value": "6s",
+        "purpose": "One breath of the loading mark."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "tablet",
+        "value": "744px"
+      },
+      {
+        "name": "desktop",
+        "value": "1024px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The one primary action on a screen, such as building a chart.",
+      "html": "<button type=\"button\" class=\"ds-btn-primary\">起盘</button>",
+      "css": ".ds-btn-primary { min-height: var(--control-h, 52px); padding: 16px 24px; background: var(--tx-0, #fff); color: var(--bg-0, #000); border: 1px solid var(--tx-0, #fff); border-radius: 0; font-size: 16px; font-weight: 400; transition: opacity 200ms cubic-bezier(0.15, 1, 0.35, 1); cursor: pointer; } .ds-btn-primary:hover { opacity: 0.8; } .ds-btn-primary:active { opacity: 0.72; } .ds-btn-primary:focus-visible { outline: 2px solid var(--tx-0, #fff); outline-offset: 2px; }"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Secondary actions and toggles; pressed toggles keep a raised fill.",
+      "html": "<button type=\"button\" class=\"ds-btn-ghost\">合盘</button> <button type=\"button\" class=\"ds-btn-ghost\" aria-pressed=\"true\">女</button>",
+      "css": ".ds-btn-ghost { min-height: var(--control-h, 52px); padding: 16px 24px; background: transparent; color: var(--tx-0, #fff); border: 1px solid var(--bdr-heavy, #fff); border-radius: 0; font-size: 16px; transition: background-color 200ms cubic-bezier(0.15, 1, 0.35, 1), opacity 200ms cubic-bezier(0.15, 1, 0.35, 1); cursor: pointer; } .ds-btn-ghost:hover, .ds-btn-ghost[aria-pressed=\"true\"] { background: var(--bg-2, #1C232B); } .ds-btn-ghost:active { opacity: 0.72; } .ds-btn-ghost:focus-visible { outline: 2px solid var(--tx-0, #fff); outline-offset: 2px; }"
+    },
+    {
+      "name": "Small Button",
+      "kind": "button",
+      "refersTo": "button-sm",
+      "description": "Compact actions inside panels, such as retry or a quick question.",
+      "html": "<button type=\"button\" class=\"ds-btn-sm\">重试</button>",
+      "css": ".ds-btn-sm { min-height: 44px; padding: 10px 16px; background: transparent; color: var(--tx-0, #fff); border: 1px solid var(--bdr-heavy, #fff); border-radius: 0; font-size: 14px; line-height: 18px; cursor: pointer; } .ds-btn-sm:hover { background: var(--bg-2, #1C232B); } .ds-btn-sm:focus-visible { outline: 2px solid var(--tx-0, #fff); outline-offset: 2px; }"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Every text field and select: transparent, hairline, square.",
+      "html": "<label class=\"ds-label\" for=\"ds-q\">继续追问</label><input id=\"ds-q\" class=\"ds-input\" placeholder=\"继续追问，如：命宫没有主星，怎么看？\">",
+      "css": ".ds-label { display: block; margin-bottom: 8px; font-size: 14px; color: var(--tx-2, rgba(255,255,255,0.6)); } .ds-input { width: 100%; min-height: var(--control-h, 52px); padding: 0 16px; background: transparent; border: 1px solid var(--bdr-med, rgba(255,255,255,0.15)); border-radius: 0; font-size: 16px; color: var(--tx-0, #fff); transition: border-color 200ms cubic-bezier(0.15, 1, 0.35, 1); } .ds-input::placeholder { color: var(--tx-2, rgba(255,255,255,0.6)); } .ds-input:hover { border-color: var(--tx-2, rgba(255,255,255,0.6)); } .ds-input:focus { border-color: var(--tx-0, #fff); outline: none; }"
+    },
+    {
+      "name": "Site Navigation",
+      "kind": "nav",
+      "refersTo": "nav",
+      "description": "The one sticky nav: pole-star mark and name on the left, text links and switches on the right.",
+      "html": "<nav class=\"ds-nav\"><span class=\"ds-brand\"><span class=\"ds-mark\"></span>紫微命盘</span><span class=\"ds-links\"><a href=\"#\">起盘</a><a href=\"#\">合盘</a><a href=\"#\" lang=\"en\">EN</a></span></nav>",
+      "css": ".ds-nav { height: var(--nav-h, 72px); display: flex; align-items: center; justify-content: space-between; padding: 0 16px; background: var(--bg-0, #000); color: var(--tx-0, #fff); font-size: 14px; } .ds-brand { display: inline-flex; align-items: center; gap: 8px; } .ds-links { display: flex; gap: 24px; } .ds-links a { color: inherit; text-decoration: none; transition: opacity 200ms cubic-bezier(0.15, 1, 0.35, 1); } .ds-links a:hover { opacity: 0.6; } .ds-links a:focus-visible { outline: 2px solid var(--tx-0, #fff); outline-offset: 2px; } .ds-mark { width: 18px; height: 18px; border: 1px solid var(--ac-bdr, rgba(200,164,100,0.32)); border-radius: 9999px; display: inline-grid; place-items: center; } .ds-mark::after { content: \"\"; width: 4px; height: 4px; border-radius: 9999px; background: var(--ac, #C8A464); }"
+    },
+    {
+      "name": "Sihua Badges",
+      "kind": "chip",
+      "refersTo": "sihua-badge",
+      "description": "The four transformation markers, each with its character so color is never the only signal.",
+      "html": "<span class=\"ds-badge ds-lu\">禄</span> <span class=\"ds-badge ds-quan\">权</span> <span class=\"ds-badge ds-ke\">科</span> <span class=\"ds-badge ds-ji\">忌</span>",
+      "css": ".ds-badge { display: inline-flex; align-items: center; padding: 0 4px; border: 1px solid currentColor; border-radius: 2px; font-size: 12px; line-height: 16px; } .ds-lu { color: var(--lu, #6CC08E); } .ds-quan { color: var(--quan, #86A8F0); } .ds-ke { color: var(--ke, #D58FD0); } .ds-ji { color: var(--ji, #EC7A6E); }"
+    },
+    {
+      "name": "Palace Cell",
+      "kind": "custom",
+      "refersTo": null,
+      "description": "A chart palace: name and branch, gold star names, and a gold 3px edge on the current decade.",
+      "html": "<div class=\"ds-palace ds-current\"><div class=\"ds-palace-head\"><span>命宫</span><span class=\"ds-age\">33–42</span></div><span class=\"ds-star\">太阳</span> <span class=\"ds-badge ds-lu\">禄</span></div>",
+      "css": ".ds-palace { width: 160px; padding: 10px; background: var(--bg-0, #000); border: 1px solid var(--bdr, rgba(255,255,255,0.15)); color: var(--tx-0, #fff); font-size: 14px; } .ds-current { box-shadow: inset 3px 0 0 var(--ac, #C8A464); } .ds-palace-head { display: flex; justify-content: space-between; margin-bottom: 8px; } .ds-age { font-size: 12px; color: var(--ac, #C8A464); font-variant-numeric: tabular-nums; } .ds-star { font-size: 16px; color: var(--ac, #C8A464); } .ds-badge { display: inline-flex; padding: 0 4px; border: 1px solid currentColor; border-radius: 2px; font-size: 12px; } .ds-lu { color: var(--lu, #6CC08E); }"
+    },
+    {
+      "name": "Reading Panel",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Streamed AI reading: gold 14px headers at weight 600 over 16px body text, in a live region.",
+      "html": "<section class=\"ds-reading\" aria-live=\"polite\"><h3 class=\"ds-reading-head\">命格定性</h3><p>命宫坐太阳，一生看重名声，适合在人前做事。</p></section>",
+      "css": ".ds-reading { max-width: 420px; padding: 20px; background: var(--bg-card, rgba(16,24,32,0.72)); border: 1px solid var(--bdr, rgba(255,255,255,0.15)); border-radius: 0; color: var(--tx-1, #fff); font-size: 16px; line-height: 1.6; } .ds-reading-head { margin: 0 0 4px; font-size: 14px; font-weight: 600; color: var(--ac, #C8A464); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Pole Star at Night",
+    "overview": "A calm, monochrome night with one fixed point of gold. The brand's only symbol is the pole star, a thin ring around a gold dot. In Chinese astronomy, Ziwei is the emperor's star by the celestial pole, so the mark and the name come from the same place.\n\nNight is the default theme: pure black surfaces, with white text at full or 60% strength. Day mode is the same system on white. Hierarchy comes from size and opacity, never from weight, which is only 400 or 600. Edges are 1px hairlines and corners are square; only the small sihua badges round to 2px. Controls are 52px tall, the nav is 72px, and page gutters grow from 16px to 112px.\n\nMotion is short and quiet: 200ms for interaction and 600ms for reveals, on one easing curve, moving opacity and stroke only. It turns off when the system asks for reduced motion.\n\nGold is reserved for chart meaning: the star names, the Life Palace, the current decade, the trine-and-opposition lines and the AI reading headers. Wherever it appears, it says \"this matters in your chart\". The sihua keep their own four colors, always paired with their character.\n\nThe specs were measured after polestar.com's web pages in November 2026. None of its logo, fonts, imagery or copy is used. Chinese typesetting follows Apple's China site: PingFang SC at normal tracking.",
+    "keyCharacteristics": [
+      "Monochrome surfaces with one gold accent, kept for chart meaning only.",
+      "Square corners and 1px hairlines; no rounded cards.",
+      "Hierarchy from size and opacity; two weights only (400, 600).",
+      "Flat: depth comes from tonal panels, not shadows.",
+      "Quiet motion: opacity and stroke only, 200ms and 600ms on one curve.",
+      "Night by default; day mode mirrors it on white."
+    ],
+    "rules": [
+      {
+        "name": "The One Gold Rule",
+        "body": "Gold appears only where the chart means something. Buttons, navigation, links and selected states stay monochrome. If you can remove the gold without losing chart information, it shouldn't be gold.",
+        "section": "colors"
+      },
+      {
+        "name": "The Character Pairing Rule",
+        "body": "A sihua color never stands alone. Every marker also carries its character (禄, 权, 科, 忌), so color is never the only signal.",
+        "section": "colors"
+      },
+      {
+        "name": "The Contrast Floor Rule",
+        "body": "Text keeps at least 4.5:1 contrast in both themes. `tests/unit/design/design-system.test.ts` checks every text and background pair.",
+        "section": "colors"
+      },
+      {
+        "name": "The Two Weights Rule",
+        "body": "Only 400 and 600 exist; Tailwind's weight scale is remapped onto them. Use 600 for strong emphasis and the AI reading headers, and nothing heavier.",
+        "section": "typography"
+      },
+      {
+        "name": "The 12px Floor Rule",
+        "body": "No text is smaller than 12px.",
+        "section": "typography"
+      },
+      {
+        "name": "The Normal Tracking Rule",
+        "body": "Chinese stays at normal letter spacing. Only the display title takes a little air (`0.04em`), and nothing exceeds `0.08em`.",
+        "section": "typography"
+      },
+      {
+        "name": "The Flat-By-Default Rule",
+        "body": "Surfaces don't cast shadows. To separate a layer, step up a tone or add a hairline.",
+        "section": "elevation & depth"
+      }
+    ],
+    "dos": [
+      "**Do** take every color, radius, shadow and duration from the tokens in `app/globals.css`.",
+      "**Do** keep gold for chart meaning: star names, the Life Palace, the current decade, the trine-and-opposition lines and the AI reading headers.",
+      "**Do** pair every sihua color with its character label.",
+      "**Do** build hierarchy with size (12, 14, 16, 17, 30px and display) and opacity (100% and 60%).",
+      "**Do** use `.btn-primary`, `.btn-ghost` and `.input-base` for every button and input, at 52px (44px for small buttons).",
+      "**Do** use 200ms for interaction and 600ms for reveals on `cubic-bezier(0.15, 1, 0.35, 1)`, and turn motion off under `prefers-reduced-motion`."
+    ],
+    "donts": [
+      "**Don't** write hex or rgba values in components.",
+      "**Don't** use gold on buttons, navigation, links or selected states.",
+      "**Don't** round corners, except the 2px sihua badges and true circles.",
+      "**Don't** add shadows to cards or panels.",
+      "**Don't** use weights other than 400 and 600, or text smaller than 12px.",
+      "**Don't** scale or lift elements on hover or press. Pressing dims, nothing moves.",
+      "**Don't** widen Chinese letter spacing.",
+      "**Don't** use Polestar's logo, fonts, imagery or copy. Only its measured specs informed this system."
+    ]
+  }
+}
