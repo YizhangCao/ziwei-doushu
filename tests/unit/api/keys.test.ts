@@ -5,7 +5,7 @@ import { API_KEY_PREFIX, apiKeyRecordFor, generateApiKey, hashApiKey, verifyApiK
 const sha256 = (value: string) => createHash('sha256').update(value).digest('hex');
 
 describe('generateApiKey() — the plain key is shown once, only its hash is stored', () => {
-  it('returns a plain key with the ZiweiHub prefix', () => {
+  it('returns a plain key with the Ziwei Natal Chart prefix', () => {
     const { plainKey } = generateApiKey();
     expect(plainKey.startsWith(API_KEY_PREFIX)).toBe(true);
     // 32 random bytes in base64url after the prefix: long enough that guessing is hopeless.

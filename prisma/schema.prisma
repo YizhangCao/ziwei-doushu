@@ -1,4 +1,4 @@
-// ZiweiHub database schema (#14). The connection URL lives in prisma.config.ts (Prisma 7).
+// Ziwei Natal Chart database schema (#14). The connection URL lives in prisma.config.ts (Prisma 7).
 // Change this file only together with a new migration in prisma/migrations/.
 
 generator client {

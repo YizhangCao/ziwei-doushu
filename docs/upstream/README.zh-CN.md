@@ -1,4 +1,4 @@
-> 这是上游开源项目 [Renhuai123/ziwei-doushu](https://github.com/Renhuai123/ziwei-doushu) 的原版 README，保留在这里用于致谢和参考。ZiweiHub 的说明见[中文 README](../../README.zh-CN.md)。
+> 这是上游开源项目 [Renhuai123/ziwei-doushu](https://github.com/Renhuai123/ziwei-doushu) 的原版 README，保留在这里用于致谢和参考。紫微命盘的说明见[中文 README](../../README.zh-CN.md)。
 
 <div align="center">
 
@@ -30,7 +30,7 @@
 
 在线体验：[ouranic.cn](https://ouranic.cn/?from=gh-readme)，排盘、AI 解读、命盘历史全部开放。
 
-ZiweiHub（本仓库的 P2 版本）生产环境：<https://ziwei-doushu-seven-omega.vercel.app>，由 `main` 自动部署；每个 PR 另有 Vercel 预览部署。
+紫微命盘（本仓库的 P2 版本）生产环境：<https://ziwei-doushu-seven-omega.vercel.app>，由 `main` 自动部署；每个 PR 另有 Vercel 预览部署。
 
 > **注：关于六亲判断**
 >

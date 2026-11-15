@@ -1,6 +1,6 @@
 # Architecture
 
-ZiweiHub is one Next.js 16 app on Vercel. The chart is built in the browser; the server handles
+Ziwei Natal Chart is one Next.js 16 app on Vercel. The chart is built in the browser; the server handles
 accounts, saved data, AI readings and the public API. The diagrams below are Mermaid, so GitHub
 renders them, and they change in the same pull request as the code they describe.
 

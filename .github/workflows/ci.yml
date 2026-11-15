@@ -1,4 +1,4 @@
-# Multi-stage pipeline for ZiweiHub.
+# Multi-stage pipeline for Ziwei Natal Chart.
 # Stages: static → unit → integration → e2e, with security scanning in parallel.
 # Deployment: Vercel's GitHub integration builds a preview for every PR and deploys
 # production from main; the Neon integration gives each preview its own database branch.

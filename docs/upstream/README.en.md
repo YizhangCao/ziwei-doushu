@@ -1,4 +1,4 @@
-> This is the README of the upstream open-source project, [Renhuai123/ziwei-doushu](https://github.com/Renhuai123/ziwei-doushu), kept here for credit and reference. For ZiweiHub, see the [repository home](../../README.md).
+> This is the README of the upstream open-source project, [Renhuai123/ziwei-doushu](https://github.com/Renhuai123/ziwei-doushu), kept here for credit and reference. For Ziwei Natal Chart, see the [repository home](../../README.md).
 
 <div align="center">
 
@@ -30,7 +30,7 @@ We open-source the charting algorithm and the knowledge base because we believe 
 
 This repo is an open snapshot of the engine behind [ouranic.cn](https://ouranic.cn/?from=gh-readme-en), synced from production periodically.
 
-ZiweiHub (this fork's P2 app) runs in production at <https://ziwei-doushu-seven-omega.vercel.app>, deployed from `main`; every pull request also gets a Vercel preview deployment.
+Ziwei Natal Chart (this fork's P2 app) runs in production at <https://ziwei-doushu-seven-omega.vercel.app>, deployed from `main`; every pull request also gets a Vercel preview deployment.
 
 > **Note: on readings of family relations**
 >

@@ -1,10 +1,10 @@
 openapi: 3.1.0
 info:
-  title: ZiweiHub public API
+  title: Ziwei Natal Chart public API
   version: 1.0.0
   summary: Build a Zi Wei Dou Shu (紫微斗数) chart from birth data.
   description: |
-    The public API runs the same charting engine as the ZiweiHub website and returns the
+    The public API runs the same charting engine as the Ziwei Natal Chart website and returns the
     chart as JSON.
 
     **Authentication.** Every request needs an API key in the `Authorization` header:

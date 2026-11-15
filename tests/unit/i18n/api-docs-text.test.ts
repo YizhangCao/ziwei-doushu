@@ -25,7 +25,7 @@ describe('API docs page text', () => {
   it('keeps the Chinese word for word', () => {
     expect(MESSAGES.zh.apiDocs).toEqual({
       metaTitle: 'API 文档 · 紫微命盘',
-      metaDescription: 'ZiweiHub 公开 API：用出生信息生成紫微斗数命盘 JSON。',
+      metaDescription: '紫微命盘公开 API：用出生信息生成紫微斗数命盘 JSON。',
       title: 'API 文档',
       intro: '用出生日期、时辰和性别生成紫微斗数命盘 JSON。每个请求都需要在 <code>Authorization</code> 头里带上<code> Bearer </code>API key；key 在登录后的设置页创建，只显示一次。试用时请用虚构的出生信息。',
       spec: '规范文件：<link>openapi.yaml</link>（OpenAPI 3.1）',
