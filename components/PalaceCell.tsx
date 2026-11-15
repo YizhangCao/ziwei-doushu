@@ -1,5 +1,5 @@
 'use client';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import { useLocale, useTranslations } from 'next-intl';
 import type { Palace, Star } from '@/lib/ziwei/types';
 import { ganzhiLabel, termLabel } from '@/lib/i18n/glossary';
@@ -17,7 +17,10 @@ interface PalaceCellProps {
   onStarClick?: (star: Star) => void;
   isSelected?: boolean;
   isSanFang?: boolean;
+  /** When the cell starts to fade in, in seconds (the chart reveal, #86). */
   delay?: number;
+  /** When the current decade's gold edge starts to fade in; defaults to the cell's own delay. */
+  edgeDelay?: number;
   /** 叠加四化：星名 → 四化类型（'禄'/'权'/'科'/'忌'） */
   overlayStarSiHua?: Record<string, string>;
   /** 叠加标签：'年'（流年）或 '限'（大限） */
@@ -58,10 +61,17 @@ function SiHuaBadge({ siHua, overlay, label, onClick }: {
 }
 
 export default function PalaceCell({
-  palace, onClick, onStarClick, isSelected, isSanFang, delay = 0,
+  palace, onClick, onStarClick, isSelected, isSanFang, delay = 0, edgeDelay = delay,
   overlayStarSiHua, overlayLabel, onSiHuaClick,
 }: PalaceCellProps) {
   const { branch, stem, name, stars, daXianAge, isCurrentDaXian, isMingGong, isShenGong } = palace;
+  // Under reduced motion the cell and its edge are simply there (DESIGN.md).
+  const reduced = useReducedMotion();
+  const reveal = (start: number) => ({
+    initial: reduced ? false : { opacity: 0 },
+    animate: { opacity: 1 },
+    transition: { duration: 0.6, delay: start, ease: [0.15, 1, 0.35, 1] as const },
+  });
   const t = useTranslations('board.palace');
   const locale = useLocale();
   const term = (zh: string) => termLabel(zh, locale);
@@ -75,9 +85,9 @@ export default function PalaceCell({
 
   return (
     <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.6, delay, ease: [0.15, 1, 0.35, 1] }}
+      {...reveal(delay)}
+      data-palace={name}
+      data-branch={branch}
       onClick={onClick}
       role="button"
       tabIndex={0}
@@ -89,7 +99,7 @@ export default function PalaceCell({
       className="relative flex flex-col p-2 cursor-pointer h-full"
       style={{
         minHeight: '112px',
-        // 选中 = 1px 正文色描边（界面状态，单色）；当前大限 = 金色左边线（命盘含义）；
+        // 选中 = 1px 正文色描边（界面状态，单色）；当前大限 = 金色左边线（命盘含义，下方单独一层）；
         // 三方四正 = 细底；命宫 = 极淡的金底
         background: isSelected
           ? 'var(--bg-2)'
@@ -100,13 +110,20 @@ export default function PalaceCell({
           : isMingGong
           ? 'var(--ac-bg)'
           : 'var(--t-bg)',
-        boxShadow: isSelected
-          ? `inset 0 0 0 1px var(--tx-0)${isCurrentDaXian ? ', inset 3px 0 0 var(--ac)' : ''}`
-          : isCurrentDaXian
-          ? 'inset 3px 0 0 var(--ac)'
-          : 'none',
+        boxShadow: isSelected ? 'inset 0 0 0 1px var(--tx-0)' : 'none',
       }}
     >
+      {/* 当前大限的 3px 金边：单独一层，起盘时最后落下（#86） */}
+      {isCurrentDaXian && (
+        <motion.span
+          {...reveal(edgeDelay)}
+          aria-hidden="true"
+          data-decade-edge
+          className="absolute inset-y-0 left-0 pointer-events-none"
+          style={{ width: 3, background: 'var(--ac)' }}
+        />
+      )}
+
       {/* 宫名 + 命 / 身 + 大限年龄 */}
       <div className="flex flex-wrap items-baseline justify-between gap-x-1">
         <span className="flex items-center gap-1 whitespace-nowrap" style={{ fontSize: 'var(--fs-small)', lineHeight: '18px', color: isMingGong ? 'var(--ac)' : 'var(--tx-0)' }}>

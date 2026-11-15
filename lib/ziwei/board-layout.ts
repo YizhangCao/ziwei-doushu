@@ -26,6 +26,15 @@ export const BRANCH_SVG_POS: Record<number, [number, number]> = {
   2: [12.5, 87.5], 1: [37.5, 87.5], 0: [62.5, 87.5], 11: [87.5, 87.5],
 };
 
+/**
+ * The order the rules place the palaces in: the Life Palace first, then each next palace
+ * one branch back (PALACE_NAMES_ORDER, counterclockwise on the board). The board reveals
+ * itself in this order when a chart is built (#86).
+ */
+export function placementOrder(mingGongBranch: number): number[] {
+  return Array.from({ length: 12 }, (_, k) => (mingGongBranch - k + 12) % 12);
+}
+
 /** Sanfang sizheng: the palace itself, its opposite, and the two palaces in a trine with it. */
 export function getSanFangSiZheng(branch: number): [number, number, number, number] {
   return [
