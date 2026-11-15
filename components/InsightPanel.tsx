@@ -1,12 +1,17 @@
 'use client';
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { aiLimitReason, rateLimitWait } from '@/lib/rate-limit/message';
+import { isAiNotConfigured } from '@/lib/ai/interpret-errors';
 import type { ZiweiChart, Palace } from '@/lib/ziwei/types';
 import type { TimeView } from './TimeNav';
 import AiContent from './AiContent';
 import { useLocale, useTranslations } from 'next-intl';
 import { termLabel } from '@/lib/i18n/glossary';
 import { formatList } from '@/lib/i18n/format';
+import { savableMessages } from '@/lib/conversations/savable';
+// The server's limits, checked here too so the panel can say why a question can't be sent.
+import { MAX_USER_CHARS, fitsInterpretLimits, toInterpretHistory } from '@/lib/ai/interpret-limits';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -16,14 +21,18 @@ interface Message {
   error?: ReadingError;
 }
 
-/** Each cause has its own message, so a used-up limit never reads like a bug (#63). */
-type ReadingError = 'network' | 'apiMissing' | 'rateLimited' | 'failed';
+/**
+ * Each cause has its own message, so a used-up limit never reads like a bug (#63). A refused
+ * request (400) is not retryable: sending the same request again gets the same answer. Nor is
+ * a missing AI setup (#118), a 500 that a retry won't fix; other 500s (an Anthropic outage, a
+ * database timeout) can pass, so they keep the retry. The free reading below stays either way.
+ */
+type ReadingError = 'network' | 'apiMissing' | 'loginRequired' | 'rateLimited' | 'rejected' | 'unavailable' | 'failed';
 const RETRYABLE: ReadonlySet<ReadingError> = new Set(['network', 'failed']);
 
-// The limits the server enforces (lib/ai/interpret.ts, #5). Checking them here lets the
-// panel say why a question can't be sent instead of failing with a 400 (#63).
-const MAX_MESSAGES = 30;
-const MAX_CHARS = 2000;
+/** Seconds in an hour, for the daily limit's wait in whole hours. */
+const HOUR_SECONDS = 3600;
+
 /** The character counter appears once a question gets this long. */
 const COUNTER_FROM = 1800;
 
@@ -37,6 +46,8 @@ interface InsightPanelProps {
   chart: ZiweiChart;
   selectedPalace?: Palace | null;
   selectedSiHua?: SelectedSiHua | null;
+  /** A saved chart's id: the conversation is kept there and shown again when it is reopened (#22). */
+  chartId?: string;
 }
 
 // Labels and prompts live in messages/{zh,en}/insight.json (#59); the Chinese is verbatim.
@@ -62,7 +73,19 @@ type RoleKey = (typeof PALACE_ROLE_KEYS)[keyof typeof PALACE_ROLE_KEYS];
 const roleKeyFor = (palaceName: string): RoleKey | undefined =>
   (PALACE_ROLE_KEYS as Record<string, RoleKey>)[palaceName];
 
-export default function InsightPanel({ chart, selectedPalace, selectedSiHua }: InsightPanelProps) {
+/** The saved conversation of a chart, or null when it couldn't be read (#22). */
+async function loadConversation(chartId: string): Promise<Message[] | null> {
+  try {
+    const res = await fetch(`/api/charts/${encodeURIComponent(chartId)}/conversation`);
+    if (!res.ok) return null;
+    const { messages } = (await res.json()) as { messages: { role: Message['role']; content: string; hidden: boolean }[] };
+    return messages.map(({ role, content, hidden }) => ({ role, content, hidden }));
+  } catch {
+    return null;
+  }
+}
+
+export default function InsightPanel({ chart, selectedPalace, selectedSiHua, chartId }: InsightPanelProps) {
   const t = useTranslations('insight');
   const locale = useLocale();
   const term = (zh: string) => termLabel(zh, locale);
@@ -77,10 +100,17 @@ export default function InsightPanel({ chart, selectedPalace, selectedSiHua }: I
   const lastPalaceBranch = useRef<number | undefined>(undefined);
   const lastSiHuaKey = useRef<string | undefined>(undefined);
   const scrollRef = useRef<HTMLDivElement>(null);
+  // The saved conversation (#22): how many savable messages are already stored, whether a save
+  // is in flight, and whether saving is off because the stored conversation couldn't be read.
+  const chartIdRef = useRef(chartId);
+  const savedCount = useRef(0);
+  const saving = useRef(false);
+  const savingOff = useRef(false);
 
   // Keep refs in sync
   useEffect(() => { messagesRef.current = messages; }, [messages]);
   useEffect(() => { loadingRef.current = loading; }, [loading]);
+  useEffect(() => { chartIdRef.current = chartId; }, [chartId]);
 
   // Auto-scroll
   useEffect(() => {
@@ -89,12 +119,42 @@ export default function InsightPanel({ chart, selectedPalace, selectedSiHua }: I
     }
   }, [messages]);
 
-  // Auto-generate 命格总览 on mount
+  // Auto-generate 命格总览 on mount. A reopened saved chart shows its saved conversation instead,
+  // without asking the AI again (#22). No cleanup: with autoLoaded set, a StrictMode re-run would
+  // skip the load, so the first run must finish.
   useEffect(() => {
     if (autoLoaded.current) return;
     autoLoaded.current = true;
-    sendMessage(t('prompts.overview'), true, { kind: 'overview' });
+    const overview = () => sendMessage(t('prompts.overview'), true, { kind: 'overview' });
+    if (!chartId) { overview(); return; }
+    void (async () => {
+      const stored = await loadConversation(chartId);
+      if (stored === null) savingOff.current = true; // never append to a conversation we couldn't read
+      if (!stored?.length) return overview();
+      savedCount.current = stored.length;
+      setMessages(stored);
+    })();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Saves finished exchanges to a saved chart's conversation (#22): after each reply, and once the
+  // chart is saved mid-conversation, so the reading from before saving is kept too. Reads refs, so
+  // a save that finishes can check again for anything that finished meanwhile.
+  const saveFinished = () => {
+    const id = chartIdRef.current;
+    if (!id || loadingRef.current || saving.current || savingOff.current) return;
+    const unsaved = savableMessages(messagesRef.current).slice(savedCount.current);
+    if (unsaved.length === 0) return;
+    saving.current = true;
+    fetch(`/api/charts/${encodeURIComponent(id)}/conversation`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages: unsaved }),
+    })
+      .then((res) => { if (res.ok) savedCount.current += unsaved.length; return res.ok; })
+      .catch(() => false) // a failed save is tried again after the next reply
+      .then((saved) => { saving.current = false; if (saved) saveFinished(); });
+  };
+  useEffect(saveFinished, [chartId, loading, messages]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Inject palace analysis when palace selected
   useEffect(() => {
@@ -154,7 +214,24 @@ export default function InsightPanel({ chart, selectedPalace, selectedSiHua }: I
         return fail('network'); // fetch rejects only when no answer came back
       }
       if (res.status === 404) return fail('apiMissing');
-      if (res.status === 429) return fail('rateLimited');
+      if (res.status === 401) return fail('loginRequired'); // AI readings are for members (#15)
+      if (res.status === 429) {
+        // The body names the limit (#118): Retry-After alone can't, since in the last hour of
+        // the UTC day the daily limit's wait is under an hour too. Retry-After gives the wait
+        // (#9); without one, the plain used-up message (#63).
+        const reason = aiLimitReason(await res.json().catch(() => null));
+        const retryAfter = Number(res.headers.get('retry-after') ?? '');
+        const wait = rateLimitWait(retryAfter);
+        let content: string | null = null;
+        if (reason === 'paused') content = t('errors.aiPaused');
+        else if (wait && reason === 'daily') content = t('errors.dailyLimitHours', { hours: Math.ceil(retryAfter / HOUR_SECONDS) });
+        else if (wait) content = 'minutes' in wait ? t('errors.rateLimitedMinutes', wait) : t('errors.rateLimitedHours', wait);
+        if (!content) return fail('rateLimited');
+        setMessages(prev => [...prev, { role: 'assistant', content, error: 'rateLimited' }]);
+        return;
+      }
+      if (res.status === 400) return fail('rejected');
+      if (res.status === 500) return fail(isAiNotConfigured(await res.json().catch(() => null)) ? 'unavailable' : 'failed');
       if (!res.ok || !res.body) return fail('failed');
 
       const reader = res.body.getReader();
@@ -198,18 +275,15 @@ export default function InsightPanel({ chart, selectedPalace, selectedSiHua }: I
    */
   const sendMessage = (text: string, hidden: boolean, what: Reading): boolean => {
     if (!text.trim() || loadingRef.current) return false;
-    if (messagesRef.current.length >= MAX_MESSAGES || text.length > MAX_CHARS) return false;
+    const userMsg: Message = { role: 'user', content: text, hidden };
+    // Read the history through the ref (a closure could be stale). It leaves the panel's own
+    // failure messages out, and the whole request must fit the server's limits (#105).
+    const apiMessages = [...toInterpretHistory(messagesRef.current), { role: userMsg.role, content: text }];
+    if (text.length > MAX_USER_CHARS || !fitsInterpretLimits(apiMessages)) return false;
     loadingRef.current = true;
     setLoading(true);
     setReading(what);
     lastRequest.current = { text, hidden, what };
-
-    const userMsg: Message = { role: 'user', content: text, hidden };
-    // Capture current messages synchronously via ref (avoids stale closure)
-    const apiMessages = [...messagesRef.current, userMsg].map(m => ({
-      role: m.role,
-      content: m.content,
-    }));
 
     setMessages(prev => [...prev, userMsg]);
     setInput('');
@@ -221,7 +295,10 @@ export default function InsightPanel({ chart, selectedPalace, selectedSiHua }: I
   const retry = () => {
     const request = lastRequest.current;
     if (!request || loadingRef.current) return;
-    const trimmed = messagesRef.current.slice(0, -2);
+    // The failed exchange is the last question and everything after it: the error, and an
+    // empty or partial reply before it if the stream had started. Cut back to before it.
+    const question = messagesRef.current.findLastIndex(m => m.role === 'user');
+    const trimmed = messagesRef.current.slice(0, Math.max(question, 0));
     messagesRef.current = trimmed;
     setMessages(trimmed);
     sendMessage(request.text, request.hidden, request.what);
@@ -271,8 +348,9 @@ export default function InsightPanel({ chart, selectedPalace, selectedSiHua }: I
   // Between sending and the first words of the reply, the panel says what it is reading (#63).
   const waiting = loading && !(last?.role === 'assistant' && last.content !== '');
   const anyShown = messages.some(m => (m.role === 'user' && !m.hidden) || (m.role === 'assistant' && m.content !== ''));
-  const tooLong = input.length > MAX_CHARS;
-  const tooMany = messages.length >= MAX_MESSAGES;
+  const tooLong = input.length > MAX_USER_CHARS;
+  // Full when one more question, the one being typed, would pass the server's limits.
+  const tooMany = !tooLong && !fitsInterpretLimits([...toInterpretHistory(messages), { role: 'user', content: input }]);
 
   return (
     <div className="flex flex-col h-full overflow-hidden card-glass" style={{ minHeight: 480 }}>
@@ -396,7 +474,7 @@ export default function InsightPanel({ chart, selectedPalace, selectedSiHua }: I
           </p>
         ) : input.length >= COUNTER_FROM && (
           <p id="insight-input-note" className="mt-2" style={{ fontSize: 'var(--fs-caption)', color: 'var(--t-text2)' }}>
-            {t('charsLeft', { n: MAX_CHARS - input.length })}
+            {t('charsLeft', { n: MAX_USER_CHARS - input.length })}
           </p>
         )}
       </div>

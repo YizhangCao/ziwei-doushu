@@ -1,9 +1,6 @@
 import type { RawMessageStreamEvent } from '@anthropic-ai/sdk/resources/messages';
-import {
-  encodeInterpretationStream,
-  serializeChartForInterpretation,
-  validateInterpretRequest,
-} from '../../lib/ai/interpret';
+import { serializeChartForInterpretation } from '../../lib/ai/chart-context';
+import { encodeInterpretationStream, validateInterpretRequest } from '../../lib/ai/interpret';
 import type { ZiweiChart } from '../../lib/ziwei/types';
 
 let failures = 0;

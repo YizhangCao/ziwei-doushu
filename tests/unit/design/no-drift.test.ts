@@ -32,6 +32,8 @@ const CORE = [
   'components/AiContent.tsx',
   'components/ChartWalkthrough.tsx',
   'components/SanFangLines.tsx',
+  'components/AiReadingSection.tsx',
+  'components/RuleBasedReading.tsx',
   // Library and knowledge (reading pages one click from home)
   'app/library/page.tsx',
   'app/library/LibrarySearch.tsx',
@@ -40,6 +42,7 @@ const CORE = [
   'app/library/search/page.tsx',
   'app/knowledge/page.tsx',
   'app/knowledge/[star]/[topic]/page.tsx',
+  'app/ni-haixia/page.tsx',
   'app/not-found.tsx',
 ];
 

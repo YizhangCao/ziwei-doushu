@@ -1,0 +1,32 @@
+{
+  "metaTitle": "Admin · Ziwei Natal Chart",
+  "title": "Admin",
+  "requestFailed": "Request failed ({status})",
+  "roles": {
+    "member": "Member",
+    "practitioner": "Practitioner",
+    "admin": "Admin"
+  },
+  "users": {
+    "heading": "Users and roles",
+    "searchLabel": "Search users",
+    "searchPlaceholder": "Name, email or GitHub id",
+    "search": "Search",
+    "searching": "Searching…",
+    "found": "{count, plural, one {Found # user} other {Found # users}}",
+    "noEmail": "No email",
+    "current": "Current: {role}",
+    "self": " (you; can’t be changed)",
+    "roleLabel": "Role for {name}",
+    "save": "Save",
+    "saveAria": "Save the role for {name}",
+    "saved": "{name} is now {role}."
+  },
+  "limit": {
+    "heading": "Daily AI limit",
+    "note": "Counted per UTC day; 0 pauses all AI readings. There is also a limit of 20 an hour for each user and each IP address.",
+    "label": "Most AI readings per user per day",
+    "save": "Save limit",
+    "saved": "{limit, plural, one {Daily limit set to # reading} other {Daily limit set to # readings}}"
+  }
+}

@@ -14,5 +14,8 @@ export default defineConfig({
     setupFiles: ['tests/integration/setup.ts'],
     // All files share one test database, so run them one at a time.
     fileParallelism: false,
+    // next-auth imports `next/server` without a file extension, which Node's ESM loader
+    // rejects; letting Vite transform it resolves the import the way Next.js does.
+    server: { deps: { inline: ['next-auth'] } },
   },
 });
