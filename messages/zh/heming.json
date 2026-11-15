@@ -4,6 +4,8 @@
   "personA": "甲方 — A",
   "personB": "乙方 — B",
   "analysisTitle": "合盘分析",
+  "comingSoon": "合盘分析即将上线",
+  "comingSoonHint": "现在可以先在「起盘」页分别查看两人的命盘。",
   "emptyState": "填好双方出生信息后，点击下方按钮<br></br>AI 将基于倪海厦体系深度分析两人缘分匹配度",
   "start": "开始合盘",
   "loading": "正在对比双方命盘…",
